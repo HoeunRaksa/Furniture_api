@@ -14,18 +14,24 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    // Add 'role', 'otp', and 'otp_expires_at' to fillable
+protected $fillable = [
+    'name',
+    'email',
+    'password',
+    'role',
+    'otp',
+    'otp_expires_at',
+    'email_verified_at',
+];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'otp', // hide OTP for serialization
     ];
-
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+protected $casts = [
+    'otp_expires_at' => 'datetime',
+    'email_verified_at' => 'datetime',
+];
 }

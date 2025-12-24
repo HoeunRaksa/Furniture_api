@@ -18,14 +18,16 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('role')->default('user');
+            $table->string('role')->default('user'); // user/admin
+            $table->string('otp')->nullable(); // OTP for registration verification
+            $table->timestamp('otp_expires_at')->nullable(); // OTP expiry time
             $table->rememberToken();
             $table->timestamps();
         });
 
-        // Password reset tokens table
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
+        // Password resets table
+        Schema::create('password_resets', function (Blueprint $table) {
+            $table->string('email')->index();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
@@ -46,8 +48,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Drop in reverse order to handle foreign keys
         Schema::dropIfExists('sessions');
-        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('password_resets');
         Schema::dropIfExists('users');
     }
 };
