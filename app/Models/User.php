@@ -14,7 +14,6 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    // Add 'role', 'otp', and 'otp_expires_at' to fillable
 protected $fillable = [
     'name',
     'email',
