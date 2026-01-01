@@ -7,30 +7,38 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 
-/**
- * @method \Laravel\Sanctum\NewAccessToken createToken(string $name, array $abilities = ['*'])
- */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-protected $fillable = [
-    'name',
-    'email',
-    'password',
-    'role',
-    'otp',
-    'otp_expires_at',
-    'email_verified_at',
-];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+        'otp',
+        'otp_expires_at',
+        'email_verified_at',
+        'profile_image',
+    ];
 
     protected $hidden = [
         'password',
         'remember_token',
-        'otp', // hide OTP for serialization
+        'otp',
     ];
-protected $casts = [
-    'otp_expires_at' => 'datetime',
-    'email_verified_at' => 'datetime',
-];
+
+    protected $casts = [
+        'otp_expires_at' => 'datetime',
+        'email_verified_at' => 'datetime',
+    ];
+
+    // Add this accessor to include token in JSON
+    protected $appends = ['token'];
+
+    public function getTokenAttribute()
+    {
+        // Only returns token if the user has created one
+        return $this->currentAccessToken()?->plainTextToken ?? null;
+    }
 }
