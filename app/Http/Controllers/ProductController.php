@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use App\Models\ProductImage;
+use App\Jobs\ProcessProductImage;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -20,7 +21,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:225',
             'price' => 'required|numeric',
             'stock' => 'required|integer',
-            'images.*' => 'required|mimes:jpg,png,jpeg'
+            'images.*' => 'required|mimes:jpg,png,jpeg|max:5120' // Max 5MB
         ]);
 
         $product = Product::create($request->only([
@@ -29,15 +30,15 @@ class ProductController extends Controller
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $path = $image->store('products', 'public');
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_url' => $path
-                ]);
+                // Save temp file quickly
+                $tempPath = $image->store('temp', 'public');
+                
+                // Process in background
+                ProcessProductImage::dispatch($product->id, $tempPath);
             }
         }
 
-        // Return the product with images
+        // Return product immediately (images will be processed in background)
         return response()->json($product->load('images'), 201);
     }
 
@@ -56,6 +57,12 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
+        
+        // Delete associated images
+        foreach ($product->images as $image) {
+            Storage::disk('public')->delete($image->image_url);
+        }
+        
         $product->delete();
         return response()->json(['message' => 'Product deleted']);
     }
@@ -66,16 +73,16 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         $request->validate([
-            'images.*' => 'required|mimes:jpg,png,jpeg'
+            'images.*' => 'required|mimes:jpg,png,jpeg|max:5120' // Max 5MB
         ]);
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $path = $image->store('products', 'public');
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_url' => $path
-                ]);
+                // Save temp file quickly
+                $tempPath = $image->store('temp', 'public');
+                
+                // Process in background
+                ProcessProductImage::dispatch($product->id, $tempPath);
             }
         }
 
