@@ -17,6 +17,8 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
+        PendingUser::where('otp_expires_at', '<', now())->delete();
+
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|email',
@@ -25,13 +27,13 @@ class AuthController extends Controller
 
         // Check if user already exists
         $existingUser = User::where('email', $request->email)->first();
-        
+
         if ($existingUser) {
             // ✅ If user exists but NOT verified, allow re-registration
             if (is_null($existingUser->email_verified_at)) {
                 // Delete the unverified user to start fresh
                 $existingUser->delete();
-                
+
                 // Continue with registration flow below...
                 \Log::info("Deleted unverified user and allowing re-registration: {$request->email}");
             } else {
@@ -48,8 +50,7 @@ class AuthController extends Controller
         // Generate OTP
         $otp = random_int(100000, 999999);
 
-        // Create pending user
-        PendingUser::create([
+        $pending = PendingUser::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -57,15 +58,21 @@ class AuthController extends Controller
             'otp_expires_at' => now()->addMinutes(5),
         ]);
 
-        // Send OTP email
         try {
             Mail::raw("Your OTP is $otp (expires in 5 minutes)", function ($msg) use ($request) {
                 $msg->to($request->email)
                     ->subject('Verify Your Account');
             });
         } catch (\Exception $e) {
+            $pending->delete();
+
             \Log::error("Failed to send OTP email: " . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Failed to send OTP. Please try again.'
+            ], 500);
         }
+
 
         return response()->json([
             'success' => true,
@@ -173,8 +180,8 @@ class AuthController extends Controller
         if (!$pending) {
             // Check if user exists but not verified
             $user = User::where('email', $request->email)
-                         ->whereNull('email_verified_at')
-                         ->first();
+                ->whereNull('email_verified_at')
+                ->first();
 
             if ($user) {
                 // Create pending user entry for unverified user
