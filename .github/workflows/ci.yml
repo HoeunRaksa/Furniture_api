@@ -24,11 +24,11 @@ jobs:
             cd /var/www/Furniture_api
 
             echo "== FIX GIT SAFE DIRECTORY =="
-            git config --global --add safe.directory /var/www/Furniture_api
+            sudo -u www-data git config --global --add safe.directory /var/www/Furniture_api
 
-            echo "== GIT RESET & PULL =="
-            git reset --hard
-            git pull origin main
+            echo "== GIT RESET & PULL (as www-data) =="
+            sudo -u www-data git reset --hard
+            sudo -u www-data git pull origin main
 
             echo "== PERMISSIONS =="
             sudo chown -R www-data:www-data /var/www/Furniture_api
