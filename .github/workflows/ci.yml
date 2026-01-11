@@ -33,6 +33,13 @@ jobs:
             echo "== PERMISSIONS =="
             sudo chown -R www-data:www-data /var/www/Furniture_api
 
+            echo "== CLEAR BOOTSTRAP CACHE (BEFORE COMPOSER) =="
+            sudo -u www-data php artisan config:clear || true
+            sudo -u www-data php artisan cache:clear || true
+            sudo -u www-data php artisan route:clear || true
+            sudo -u www-data php artisan view:clear || true
+            sudo rm -rf bootstrap/cache/*.php || true
+
             echo "== COMPOSER INSTALL =="
             sudo -u www-data composer install \
               --no-dev \
@@ -47,10 +54,8 @@ jobs:
 
             echo "== LARAVEL OPTIMIZE =="
             sudo -u www-data php artisan migrate --force
-            sudo -u www-data php artisan config:clear
-            sudo -u www-data php artisan cache:clear
-            sudo -u www-data php artisan route:clear
-            sudo -u www-data php artisan view:clear
+            sudo -u www-data php artisan config:cache
+            sudo -u www-data php artisan route:cache
             sudo -u www-data php artisan view:cache
 
             echo "== RELOAD NGINX =="
