@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PageController;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', [PageController::class, 'welcome']);
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin', [PageController::class, 'admin']);
 });
-$router->get('/admin', ['middleware' => ['auth', 'role:admin'], function () {
-    return 'Admin only';
-}]);
