@@ -3,7 +3,7 @@ name: Laravel CI/CD
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   deploy:
@@ -23,12 +23,15 @@ jobs:
             echo "== GO TO PROJECT =="
             cd /var/www/Furniture_api
 
-            echo "== GIT PULL =="
+            echo "== FIX GIT SAFE DIRECTORY =="
+            git config --global --add safe.directory /var/www/Furniture_api
+
+            echo "== GIT RESET & PULL =="
             git reset --hard
             git pull origin main
 
             echo "== PERMISSIONS =="
-            sudo chown -R www-data:www-data .
+            sudo chown -R www-data:www-data /var/www/Furniture_api
 
             echo "== COMPOSER INSTALL =="
             sudo -u www-data composer install \
@@ -36,10 +39,17 @@ jobs:
               --optimize-autoloader \
               --no-interaction
 
+            echo "== ENV CHECK =="
+            if [ ! -f .env ]; then
+              sudo -u www-data cp .env.example .env
+              sudo -u www-data php artisan key:generate
+            fi
+
             echo "== LARAVEL OPTIMIZE =="
             sudo -u www-data php artisan migrate --force
             sudo -u www-data php artisan config:clear
             sudo -u www-data php artisan cache:clear
+            sudo -u www-data php artisan route:clear
             sudo -u www-data php artisan route:cache
             sudo -u www-data php artisan view:clear
             sudo -u www-data php artisan view:cache
