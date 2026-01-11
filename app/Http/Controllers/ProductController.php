@@ -4,88 +4,336 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use App\Jobs\ProcessProductImage;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        return Product::with('images')->get();
+        try {
+            $products = Product::with('images')->latest()->get();
+
+            // Add full URL for images
+            $products->transform(function ($product) {
+                $product->images->transform(function ($image) {
+                    if ($image->image_url) {
+                        $image->full_url = url($image->image_url);
+                    }
+                    return $image;
+                });
+                return $product;
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $products
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch products', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch products',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:225',
+            'description' => 'nullable|string',
             'price' => 'required|numeric',
+            'discount' => 'nullable|numeric',
             'stock' => 'required|integer',
-            'images.*' => 'required|mimes:jpg,png,jpeg|max:5120' // Max 5MB
+            'rating' => 'nullable|numeric',
+            'images.*' => 'required|image|mimes:jpg,png,jpeg,webp|max:5120' // Max 5MB
         ]);
 
-        $product = Product::create($request->only([
-            'category_id', 'name', 'description', 'price', 'discount', 'stock', 'rating'
-        ]));
+        try {
+            $product = Product::create($request->only([
+                'category_id', 'name', 'description', 'price', 'discount', 'stock', 'rating'
+            ]));
 
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                // Save temp file quickly
-                $tempPath = $image->store('temp', 'public');
-                
-                // Process in background
-                ProcessProductImage::dispatch($product->id, $tempPath);
+            if ($request->hasFile('images')) {
+                // Create directory if not exists
+                $uploadPath = public_path('uploads/products');
+                if (!File::exists($uploadPath)) {
+                    File::makeDirectory($uploadPath, 0755, true);
+                }
+
+                foreach ($request->file('images') as $image) {
+                    // Generate unique filename
+                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    
+                    // Move to public directory
+                    $image->move($uploadPath, $filename);
+                    
+                    // Create image record
+                    $product->images()->create([
+                        'image_url' => 'uploads/products/' . $filename
+                    ]);
+                }
             }
-        }
 
-        // Return product immediately (images will be processed in background)
-        return response()->json($product->load('images'), 201);
+            // Load images with full URLs
+            $product->load('images');
+            $product->images->transform(function ($image) {
+                if ($image->image_url) {
+                    $image->full_url = url($image->image_url);
+                }
+                return $image;
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product created successfully',
+                'data' => $product
+            ], 201);
+        } catch (\Exception $e) {
+            // Delete uploaded images if exists
+            if (isset($product) && $product->images) {
+                foreach ($product->images as $image) {
+                    if (File::exists(public_path($image->image_url))) {
+                        File::delete(public_path($image->image_url));
+                    }
+                }
+                $product->images()->delete();
+            }
+
+            Log::error('Failed to create product', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create product',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show($id)
     {
-        return Product::with('images')->findOrFail($id);
+        try {
+            $product = Product::with('images')->findOrFail($id);
+
+            // Add full URL for images
+            $product->images->transform(function ($image) {
+                if ($image->image_url) {
+                    $image->full_url = url($image->image_url);
+                }
+                return $image;
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $product
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found',
+                'error' => $e->getMessage()
+            ], 404);
+        }
     }
 
     public function update(Request $request, $id)
     {
+        // Handle _method field from FormData
+        if ($request->has('_method')) {
+            $request->request->remove('_method');
+        }
+
         $product = Product::findOrFail($id);
-        $product->update($request->all());
-        return response()->json($product->load('images'));
+
+        $validated = $request->validate([
+            'category_id' => 'sometimes|required|exists:categories,id',
+            'name' => 'sometimes|required|string|max:225',
+            'description' => 'nullable|string',
+            'price' => 'sometimes|required|numeric',
+            'discount' => 'nullable|numeric',
+            'stock' => 'sometimes|required|integer',
+            'rating' => 'nullable|numeric',
+            'images.*' => 'nullable|image|mimes:jpg,png,jpeg,webp|max:5120'
+        ]);
+
+        try {
+            $product->update($request->only([
+                'category_id', 'name', 'description', 'price', 'discount', 'stock', 'rating'
+            ]));
+
+            if ($request->hasFile('images')) {
+                // Create directory if not exists
+                $uploadPath = public_path('uploads/products');
+                if (!File::exists($uploadPath)) {
+                    File::makeDirectory($uploadPath, 0755, true);
+                }
+
+                foreach ($request->file('images') as $image) {
+                    // Generate unique filename
+                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    
+                    // Move to public directory
+                    $image->move($uploadPath, $filename);
+                    
+                    // Create image record
+                    $product->images()->create([
+                        'image_url' => 'uploads/products/' . $filename
+                    ]);
+                }
+            }
+
+            // Load images with full URLs
+            $product->load('images');
+            $product->images->transform(function ($image) {
+                if ($image->image_url) {
+                    $image->full_url = url($image->image_url);
+                }
+                return $image;
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product updated successfully',
+                'data' => $product
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to update product', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update product',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
-        
-        // Delete associated images
-        foreach ($product->images as $image) {
-            Storage::disk('public')->delete($image->image_url);
+        try {
+            $product = Product::findOrFail($id);
+            
+            // Delete associated images
+            foreach ($product->images as $image) {
+                if ($image->image_url && File::exists(public_path($image->image_url))) {
+                    File::delete(public_path($image->image_url));
+                }
+            }
+            
+            $product->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to delete product', [
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete product',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        
-        $product->delete();
-        return response()->json(['message' => 'Product deleted']);
     }
 
-    // Optional: Upload images to existing product
+    // Upload additional images to existing product
     public function uploadImages(Request $request, $id)
     {
         $product = Product::findOrFail($id);
 
-        $request->validate([
-            'images.*' => 'required|mimes:jpg,png,jpeg|max:5120' // Max 5MB
+        $validated = $request->validate([
+            'images.*' => 'required|image|mimes:jpg,png,jpeg,webp|max:5120'
         ]);
 
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                // Save temp file quickly
-                $tempPath = $image->store('temp', 'public');
-                
-                // Process in background
-                ProcessProductImage::dispatch($product->id, $tempPath);
-            }
-        }
+        try {
+            if ($request->hasFile('images')) {
+                // Create directory if not exists
+                $uploadPath = public_path('uploads/products');
+                if (!File::exists($uploadPath)) {
+                    File::makeDirectory($uploadPath, 0755, true);
+                }
 
-        return response()->json($product->load('images'));
+                foreach ($request->file('images') as $image) {
+                    // Generate unique filename
+                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    
+                    // Move to public directory
+                    $image->move($uploadPath, $filename);
+                    
+                    // Create image record
+                    $product->images()->create([
+                        'image_url' => 'uploads/products/' . $filename
+                    ]);
+                }
+            }
+
+            // Load images with full URLs
+            $product->load('images');
+            $product->images->transform(function ($image) {
+                if ($image->image_url) {
+                    $image->full_url = url($image->image_url);
+                }
+                return $image;
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Images uploaded successfully',
+                'data' => $product
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to upload images', [
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to upload images',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Delete specific image
+    public function deleteImage($productId, $imageId)
+    {
+        try {
+            $product = Product::findOrFail($productId);
+            $image = $product->images()->findOrFail($imageId);
+
+            // Delete file
+            if ($image->image_url && File::exists(public_path($image->image_url))) {
+                File::delete(public_path($image->image_url));
+            }
+
+            // Delete record
+            $image->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Image deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to delete image', [
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete image',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
