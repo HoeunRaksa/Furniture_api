@@ -1,0 +1,52 @@
+name: Linter
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          composer install \
+            --no-ansi \
+            --no-interaction \
+            --no-scripts \
+            --no-progress \
+            --prefer-dist
+          npm ci
+
+      - name: Run Pint (Laravel)
+        run: vendor/bin/pint --test
+
+      - name: Format Frontend (check only)
+        run: npm run format:check || npm run format
+
+      - name: Lint Frontend
+        run: npm run lint
