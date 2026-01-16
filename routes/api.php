@@ -27,13 +27,13 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth:sanctum')->group(function () {
-    
+
     // Auth Routes
     Route::get('/user', [AuthController::class, 'user']); // ✅ Replaced UserController::me
     Route::post('/update-profile', [AuthController::class, 'updateProfile']); // ✅ Replaced UserController::uploadProfileImage
     Route::delete('/profile-image', [AuthController::class, 'deleteProfileImage']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    
+
     // Favorite Routes
     Route::get('/favorites', [FavoriteController::class, 'index']);
     Route::post('/favorites', [FavoriteController::class, 'store']);
@@ -48,18 +48,18 @@ Route::middleware('auth:sanctum')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    
+
     // Admin Dashboard
-    Route::get('/admin/dashboard', fn () => response()->json([
+    Route::get('/admin/dashboard', fn() => response()->json([
         'success' => true,
         'message' => 'Admin dashboard'
     ]));
-    
+
     // Product Management Routes
     Route::post('/admin/products', [ProductController::class, 'store']);
     Route::post('/admin/products/{id}', [ProductController::class, 'update']);
     Route::delete('/admin/products/{id}', [ProductController::class, 'destroy']);
-    
+
     // Product Images Management
     Route::post('/admin/products/{id}/images', [ProductController::class, 'uploadImages']);
     Route::delete('/admin/products/{productId}/images/{imageId}', [ProductController::class, 'deleteImage']);

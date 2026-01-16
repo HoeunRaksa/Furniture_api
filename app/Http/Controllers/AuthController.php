@@ -71,7 +71,7 @@ class AuthController extends Controller
                 // Generate unique filename
                 $image = $request->file('profile_image');
                 $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                
+
                 // Move to public directory
                 $image->move($uploadPath, $filename);
                 $profileImagePath = 'uploads/profiles/' . $filename;
@@ -387,7 +387,7 @@ class AuthController extends Controller
                 // Generate unique filename
                 $image = $request->file('profile_image');
                 $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                
+
                 // Move to public directory
                 $image->move($uploadPath, $filename);
                 $validated['profile_image'] = 'uploads/profiles/' . $filename;
