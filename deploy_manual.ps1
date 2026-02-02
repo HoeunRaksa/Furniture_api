@@ -2,11 +2,11 @@
 # Run this if GitHub Actions keeps timing out
 
 param(
-    [Parameter(Mandatory=$true)]
-    [string]$ServerIP,
+    [Parameter(Mandatory=$false)]
+    [string]$ServerIP = "54.165.46.134",
     
-    [Parameter(Mandatory=$true)]
-    [string]$KeyPath
+    [Parameter(Mandatory=$false)]
+    [string]$KeyPath = "K3.pem"
 )
 
 Write-Host "Deploying to server: $ServerIP" -ForegroundColor Green

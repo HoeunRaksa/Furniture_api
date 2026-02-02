@@ -68,7 +68,7 @@ echo "Configuring Nginx..."
 cat <<EOF | sudo tee "$NGINX_CONF"
 server {
     listen 80;
-    server_name api.furniture.learner-teach.online 3.81.228.243;
+    server_name api.furniture.learner-teach.online 54.165.46.134;
     root /var/www/Furniture_api/public;
 
     add_header X-Frame-Options "SAMEORIGIN";
