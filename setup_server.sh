@@ -51,6 +51,8 @@ fi
 # Ensure permissions and git safety
 sudo chown -R www-data:www-data "$TARGET_DIR"
 sudo git config --system --add safe.directory "$TARGET_DIR"
+# Specifically allow www-data to use this directory as well
+sudo -u www-data git config --global --add safe.directory "$TARGET_DIR"
 sudo chmod -R 775 "$TARGET_DIR/storage" "$TARGET_DIR/bootstrap/cache"
 
 # Nginx Configuration
@@ -102,19 +104,26 @@ if [ ! -f .env ]; then
 fi
 
 # Always update .env to ensure correct values
-sudo -u www-data sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=mysql/' .env
-sudo -u www-data sed -i 's/# DB_HOST=127.0.0.1/DB_HOST=127.0.0.1/' .env
-sudo -u www-data sed -i 's/# DB_PORT=3306/DB_PORT=3306/' .env
-sudo -u www-data sed -i 's/# DB_DATABASE=laravel/DB_DATABASE=furniture_db/' .env
-sudo -u www-data sed -i 's/# DB_USERNAME=root/DB_USERNAME=furniture_user/' .env
-sudo -u www-data sed -i 's/# DB_PASSWORD=/DB_PASSWORD=StrongPassword123!/' .env
-sudo -u www-data sed -i 's/APP_ENV=local/APP_ENV=production/' .env
-sudo -u www-data sed -i 's/APP_DEBUG=true/APP_DEBUG=false/' .env
-sudo -u www-data sed -i "s|APP_URL=http://localhost|APP_URL=https://api.furniture.learner-teach.online|" .env
-sudo -u www-data sed -i "s|APP_URL=http://3.81.228.243|APP_URL=https://api.furniture.learner-teach.online|" .env
+sudo -u www-data sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+sudo -u www-data sed -i 's/^# DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+sudo -u www-data sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+sudo -u www-data sed -i 's/^# DB_PORT=.*/DB_PORT=3306/' .env
+sudo -u www-data sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env
+sudo -u www-data sed -i 's/^# DB_DATABASE=.*/DB_DATABASE=furniture_db/' .env
+sudo -u www-data sed -i 's/^DB_DATABASE=.*/DB_DATABASE=furniture_db/' .env
+sudo -u www-data sed -i 's/^# DB_USERNAME=.*/DB_USERNAME=furniture_user/' .env
+sudo -u www-data sed -i 's/^DB_USERNAME=.*/DB_USERNAME=furniture_user/' .env
+sudo -u www-data sed -i 's/^# DB_PASSWORD=.*/DB_PASSWORD=StrongPassword123!/' .env
+sudo -u www-data sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=StrongPassword123!/' .env
+
+sudo -u www-data sed -i 's/^APP_ENV=.*/APP_ENV=production/' .env
+sudo -u www-data sed -i 's/^APP_DEBUG=.*/APP_DEBUG=false/' .env
+sudo -u www-data sed -i "s|^APP_URL=.*|APP_URL=https://api.furniture.learner-teach.online|" .env
 
 echo "Installing Dependencies..."
-sudo -u www-data composer install --no-dev --optimize-autoloader
+# Set HOME for www-data so composer/npm can write to cache
+export HOME=/var/www
+sudo -u www-data HOME=/var/www composer install --no-dev --optimize-autoloader
 
 if [ -z "$(sudo -u www-data grep '^APP_KEY=' .env | cut -d= -f2)" ]; then
     sudo -u www-data php artisan key:generate

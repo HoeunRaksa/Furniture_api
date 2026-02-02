@@ -17,6 +17,7 @@ jobs:
           username: ubuntu
           port: 22
           key: ${{ secrets.DEPLOY_KEY }}
+          command_timeout: 30m
           script: |
             set -e
 
@@ -24,6 +25,8 @@ jobs:
             cd /var/www/Furniture_api
 
             echo "== FIX GIT SAFE DIRECTORY =="
+            # Ensure permissions are correct before git operations
+            sudo chown -R www-data:www-data /var/www/Furniture_api
             sudo -u www-data git config --global --add safe.directory /var/www/Furniture_api
 
             echo "== GIT RESET & PULL (as www-data) =="
