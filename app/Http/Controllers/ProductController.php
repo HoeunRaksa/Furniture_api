@@ -48,13 +48,12 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'discount' => 'nullable|numeric',
             'stock' => 'required|integer',
-            'rating' => 'nullable|numeric',
             'images.*' => 'required|image|mimes:jpg,png,jpeg,webp|max:5120' // Max 5MB
         ]);
 
         try {
             $product = Product::create($request->only([
-                'category_id', 'name', 'description', 'price', 'discount', 'stock', 'rating'
+                'category_id', 'name', 'description', 'price', 'discount', 'stock'
             ]));
 
             if ($request->hasFile('images')) {
@@ -158,13 +157,12 @@ class ProductController extends Controller
             'price' => 'sometimes|required|numeric',
             'discount' => 'nullable|numeric',
             'stock' => 'sometimes|required|integer',
-            'rating' => 'nullable|numeric',
             'images.*' => 'nullable|image|mimes:jpg,png,jpeg,webp|max:5120'
         ]);
 
         try {
             $product->update($request->only([
-                'category_id', 'name', 'description', 'price', 'discount', 'stock', 'rating'
+                'category_id', 'name', 'description', 'price', 'discount', 'stock'
             ]));
 
             if ($request->hasFile('images')) {
