@@ -46,6 +46,10 @@ jobs:
               --optimize-autoloader \
               --no-interaction
 
+            echo "== NPM BUILD =="
+            sudo -u www-data npm install
+            sudo -u www-data npm run build
+
             echo "== ENV CHECK =="
             if [ ! -f .env ]; then
               sudo -u www-data cp .env.example .env
