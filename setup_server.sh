@@ -19,6 +19,12 @@ sudo apt-get update
 wait_for_lock
 sudo apt-get install -y nginx mysql-server php8.4 php8.4-fpm php8.4-mysql php8.4-curl php8.4-gd php8.4-mbstring php8.4-xml php8.4-zip php8.4-bcmath php8.4-intl php8.4-cli unzip acl
 
+# Configure Firewall
+echo "Configuring Firewall..."
+sudo ufw allow 'Nginx Full'
+sudo ufw allow 22/tcp
+sudo ufw --force enable
+
 # Install Composer
 if ! command -v composer &> /dev/null; then
     echo "Installing Composer..."
