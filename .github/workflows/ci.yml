@@ -49,14 +49,14 @@ jobs:
             export HOME=/var/www
 
             echo "== COMPOSER INSTALL =="
-            sudo -u www-data HOME=/var/www composer install \
+            sudo -u www-data env HOME=/var/www /usr/local/bin/composer install \
               --no-dev \
               --optimize-autoloader \
               --no-interaction
 
             echo "== NPM BUILD =="
-            sudo -u www-data HOME=/var/www npm install
-            sudo -u www-data HOME=/var/www npm run build
+            sudo -u www-data env HOME=/var/www /usr/bin/npm install
+            sudo -u www-data env HOME=/var/www /usr/bin/npm run build
 
             echo "== ENV CHECK =="
             if [ ! -f .env ]; then
