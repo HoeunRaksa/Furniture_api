@@ -44,8 +44,8 @@ jobs:
             sudo rm -rf bootstrap/cache/*.php || true
 
             echo "== NPM & COMPOSER SETUP =="
-            sudo mkdir -p /var/www/.npm
-            sudo chown -R www-data:www-data /var/www/.npm
+            sudo mkdir -p /var/www/.npm /var/www/.composer /var/www/.config /var/www/.cache
+            sudo chown -R www-data:www-data /var/www/.npm /var/www/.composer /var/www/.config /var/www/.cache
             export HOME=/var/www
 
             echo "== COMPOSER INSTALL =="
