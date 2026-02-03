@@ -43,15 +43,20 @@ jobs:
             sudo -u www-data php artisan view:clear || true
             sudo rm -rf bootstrap/cache/*.php || true
 
+            echo "== NPM & COMPOSER SETUP =="
+            sudo mkdir -p /var/www/.npm
+            sudo chown -R www-data:www-data /var/www/.npm
+            export HOME=/var/www
+
             echo "== COMPOSER INSTALL =="
-            sudo -u www-data composer install \
+            sudo -u www-data HOME=/var/www composer install \
               --no-dev \
               --optimize-autoloader \
               --no-interaction
 
             echo "== NPM BUILD =="
-            sudo -u www-data npm install
-            sudo -u www-data npm run build
+            sudo -u www-data HOME=/var/www npm install
+            sudo -u www-data HOME=/var/www npm run build
 
             echo "== ENV CHECK =="
             if [ ! -f .env ]; then
