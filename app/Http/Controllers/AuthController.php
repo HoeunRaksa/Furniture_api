@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\PendingUser;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -34,7 +34,7 @@ class AuthController extends Controller
         if ($existingUser && $existingUser->email_verified_at) {
             return response()->json([
                 'success' => false,
-                'message' => 'This email is already registered. Please login instead.'
+                'message' => 'This email is already registered. Please login instead.',
             ], 400);
         }
 
@@ -64,24 +64,25 @@ class AuthController extends Controller
             try {
                 // Create directory if not exists
                 $uploadPath = public_path('uploads/profiles');
-                if (!File::exists($uploadPath)) {
+                if (! File::exists($uploadPath)) {
                     File::makeDirectory($uploadPath, 0755, true);
                 }
 
                 // Generate unique filename
                 $image = $request->file('profile_image');
-                $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
 
                 // Move to public directory
                 $image->move($uploadPath, $filename);
-                $profileImagePath = 'uploads/profiles/' . $filename;
+                $profileImagePath = 'uploads/profiles/'.$filename;
             } catch (\Exception $e) {
                 Log::error('Failed to upload profile image during registration', [
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to upload profile image. Please try again.'
+                    'message' => 'Failed to upload profile image. Please try again.',
                 ], 500);
             }
         }
@@ -96,22 +97,23 @@ class AuthController extends Controller
                 'otp_expires_at' => now()->addMinutes(5),
             ]);
 
-            if (!$this->sendOtpMail($request->email, $otp, 'Verify Your Account')) {
+            if (! $this->sendOtpMail($request->email, $otp, 'Verify Your Account')) {
                 // Delete uploaded image if email fails
                 if ($profileImagePath && File::exists(public_path($profileImagePath))) {
                     File::delete(public_path($profileImagePath));
                 }
                 $pending->delete();
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to send OTP. Please try again.'
+                    'message' => 'Failed to send OTP. Please try again.',
                 ], 500);
             }
 
             return response()->json([
                 'success' => true,
                 'message' => 'OTP sent successfully. Please check your email.',
-                'email' => $request->email
+                'email' => $request->email,
             ]);
         } catch (\Exception $e) {
             // Clean up image if database operation fails
@@ -121,13 +123,13 @@ class AuthController extends Controller
 
             Log::error('Registration failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Registration failed. Please try again.',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -142,10 +144,10 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (! Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid credentials'
+                'message' => 'Invalid credentials',
             ], 401);
         }
 
@@ -153,9 +155,10 @@ class AuthController extends Controller
 
         if (is_null($user->email_verified_at)) {
             Auth::logout();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Please verify your email with OTP first.'
+                'message' => 'Please verify your email with OTP first.',
             ], 403);
         }
 
@@ -168,7 +171,7 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Login successful',
             'user' => $user,
-            'token' => $user->createToken('api-token')->plainTextToken
+            'token' => $user->createToken('api-token')->plainTextToken,
         ]);
     }
 
@@ -184,10 +187,10 @@ class AuthController extends Controller
 
         $pending = PendingUser::where('email', $request->email)->first();
 
-        if (!$pending) {
+        if (! $pending) {
             return response()->json([
                 'success' => false,
-                'message' => 'No pending verification found.'
+                'message' => 'No pending verification found.',
             ], 404);
         }
 
@@ -197,16 +200,17 @@ class AuthController extends Controller
                 File::delete(public_path($pending->profile_image));
             }
             $pending->delete();
+
             return response()->json([
                 'success' => false,
-                'message' => 'OTP expired. Please request a new one.'
+                'message' => 'OTP expired. Please request a new one.',
             ], 400);
         }
 
-        if (!Hash::check($request->otp, $pending->otp_hash)) {
+        if (! Hash::check($request->otp, $pending->otp_hash)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid OTP. Please try again.'
+                'message' => 'Invalid OTP. Please try again.',
             ], 400);
         }
 
@@ -230,18 +234,18 @@ class AuthController extends Controller
                 'success' => true,
                 'message' => 'Account verified successfully',
                 'user' => $user,
-                'token' => $user->createToken('api-token')->plainTextToken
+                'token' => $user->createToken('api-token')->plainTextToken,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to verify OTP', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Verification failed. Please try again.',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -255,15 +259,15 @@ class AuthController extends Controller
 
         $pending = PendingUser::where('email', $request->email)->first();
 
-        if (!$pending) {
+        if (! $pending) {
             $user = User::where('email', $request->email)
                 ->whereNull('email_verified_at')
                 ->first();
 
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No pending verification found. Please register first.'
+                    'message' => 'No pending verification found. Please register first.',
                 ], 404);
             }
 
@@ -279,27 +283,28 @@ class AuthController extends Controller
                     'otp_expires_at' => now()->addMinutes(5),
                 ]);
 
-                if (!$this->sendOtpMail($user->email, $otp, 'Resend OTP')) {
+                if (! $this->sendOtpMail($user->email, $otp, 'Resend OTP')) {
                     $pending->delete();
+
                     return response()->json([
                         'success' => false,
-                        'message' => 'Failed to send OTP. Please try again.'
+                        'message' => 'Failed to send OTP. Please try again.',
                     ], 500);
                 }
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'OTP sent successfully'
+                    'message' => 'OTP sent successfully',
                 ]);
             } catch (\Exception $e) {
                 Log::error('Failed to resend OTP', [
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
 
                 return response()->json([
                     'success' => false,
                     'message' => 'Failed to send OTP. Please try again.',
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ], 500);
             }
         }
@@ -312,26 +317,26 @@ class AuthController extends Controller
                 'otp_expires_at' => now()->addMinutes(5),
             ]);
 
-            if (!$this->sendOtpMail($pending->email, $otp, 'Resend OTP')) {
+            if (! $this->sendOtpMail($pending->email, $otp, 'Resend OTP')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to send OTP. Please try again.'
+                    'message' => 'Failed to send OTP. Please try again.',
                 ], 500);
             }
 
             return response()->json([
                 'success' => true,
-                'message' => 'OTP resent successfully'
+                'message' => 'OTP resent successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to resend OTP', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to resend OTP. Please try again.',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -350,7 +355,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $user
+            'data' => $user,
         ]);
     }
 
@@ -368,7 +373,7 @@ class AuthController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
+            'email' => 'sometimes|required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:6',
             'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
@@ -380,17 +385,17 @@ class AuthController extends Controller
             if ($request->hasFile('profile_image')) {
                 // Create directory if not exists
                 $uploadPath = public_path('uploads/profiles');
-                if (!File::exists($uploadPath)) {
+                if (! File::exists($uploadPath)) {
                     File::makeDirectory($uploadPath, 0755, true);
                 }
 
                 // Generate unique filename
                 $image = $request->file('profile_image');
-                $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
 
                 // Move to public directory
                 $image->move($uploadPath, $filename);
-                $validated['profile_image'] = 'uploads/profiles/' . $filename;
+                $validated['profile_image'] = 'uploads/profiles/'.$filename;
 
                 // Delete old image
                 if ($oldImagePath && File::exists(public_path($oldImagePath))) {
@@ -413,7 +418,7 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Profile updated successfully',
-                'data' => $user
+                'data' => $user,
             ]);
         } catch (\Exception $e) {
             // Delete uploaded image if exists
@@ -423,13 +428,13 @@ class AuthController extends Controller
 
             Log::error('Failed to update profile', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update profile',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -451,17 +456,17 @@ class AuthController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Profile image deleted successfully'
+                'message' => 'Profile image deleted successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to delete profile image', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete profile image',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -472,9 +477,10 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
+
         return response()->json([
             'success' => true,
-            'message' => 'Logged out successfully'
+            'message' => 'Logged out successfully',
         ]);
     }
 
@@ -486,14 +492,16 @@ class AuthController extends Controller
         try {
             Mail::raw(
                 "Your OTP is: $otp\n\nThis code will expire in 5 minutes.\n\nIf you didn't request this, please ignore this email.",
-                fn($msg) => $msg->to($email)->subject($subject)
+                fn ($msg) => $msg->to($email)->subject($subject)
             );
+
             return true;
         } catch (\Exception $e) {
-            Log::error("OTP mail failed", [
+            Log::error('OTP mail failed', [
                 'email' => $email,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }

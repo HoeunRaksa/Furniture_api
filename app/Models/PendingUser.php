@@ -11,6 +11,6 @@ class PendingUser extends Model
         'email',
         'password',
         'otp_hash',
-        'otp_expires_at'
+        'otp_expires_at',
     ];
 }

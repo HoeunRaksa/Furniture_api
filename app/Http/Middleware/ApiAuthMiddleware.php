@@ -8,7 +8,7 @@ class ApiAuthMiddleware
 {
     public function handle($request, Closure $next)
     {
-        if (!$request->user()) {
+        if (! $request->user()) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 

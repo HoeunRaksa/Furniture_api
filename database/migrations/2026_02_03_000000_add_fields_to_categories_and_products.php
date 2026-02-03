@@ -9,28 +9,28 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            if (!Schema::hasColumn('categories', 'slug')) {
+            if (! Schema::hasColumn('categories', 'slug')) {
                 $table->string('slug')->unique()->after('name')->nullable();
             }
-            if (!Schema::hasColumn('categories', 'description')) {
+            if (! Schema::hasColumn('categories', 'description')) {
                 $table->text('description')->nullable()->after('slug');
             }
-            if (!Schema::hasColumn('categories', 'image_path')) {
+            if (! Schema::hasColumn('categories', 'image_path')) {
                 $table->string('image_path')->nullable()->after('description');
             }
-            if (!Schema::hasColumn('categories', 'is_active')) {
+            if (! Schema::hasColumn('categories', 'is_active')) {
                 $table->boolean('is_active')->default(true)->after('image_path');
             }
         });
 
         Schema::table('products', function (Blueprint $table) {
-            if (!Schema::hasColumn('products', 'slug')) {
+            if (! Schema::hasColumn('products', 'slug')) {
                 $table->string('slug')->unique()->after('name')->nullable();
             }
-            if (!Schema::hasColumn('products', 'is_featured')) {
+            if (! Schema::hasColumn('products', 'is_featured')) {
                 $table->boolean('is_featured')->default(false)->after('stock');
             }
-            if (!Schema::hasColumn('products', 'is_active')) {
+            if (! Schema::hasColumn('products', 'is_active')) {
                 $table->boolean('is_active')->default(true)->after('is_featured');
             }
         });
@@ -43,7 +43,7 @@ return new class extends Migration
         });
 
         Schema::table('products', function (Blueprint $table) {
-             $table->dropColumn(['slug', 'is_featured', 'is_active']);
+            $table->dropColumn(['slug', 'is_featured', 'is_active']);
         });
     }
 };

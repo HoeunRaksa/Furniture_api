@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\ProductController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,9 +50,9 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
     // Admin Dashboard
-    Route::get('/admin/dashboard', fn() => response()->json([
+    Route::get('/admin/dashboard', fn () => response()->json([
         'success' => true,
-        'message' => 'Admin dashboard'
+        'message' => 'Admin dashboard',
     ]));
 
     // Product Management Routes

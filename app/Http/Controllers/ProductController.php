@@ -20,21 +20,24 @@ class ProductController extends Controller
                     if ($image->image_url) {
                         $image->full_url = url($image->image_url);
                     }
+
                     return $image;
                 });
+
                 return $product;
             });
 
             return response()->json([
                 'success' => true,
-                'data' => $products
+                'data' => $products,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to fetch products', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch products',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -48,31 +51,31 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'discount' => 'nullable|numeric',
             'stock' => 'required|integer',
-            'images.*' => 'required|image|mimes:jpg,png,jpeg,webp|max:5120' // Max 5MB
+            'images.*' => 'required|image|mimes:jpg,png,jpeg,webp|max:5120', // Max 5MB
         ]);
 
         try {
             $product = Product::create($request->only([
-                'category_id', 'name', 'description', 'price', 'discount', 'stock'
+                'category_id', 'name', 'description', 'price', 'discount', 'stock',
             ]));
 
             if ($request->hasFile('images')) {
                 // Create directory if not exists
                 $uploadPath = public_path('uploads/products');
-                if (!File::exists($uploadPath)) {
+                if (! File::exists($uploadPath)) {
                     File::makeDirectory($uploadPath, 0755, true);
                 }
 
                 foreach ($request->file('images') as $image) {
                     // Generate unique filename
-                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                    
+                    $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
+
                     // Move to public directory
                     $image->move($uploadPath, $filename);
-                    
+
                     // Create image record
                     $product->images()->create([
-                        'image_url' => 'uploads/products/' . $filename
+                        'image_url' => 'uploads/products/'.$filename,
                     ]);
                 }
             }
@@ -83,13 +86,14 @@ class ProductController extends Controller
                 if ($image->image_url) {
                     $image->full_url = url($image->image_url);
                 }
+
                 return $image;
             });
 
             return response()->json([
                 'success' => true,
                 'message' => 'Product created successfully',
-                'data' => $product
+                'data' => $product,
             ], 201);
         } catch (\Exception $e) {
             // Delete uploaded images if exists
@@ -104,13 +108,13 @@ class ProductController extends Controller
 
             Log::error('Failed to create product', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create product',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -125,18 +129,19 @@ class ProductController extends Controller
                 if ($image->image_url) {
                     $image->full_url = url($image->image_url);
                 }
+
                 return $image;
             });
 
             return response()->json([
                 'success' => true,
-                'data' => $product
+                'data' => $product,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Product not found',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 404);
         }
     }
@@ -157,31 +162,31 @@ class ProductController extends Controller
             'price' => 'sometimes|required|numeric',
             'discount' => 'nullable|numeric',
             'stock' => 'sometimes|required|integer',
-            'images.*' => 'nullable|image|mimes:jpg,png,jpeg,webp|max:5120'
+            'images.*' => 'nullable|image|mimes:jpg,png,jpeg,webp|max:5120',
         ]);
 
         try {
             $product->update($request->only([
-                'category_id', 'name', 'description', 'price', 'discount', 'stock'
+                'category_id', 'name', 'description', 'price', 'discount', 'stock',
             ]));
 
             if ($request->hasFile('images')) {
                 // Create directory if not exists
                 $uploadPath = public_path('uploads/products');
-                if (!File::exists($uploadPath)) {
+                if (! File::exists($uploadPath)) {
                     File::makeDirectory($uploadPath, 0755, true);
                 }
 
                 foreach ($request->file('images') as $image) {
                     // Generate unique filename
-                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                    
+                    $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
+
                     // Move to public directory
                     $image->move($uploadPath, $filename);
-                    
+
                     // Create image record
                     $product->images()->create([
-                        'image_url' => 'uploads/products/' . $filename
+                        'image_url' => 'uploads/products/'.$filename,
                     ]);
                 }
             }
@@ -192,24 +197,25 @@ class ProductController extends Controller
                 if ($image->image_url) {
                     $image->full_url = url($image->image_url);
                 }
+
                 return $image;
             });
 
             return response()->json([
                 'success' => true,
                 'message' => 'Product updated successfully',
-                'data' => $product
+                'data' => $product,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to update product', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update product',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -218,29 +224,29 @@ class ProductController extends Controller
     {
         try {
             $product = Product::findOrFail($id);
-            
+
             // Delete associated images
             foreach ($product->images as $image) {
                 if ($image->image_url && File::exists(public_path($image->image_url))) {
                     File::delete(public_path($image->image_url));
                 }
             }
-            
+
             $product->delete();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Product deleted successfully'
+                'message' => 'Product deleted successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to delete product', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete product',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -251,27 +257,27 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         $validated = $request->validate([
-            'images.*' => 'required|image|mimes:jpg,png,jpeg,webp|max:5120'
+            'images.*' => 'required|image|mimes:jpg,png,jpeg,webp|max:5120',
         ]);
 
         try {
             if ($request->hasFile('images')) {
                 // Create directory if not exists
                 $uploadPath = public_path('uploads/products');
-                if (!File::exists($uploadPath)) {
+                if (! File::exists($uploadPath)) {
                     File::makeDirectory($uploadPath, 0755, true);
                 }
 
                 foreach ($request->file('images') as $image) {
                     // Generate unique filename
-                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                    
+                    $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
+
                     // Move to public directory
                     $image->move($uploadPath, $filename);
-                    
+
                     // Create image record
                     $product->images()->create([
-                        'image_url' => 'uploads/products/' . $filename
+                        'image_url' => 'uploads/products/'.$filename,
                     ]);
                 }
             }
@@ -282,23 +288,24 @@ class ProductController extends Controller
                 if ($image->image_url) {
                     $image->full_url = url($image->image_url);
                 }
+
                 return $image;
             });
 
             return response()->json([
                 'success' => true,
                 'message' => 'Images uploaded successfully',
-                'data' => $product
+                'data' => $product,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to upload images', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to upload images',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -320,17 +327,17 @@ class ProductController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Image deleted successfully'
+                'message' => 'Image deleted successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to delete image', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete image',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
