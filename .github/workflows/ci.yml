@@ -43,23 +43,15 @@ jobs:
             sudo -u www-data php artisan view:clear || true
             sudo rm -rf bootstrap/cache/*.php || true
 
-            echo "== NPM & COMPOSER SETUP =="
-            sudo mkdir -p /var/www/.npm /var/www/.composer /var/www/.config /var/www/.cache
-            sudo chown -R www-data:www-data /var/www/.npm /var/www/.composer /var/www/.config /var/www/.cache
-            
-            # Export PATH and HOME for subsequent commands
-            export HOME=/var/www
-            export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+            echo "== COMPOSER SETUP =="
+            sudo mkdir -p /var/www/.composer /var/www/.config /var/www/.cache
+            sudo chown -R www-data:www-data /var/www/.composer /var/www/.config /var/www/.cache
 
             echo "== COMPOSER INSTALL =="
-            sudo -u www-data env HOME=/var/www PATH=$PATH composer install \
+            sudo -u www-data env HOME=/var/www composer install \
               --no-dev \
               --optimize-autoloader \
               --no-interaction
-
-            echo "== NPM BUILD =="
-            sudo -u www-data env HOME=/var/www PATH=$PATH npm install
-            sudo -u www-data env HOME=/var/www PATH=$PATH npm run build
 
             echo "== ENV CHECK =="
             if [ ! -f .env ]; then
