@@ -197,17 +197,17 @@
             if (files.length > 0) {
                 $('.image-upload-wrapper').addClass('border-primary');
             }
-            for (let i = 0; i < files.length; i++) {
+            Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onload = function(re) {
                     $('#imagePreviewContainer').append(`
-                            <div class="position-relative animate__animated animate__fadeIn">
-                                <img src="${re.target.result}" class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover; border: 2px solid white;">
-                            </div>
-                        `);
+                        <div class="position-relative">
+                            <img src="${re.target.result}" class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover; border: 2px solid #fff;">
+                        </div>
+                    `);
                 }
-                reader.readAsDataURL(files[i]);
-            }
+                reader.readAsDataURL(file);
+            });
         });
 
         // Form submission
