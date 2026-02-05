@@ -13,7 +13,7 @@ class Product extends Model
         'category_id',
         'name',
         'description', 'price', 'discount', 'stock',
-        'active', 'is_featured', 'is_recommended'
+        'active', 'is_featured'
     ];
 
     public function images()

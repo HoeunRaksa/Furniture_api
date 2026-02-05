@@ -39,6 +39,15 @@ class ProductController extends Controller
             return DataTables::of($products)
                 ->addColumn('image_url', fn($product) => $product->images->first()?->image_url ? asset($product->images->first()->image_url) : null)
                 ->addColumn('category', fn($product) => $product->category?->name ?? '<span class="badge bg-secondary">No Category</span>')
+                ->addColumn('price', fn($product) => '$' . number_format($product->price, 2))
+                ->addColumn('discount', fn($product) => '$' . number_format($product->discount, 2))
+                ->addColumn('stock', fn($product) => $product->stock)
+                ->addColumn('featured', function ($product) {
+                    if ($product->is_featured) {
+                        return '<span class="status-badge text-white bg-warning">Featured</span>';
+                    }
+                    return '<span class="status-badge text-dark bg-light">Standard</span>';
+                })
                 ->addColumn('status', function ($product) {
                     $badges = [];
                     if ($product->is_active) {
@@ -63,7 +72,7 @@ class ProductController extends Controller
                         </button>
                     </div>';
                 })
-                ->rawColumns(['category', 'status', 'action'])
+                ->rawColumns(['category', 'featured', 'status', 'action'])
                 ->make(true);
         }
     }
@@ -108,7 +117,6 @@ class ProductController extends Controller
                 'stock' => $request->stock ?? 0,
                 'active' => $request->boolean('active', true),
                 'is_featured' => $request->boolean('is_featured', false),
-                'is_recommended' => $request->boolean('is_recommended', false),
                 'is_active' => $request->boolean('is_active', true)
             ]);
 
@@ -223,7 +231,6 @@ class ProductController extends Controller
                 'stock' => $request->stock ?? 0,
                 'active' => $request->boolean('active', true),
                 'is_featured' => $request->boolean('is_featured', false),
-                'is_recommended' => $request->boolean('is_recommended', false),
                 'is_active' => $request->boolean('is_active', true)
             ]);
 

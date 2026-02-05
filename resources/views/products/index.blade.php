@@ -17,10 +17,14 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="5%">ID</th>
-                                        <th width="45%">Product</th>
-                                        <th width="20%">Category</th>
-                                        <th width="15%">Status</th>
-                                        <th width="15%">Actions</th>
+                                        <th width="30%">Product</th>
+                                        <th width="15%">Category</th>
+                                        <th width="10%">Price</th>
+                                        <th width="10%">Discount</th>
+                                        <th width="10%">Stock</th>
+                                        <th width="10%">Featured</th>
+                                        <th width="10%">Status</th>
+                                        <th width="10%">Actions</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -80,6 +84,10 @@
                         }
                     },
                     { data: 'category', name: 'category.name' },
+                    { data: 'price', name: 'price' },
+                    { data: 'discount', name: 'discount' },
+                    { data: 'stock', name: 'stock' },
+                    { data: 'featured', name: 'is_featured' },
                     { data: 'status', name: 'status', orderable: false, searchable: false },
                     { data: 'action', name: 'action', orderable: false, searchable: false }
                 ],
