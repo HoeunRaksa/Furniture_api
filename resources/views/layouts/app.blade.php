@@ -303,7 +303,6 @@
     </script>
 
     <script src="{{ asset('js/notifications.js') }}"></script>
-    @include('includes.js')
     @stack('scripts')
 </body>
 </html>
