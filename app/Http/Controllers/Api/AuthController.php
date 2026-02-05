@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\PendingUser;
 use App\Models\User;
@@ -151,6 +153,7 @@ class AuthController extends Controller
             ], 401);
         }
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         if (is_null($user->email_verified_at)) {

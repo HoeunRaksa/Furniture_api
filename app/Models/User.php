@@ -20,6 +20,12 @@ class User extends Authenticatable
         'otp_expires_at',
         'email_verified_at',
         'profile_image',
+        'prefix',
+        'first_name',
+        'last_name',
+        'gender',
+        'is_active',
+        'username',
     ];
 
     protected $hidden = [

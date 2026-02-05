@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -27,7 +29,7 @@ class ProductController extends Controller
             'data' => $products,
         ]);
     } catch (\Exception $e) {
-        \Log::error('Failed to fetch products', ['error' => $e->getMessage()]);
+        Log::error('Failed to fetch products', ['error' => $e->getMessage()]);
 
         return response()->json([
             'success' => false,
