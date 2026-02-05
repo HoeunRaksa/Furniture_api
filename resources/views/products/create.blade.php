@@ -219,7 +219,7 @@
     </div>
 
     {{-- Data Bridge for JS --}}
-    <div id="js-data-bridge" data-attributes='@json($attributes->load("values"))' style="display: none;"></div>
+    <div id="js-data-bridge" data-attributes="{{ json_encode($attributes->load('values')) }}" style="display: none;"></div>
 
     <style>
         .premium-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; }
@@ -250,6 +250,7 @@
             // Global data from bridge
             const bridge = document.getElementById('js-data-bridge');
             const allAttributes = JSON.parse(bridge.dataset.attributes);
+            let variantIndex = 0;
 
             // Add description line
             $('#addLine').click(function() {
@@ -296,7 +297,7 @@
                 return arr.reduce((a, b) => a.flatMap(d => b.map(e => [...d, e])), [[]]);
             }
 
-            let variantIndex = 0;
+
 
             function appendVariantCard(badges, hiddenInputs, index) {
                 $('#variantsSection').append(`

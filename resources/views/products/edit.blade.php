@@ -261,7 +261,7 @@
 
         {{-- Data Bridge for JS --}}
         <div id="js-data-bridge" 
-             data-attributes='@json($attributes->load("values"))'
+             data-attributes="{{ json_encode($attributes->load('values')) }}"
              data-variant-count="{{ $product->variants->count() }}"
              style="display: none;">
         </div>
