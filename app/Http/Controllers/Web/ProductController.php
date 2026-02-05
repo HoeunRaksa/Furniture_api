@@ -93,6 +93,7 @@ class ProductController extends Controller
             'images.*' => 'nullable|image|mimes:jpg,png,jpeg,webp|max:5120',
             'description_lines' => 'nullable|array',
             'variants' => 'nullable|array',
+            'is_active' => 'nullable|boolean',
         ]);
 
         try {
@@ -101,7 +102,14 @@ class ProductController extends Controller
             $product = Product::create([
                 'category_id' => $request->category_id,
                 'name' => $request->name,
-                'is_active' => $request->boolean('is_active', true),
+                'description' => $request->description,
+                'price' => $request->price ?? 0,
+                'discount' => $request->discount ?? 0,
+                'stock' => $request->stock ?? 0,
+                'active' => $request->boolean('active', true),
+                'is_featured' => $request->boolean('is_featured', false),
+                'is_recommended' => $request->boolean('is_recommended', false),
+                'is_active' => $request->boolean('is_active', true)
             ]);
 
             // Handle Images
@@ -146,6 +154,15 @@ class ProductController extends Controller
                 }
             }
 
+            // Discount
+            if ($request->filled('discount_value')) {
+                $product->discounts()->create([
+                    'name' => $request->discount_name ?? $product->name . ' Discount',
+                    'value' => $request->discount_value,
+                    'is_percentage' => $request->boolean('is_percentage', true),
+                    'active' => true,
+                ]);
+            }
 
             DB::commit();
 
@@ -190,6 +207,7 @@ class ProductController extends Controller
             'images.*' => 'nullable|image|mimes:jpg,png,jpeg,webp|max:5120',
             'description_lines' => 'nullable|array',
             'variants' => 'nullable|array',
+            'is_active' => 'nullable|boolean',
         ]);
 
         try {
@@ -199,7 +217,14 @@ class ProductController extends Controller
             $product->update([
                 'category_id' => $request->category_id,
                 'name' => $request->name,
-                'is_active' => $request->boolean('is_active', true),
+                'description' => $request->description,
+                'price' => $request->price ?? 0,
+                'discount' => $request->discount ?? 0,
+                'stock' => $request->stock ?? 0,
+                'active' => $request->boolean('active', true),
+                'is_featured' => $request->boolean('is_featured', false),
+                'is_recommended' => $request->boolean('is_recommended', false),
+                'is_active' => $request->boolean('is_active', true)
             ]);
 
             // Handle Images
@@ -251,6 +276,16 @@ class ProductController extends Controller
                 }
             }
 
+            // Update Discount
+            if ($request->filled('discount_value')) {
+                $product->discounts()->update(['active' => false]);
+                $product->discounts()->create([
+                    'name' => $request->discount_name ?? $product->name . ' Discount',
+                    'value' => $request->discount_value,
+                    'is_percentage' => $request->boolean('is_percentage', true),
+                    'active' => true,
+                ]);
+            }
 
             DB::commit();
 
