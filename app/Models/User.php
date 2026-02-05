@@ -40,7 +40,12 @@ class User extends Authenticatable
     ];
 
     // Add this accessor to include token in JSON
-    protected $appends = ['token'];
+    protected $appends = ['token', 'full_name'];
+
+    public function getFullNameAttribute()
+    {
+        return trim($this->first_name . ' ' . $this->last_name) ?: $this->name;
+    }
 
     public function getTokenAttribute()
     {

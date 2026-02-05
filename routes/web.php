@@ -9,6 +9,7 @@ use App\Http\Controllers\Web\AttributeController;
 use App\Http\Controllers\Web\OrdersController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\BusinessController;
+use App\Http\Controllers\Web\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 
 // Public Pages
 Route::get('/', function() {
-    return auth()->check() ? redirect()->route('home') : redirect()->route('login');
+    return \Illuminate\Support\Facades\Auth::check() ? redirect()->route('home') : redirect()->route('login');
 });
 
 // Auth Routes
@@ -33,6 +34,9 @@ Route::post('/logout', [WebAuthController::class, 'logout'])->name('logout');
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('home');
+    
+    // Notification Polling
+    Route::get('/notifications/check', [NotificationController::class, 'checkNewOrders'])->name('notifications.check');
 
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function () {
