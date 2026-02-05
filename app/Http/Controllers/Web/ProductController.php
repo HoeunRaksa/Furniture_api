@@ -41,7 +41,7 @@ class ProductController extends Controller
                 ->addColumn('category', fn($product) => $product->category?->name ?? '<span class="badge bg-secondary">No Category</span>')
                 ->addColumn('status', function ($product) {
                     $badges = [];
-                    if ($product->active) {
+                    if ($product->is_active) {
                         $badges[] = '<span class="status-badge text-white bg-success">Active</span>';
                     } else {
                         $badges[] = '<span class="status-badge text-white bg-secondary">Inactive</span>';
@@ -101,13 +101,7 @@ class ProductController extends Controller
             $product = Product::create([
                 'category_id' => $request->category_id,
                 'name' => $request->name,
-                'description' => $request->description,
-                'price' => $request->price ?? 0,
-                'discount' => $request->discount ?? 0,
-                'stock' => $request->stock ?? 0,
-                'active' => $request->boolean('active', true),
-                'is_featured' => $request->boolean('is_featured', false),
-                'is_recommended' => $request->boolean('is_recommended', false),
+                'is_active' => $request->boolean('is_active', true),
             ]);
 
             // Handle Images
@@ -152,15 +146,6 @@ class ProductController extends Controller
                 }
             }
 
-            // Discount
-            if ($request->filled('discount_value')) {
-                $product->discounts()->create([
-                    'name' => $request->discount_name ?? $product->name . ' Discount',
-                    'value' => $request->discount_value,
-                    'is_percentage' => $request->boolean('is_percentage', true),
-                    'active' => true,
-                ]);
-            }
 
             DB::commit();
 
@@ -214,13 +199,7 @@ class ProductController extends Controller
             $product->update([
                 'category_id' => $request->category_id,
                 'name' => $request->name,
-                'description' => $request->description,
-                'price' => $request->price ?? 0,
-                'discount' => $request->discount ?? 0,
-                'stock' => $request->stock ?? 0,
-                'active' => $request->boolean('active', true),
-                'is_featured' => $request->boolean('is_featured', false),
-                'is_recommended' => $request->boolean('is_recommended', false),
+                'is_active' => $request->boolean('is_active', true),
             ]);
 
             // Handle Images
@@ -272,16 +251,6 @@ class ProductController extends Controller
                 }
             }
 
-            // Update Discount
-            if ($request->filled('discount_value')) {
-                $product->discounts()->update(['active' => false]);
-                $product->discounts()->create([
-                    'name' => $request->discount_name ?? $product->name . ' Discount',
-                    'value' => $request->discount_value,
-                    'is_percentage' => $request->boolean('is_percentage', true),
-                    'active' => true,
-                ]);
-            }
 
             DB::commit();
 

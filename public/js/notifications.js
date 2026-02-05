@@ -6,7 +6,7 @@
 class NotificationManager {
     constructor() {
         this.lastCheck = null;
-        this.pollInterval = 1000; // 1 second
+        this.pollInterval = 10000; // 1 second
         this.container = $('#notification-items');
         this.badge = $('#notification-badge');
         this.audio = document.getElementById('notification-audio');
