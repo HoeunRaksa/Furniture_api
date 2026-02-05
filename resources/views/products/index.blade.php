@@ -70,7 +70,13 @@
             $('#productsTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('products.data') }}",
+                ajax: {
+                    url: "{{ route('products.data') }}",
+                    error: function (xhr, error, thrown) {
+                        console.error('DataTables Error:', error, thrown);
+                        toastr.error('Failed to load products. Please check console.');
+                    }
+                },
                 columns: [
                     { data: 'id', name: 'id' },
                     {
