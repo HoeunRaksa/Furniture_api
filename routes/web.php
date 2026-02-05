@@ -21,9 +21,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Public Pages
-Route::get('/', function() {
-    return redirect()->route('login');
-});
+Route::get('/', [PageController::class, 'welcome'])->name('welcome');
 
 // Auth Routes
 Route::get('/login', [WebAuthController::class, 'showLoginForm'])->name('login');
