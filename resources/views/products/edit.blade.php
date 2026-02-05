@@ -136,12 +136,13 @@
 
 <style>
     .form-label-premium {
-        font-weight: 600;
-        font-size: 0.8rem;
-        color: #64748b;
+        font-weight: 700;
+        font-size: 0.75rem;
+        color: #333;
         margin-bottom: 8px;
         display: block;
         text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
     .input-group-premium {
@@ -160,29 +161,42 @@
     .input-group-premium .form-control,
     .input-group-premium .form-select {
         padding-left: 42px;
-        border: 2px solid #e2e8f0;
-        border-radius: 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 2px;
         height: 45px;
+        font-family: var(--font-primary);
+    }
+
+    .input-group-premium .form-control:focus,
+    .input-group-premium .form-select:focus {
+        border-color: var(--color-gold);
+        box-shadow: none;
     }
 
     .status-toggle-card {
         background: #fff;
-        border: 2px solid #e2e8f0;
-        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 2px;
         padding: 10px 16px;
     }
 
     .image-upload-wrapper {
         border: 2px dashed #cbd5e1;
-        border-radius: 20px;
+        border-radius: 2px;
         padding: 20px;
         text-align: center;
         cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .image-upload-wrapper:hover {
+        border-color: var(--color-gold);
+        background: #fafafa;
     }
 
     .upload-icon {
         font-size: 2.5rem;
-        color: #667eea;
+        color: var(--color-gold);
     }
 </style>
 @endsection

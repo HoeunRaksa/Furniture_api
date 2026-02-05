@@ -30,89 +30,120 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
     <style>
-        /* Modern Layout Styles */
+        :root {
+            --font-primary: 'Lato', sans-serif;
+            --font-heading: 'Playfair Display', serif;
+            --color-dark: #121212;
+            /* Deep Charcoal */
+            --color-gold: #c5a059;
+            /* Muted Gold */
+            --color-gold-hover: #b08d4b;
+            --color-light: #f8f9fa;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background-color: #fcfcfc;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .navbar-brand,
+        .font-heading {
+            font-family: var(--font-heading);
+            letter-spacing: -0.01em;
+        }
+
+        /* Navbar Redesign */
         .navbar {
-            animation: slideDown 0.4s ease-out forwards;
-            background: linear-gradient(90deg, #1e293b, #0f172a);
-            z-index: 1040;
+            background-color: var(--color-dark) !important;
+            background: linear-gradient(180deg, #1a1a1a 0%, #121212 100%);
+            border-bottom: 3px solid var(--color-gold);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
         }
 
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .navbar .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
-        .navbar .dropdown-menu {
-            animation: dropdownFadeIn 0.2s ease-out;
-            border: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        @keyframes dropdownFadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .navbar .dropdown-item {
-            transition: all 0.2s ease;
-            padding: 10px 20px;
-        }
-
-        .navbar .dropdown-item:hover {
-            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
-            padding-left: 25px;
-        }
-
-        /* Notification badge animation */
-        .navbar .badge {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        /* Sidebar Wrapper Fixes */
+        /* Sidebar */
         .sidebar-wrapper {
-            transition: all 0.3s ease-in-out;
-            z-index: 1030;
-            width: 260px;
+            background: #fff;
+            border-right: 1px solid #eaeaea;
         }
 
-        @media (max-width: 991.98px) {
-            .sidebar-wrapper {
-                position: fixed;
-                top: 0;
-                left: 0;
-                height: 100vh;
-                transform: translateX(-100%);
-            }
-            .sidebar-wrapper.show {
-                transform: translateX(0);
-            }
-            .mobile-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background: rgba(0,0,0,0.5);
-                backdrop-filter: blur(4px);
-                z-index: 1025;
-            }
+        /* Refined Interactions */
+        .btn {
+            border-radius: 2px !important;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
         }
 
-        .page-content {
-            background-color: #f1f5f9;
-            min-height: calc(100vh - 72px);
+        .btn-primary {
+            background-color: var(--color-dark);
+            border-color: var(--color-dark);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-gold);
+            border-color: var(--color-gold);
+            color: #121212;
+        }
+
+        .dropdown-menu {
+            border-radius: 0 !important;
+            border: 1px solid #eee;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        /* Inputs */
+        .form-control,
+        .form-select {
+            border-radius: 2px !important;
+            border: 1px solid #e0e0e0;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--color-gold);
+            box-shadow: none;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Custom Audio Fix */
-        #notification-audio, #success-audio, #error-audio {
+        #notification-audio,
+        #success-audio,
+        #error-audio {
             display: none;
         }
     </style>
@@ -131,13 +162,13 @@
                     <button @click="mobileSidebarOpen = !mobileSidebarOpen" class="text-white lg:hidden btn btn-link p-0">
                         <i class="bi bi-list text-3xl"></i>
                     </button>
-                    
+
                     <div class="flex items-center gap-2">
                         <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden">
                             @if(session('business.logo'))
-                                <img src="{{ session('business.logo') }}" alt="Logo" class="w-full h-full object-cover">
+                            <img src="{{ session('business.logo') }}" alt="Logo" class="w-full h-full object-cover">
                             @else
-                                <i class="bi bi-shop text-slate-800 text-xl"></i>
+                            <i class="bi bi-shop text-slate-800 text-xl"></i>
                             @endif
                         </div>
                         <a href="{{ route('home') }}" class="text-white font-bold text-xl no-underline tracking-tight">
@@ -148,7 +179,7 @@
 
                 <!-- RIGHT: Metrics + Notifications + User -->
                 <div class="flex items-center gap-4">
-                    
+
                     <!-- Date Badge -->
                     <div class="hidden md:block text-white text-opacity-75 text-sm px-3 py-1.5 rounded-lg border border-white border-opacity-10 bg-white bg-opacity-5">
                         {{ now()->format('D, M d Y') }}
@@ -192,9 +223,9 @@
                         <button class="flex items-center gap-2 text-white btn btn-link no-underline p-0" data-bs-toggle="dropdown">
                             <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 overflow-hidden shadow-inner">
                                 @if (auth()->user() && auth()->user()->profile_image)
-                                    <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" class="w-full h-full object-cover">
+                                <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" class="w-full h-full object-cover">
                                 @else
-                                    <i class="bi bi-person text-white"></i>
+                                <i class="bi bi-person text-white"></i>
                                 @endif
                             </div>
                             <span class="hidden md:inline text-sm font-semibold tracking-wide">{{ auth()->user()->username ?? 'Admin' }}</span>
@@ -207,7 +238,9 @@
                             </li>
                             <li><a class="dropdown-item py-2" href="{{ route('users.index') }}"><i class="bi bi-person me-2"></i>My Profile</a></li>
                             <li><a class="dropdown-item py-2" href="{{ route('business.index') }}"><i class="bi bi-gear me-2"></i>Settings</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
@@ -223,7 +256,7 @@
         </nav>
 
         <div class="flex flex-grow relative overflow-hidden">
-            
+
             <!-- Mobile Overlay -->
             <div x-show="mobileSidebarOpen" x-cloak @click="mobileSidebarOpen = false" class="mobile-overlay lg:hidden"></div>
 
@@ -266,7 +299,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    
+
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
@@ -274,7 +307,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-    
+
     <script>
         // Sound & Toastr Bridge
         function playAudio(id) {
@@ -334,19 +367,22 @@
         });
 
         // Modal Backdrop Cleanup
-        $(document).on('hidden.bs.modal', '.modal', function () {
+        $(document).on('hidden.bs.modal', '.modal', function() {
             if ($('.modal:visible').length === 0) {
                 $('.modal-backdrop').remove();
-                $('body').removeClass('modal-open').css({'overflow': '', 'padding-right': ''});
+                $('body').removeClass('modal-open').css({
+                    'overflow': '',
+                    'padding-right': ''
+                });
             }
         });
     </script>
 
     <!-- Flash Messages (Data Attributes) -->
-    <div id="flash-messages" 
-         data-success="{{ session('success') }}" 
-         data-error="{{ session('error') }}"
-         data-errors='@json($errors->all())'>
+    <div id="flash-messages"
+        data-success="{{ session('success') }}"
+        data-error="{{ session('error') }}"
+        data-errors='@json($errors->all())'>
     </div>
 
     <script>
@@ -367,4 +403,5 @@
     <script src="{{ asset('js/notifications.js') }}"></script>
     @stack('scripts')
 </body>
+
 </html>
