@@ -28,10 +28,12 @@ class ProductController extends Controller
     public function data(Request $request)
     {
         if ($request->ajax()) {
-            $products = Product::with(['category', 'images'])
-                ->select('products.*');
+            $query = Product::with(['category', 'images'])->select('products.*');
 
-            return DataTables::of($products)
+            $count = $query->count();
+            Log::info("ProductController::data - Found {$count} products.");
+
+            return DataTables::of($query)
                 ->addColumn('image_url', fn($product) => $product->images->first()?->image_url ? asset($product->images->first()->image_url) : null)
                 ->addColumn('category', fn($product) => $product->category?->name ?? '<span class="badge bg-secondary">No Category</span>')
                 ->addColumn('price', fn($product) => '$' . number_format($product->price, 2))
@@ -265,11 +267,11 @@ class ProductController extends Controller
         try {
             $image = ProductImage::findOrFail($id);
             $imagePath = public_path($image->image_url);
-            
+
             if (File::exists($imagePath)) {
                 File::delete($imagePath);
             }
-            
+
             $image->delete();
 
             return response()->json([
