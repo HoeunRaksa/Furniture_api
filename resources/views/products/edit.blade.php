@@ -48,33 +48,14 @@
                                             </div>
 
                                             <div class="row g-3">
-                                                <div class="col-sm-4">
+                                            <div class="row g-3">
+                                                <div class="col-sm-12">
                                                     <div class="status-toggle-card">
                                                         <div class="form-check form-switch p-0 m-0 d-flex align-items-center justify-content-between w-100">
                                                             <label class="form-check-label fw-bold m-0" for="active">
-                                                                <i class="bi bi-check-circle me-1 text-success"></i> Active
+                                                                <i class="bi bi-check-circle me-1 text-success"></i> Product Active Status
                                                             </label>
                                                             <input type="checkbox" name="active" class="form-check-input" id="active" value="1" {{ $product->active ? 'checked' : '' }}>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <div class="status-toggle-card">
-                                                        <div class="form-check form-switch p-0 m-0 d-flex align-items-center justify-content-between w-100">
-                                                            <label class="form-check-label fw-bold m-0" for="isFeatured">
-                                                                <i class="bi bi-star-fill me-1 text-warning"></i> Featured
-                                                            </label>
-                                                            <input type="checkbox" name="is_featured" class="form-check-input" id="isFeatured" value="1" {{ $product->is_featured ? 'checked' : '' }}>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <div class="status-toggle-card">
-                                                        <div class="form-check form-switch p-0 m-0 d-flex align-items-center justify-content-between w-100">
-                                                            <label class="form-check-label fw-bold m-0" for="isRecommended">
-                                                                <i class="bi bi-hand-thumbs-up-fill me-1 text-info"></i> Recommend
-                                                            </label>
-                                                            <input type="checkbox" name="is_recommended" class="form-check-input" id="isRecommended" value="1" {{ $product->is_recommended ? 'checked' : '' }}>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -86,12 +67,14 @@
                                     <div class="premium-card mb-4">
                                         <div class="card-header-premium">
                                             <i class="bi bi-text-left me-2"></i>
-                                            <span>Detailed Description</span>
+                                            <span>Product Description & Features</span>
                                         </div>
                                         <div class="p-4">
                                             <div class="mb-3">
+                                                <label class="form-label-premium">General Description</label>
                                                 <textarea name="description" class="form-control rounded-4 mb-3" rows="3">{{ $product->description }}</textarea>
                                             </div>
+                                            <label class="form-label-premium">Key Features (Bullet Points)</label>
                                             <div id="descriptionLines" class="mb-3">
                                                 @foreach($product->descriptionLines as $line)
                                                 <div class="description-line mb-2">
@@ -115,14 +98,14 @@
                                     <div class="premium-card">
                                         <div class="card-header-premium border-0">
                                             <i class="bi bi-image me-2"></i>
-                                            <span>Product Visuals (Multiple)</span>
+                                            <span>Product Visuals (Gallery)</span>
                                         </div>
                                         <div class="p-4 pt-0">
                                             <div class="mb-3 d-flex flex-wrap gap-2" id="existingImages">
                                                 @foreach($product->images as $img)
                                                     <div class="position-relative" id="img_container_{{ $img->id }}">
-                                                        <img src="{{ asset($img->image_url) }}" class="rounded-3 shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
-                                                        <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute top-0 start-100 translate-middle delete-image" data-id="{{ $img->id }}" style="padding: 0 5px;">
+                                                        <img src="{{ asset($img->image_url) }}" class="rounded-3 shadow-sm border" style="width: 80px; height: 80px; object-fit: cover;">
+                                                        <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute top-0 start-100 translate-middle delete-image shadow-sm" data-id="{{ $img->id }}" style="padding: 0 5px; width:22px; height:22px;">
                                                             <i class="bi bi-x small"></i>
                                                         </button>
                                                     </div>
@@ -133,7 +116,7 @@
                                                     <div class="upload-icon">
                                                         <i class="bi bi-cloud-arrow-up-fill"></i>
                                                     </div>
-                                                    <p class="m-0">Add more images (Max 5MB each)</p>
+                                                    <p class="m-0">Append more images (Max 5MB each)</p>
                                                     <input type="file" name="images[]" id="productImages" class="d-none" accept="image/*" multiple>
                                                 </label>
                                             </div>
@@ -174,9 +157,14 @@
                                                     </div>
                                                 @endforeach
                                             </div>
-                                            <button type="button" id="generateVariants" class="btn btn-premium-primary w-100">
-                                                <i class="bi bi-magic me-2"></i> Regenerate Combinations
-                                            </button>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" id="generateVariants" class="btn btn-premium-primary flex-grow-1">
+                                                    <i class="bi bi-magic me-2"></i> Regenerate All
+                                                </button>
+                                                <button type="button" id="addManualVariant" class="btn btn-outline-primary rounded-4">
+                                                    <i class="bi bi-plus-lg"></i> Manual
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -188,23 +176,33 @@
                                         </div>
                                         <div class="p-4">
                                             <div id="variantsSection" class="variants-container">
-                                                @foreach($product->variants as $index => $variant)
-                                                    <div class="variant-premium-card">
+                                                @foreach($product->variants as $vIndex => $variant)
+                                                    <div class="variant-premium-card" data-index="{{ $vIndex }}">
                                                         <div class="d-flex justify-content-between align-items-center mb-3">
-                                                            <div class="variant-badges-container">
+                                                            <div class="variant-badges-container d-flex flex-wrap">
                                                                 @foreach($variant->attributes as $val)
                                                                     <span class="variant-badge-pill">{{ $val->attribute->name }}: {{ $val->value }}</span>
-                                                                    <input type="hidden" name="variants[{{ $index }}][attributes][]" value="{{ $val->id }}">
+                                                                    <input type="hidden" name="variants[{{ $vIndex }}][attributes][]" value="{{ $val->id }}">
                                                                 @endforeach
                                                             </div>
-                                                            <button type="button" class="btn btn-sm text-danger remove-variant p-0"><i class="bi bi-trash3"></i></button>
+                                                            <button type="button" class="btn btn-sm btn-light-danger rounded-circle remove-variant shadow-sm" style="width:30px; height:30px">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
                                                         </div>
-                                                        <div class="row g-2">
+                                                        <div class="row g-3">
                                                             <div class="col-6">
-                                                                <input type="text" name="variants[{{ $index }}][sku]" class="form-control form-control-sm" value="{{ $variant->sku }}" placeholder="SKU">
+                                                                <label class="form-label-premium">SKU</label>
+                                                                <div class="input-group-premium">
+                                                                    <i class="bi bi-barcode input-icon"></i>
+                                                                    <input type="text" name="variants[{{ $vIndex }}][sku]" class="form-control form-control-sm" value="{{ $variant->sku }}" placeholder="SKU">
+                                                                </div>
                                                             </div>
                                                             <div class="col-6">
-                                                                <input type="number" step="0.01" name="variants[{{ $index }}][price]" class="form-control form-control-sm" value="{{ $variant->price }}" required>
+                                                                <label class="form-label-premium">Price ($)</label>
+                                                                <div class="input-group-premium">
+                                                                    <i class="bi bi-currency-dollar input-icon"></i>
+                                                                    <input type="number" step="0.01" name="variants[{{ $vIndex }}][price]" class="form-control form-control-sm" value="{{ $variant->price }}" required>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -237,9 +235,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-4">
-                                                    <select name="is_percentage" class="form-select border-2 py-2">
-                                                        <option value="1" {{ ($discount?->is_percentage ?? true) ? 'selected' : '' }}>%</option>
-                                                        <option value="0" {{ !($discount?->is_percentage ?? true) ? 'selected' : '' }}>$</option>
+                                                    <select name="is_percentage" class="form-select border-2 py-2 rounded-4">
+                                                        <option value="1" {{ ($discount?->is_percentage ?? true) ? 'selected' : '' }}>% Off</option>
+                                                        <option value="0" {{ !($discount?->is_percentage ?? true) ? 'selected' : '' }}>$ Off</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -251,14 +249,21 @@
                             {{-- Final Submit --}}
                             <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3 align-items-center">
                                 <a href="{{ route('products.index') }}" class="btn btn-light rounded-pill px-4">Cancel</a>
-                                <button type="submit" id="btnSubmitProduct" class="btn btn-primary rounded-pill px-5 fw-bold">
-                                    Update Product
+                                <button type="submit" id="btnSubmitProduct" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                                    Update & Sync Product
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
+        </div>
+
+        {{-- Data Bridge for JS --}}
+        <div id="js-data-bridge" 
+             data-attributes='@json($attributes->load("values"))'
+             data-variant-count="{{ $product->variants->count() }}"
+             style="display: none;">
         </div>
     </div>
 
@@ -287,13 +292,18 @@
 @section('scripts')
     <script>
         $(function() {
+            // Global data from bridge
+            const bridge = document.getElementById('js-data-bridge');
+            const allAttributes = JSON.parse(bridge.dataset.attributes);
+            let variantIndex = parseInt(bridge.dataset.variantCount);
+
             // Add description line
             $('#addLine').click(function() {
                 const $newLine = $(`
-                    <div class="description-line mb-2">
+                    <div class="description-line mb-2" style="display:none">
                         <div class="input-group-premium">
                             <i class="bi bi-dash input-icon"></i>
-                            <input type="text" name="description_lines[]" class="form-control" placeholder="Description feature line">
+                            <input type="text" name="description_lines[]" class="form-control" placeholder="Feature line">
                             <button type="button" class="btn-remove-line remove-line">
                                 <i class="bi bi-x"></i>
                             </button>
@@ -301,10 +311,11 @@
                     </div>
                 `);
                 $('#descriptionLines').append($newLine);
+                $newLine.slideDown(200);
             });
 
             $(document).on('click', '.remove-line', function() {
-                $(this).closest('.description-line').remove();
+                $(this).closest('.description-line').slideUp(200, function() { $(this).remove(); });
             });
 
             // Image handling (Multiple)
@@ -315,8 +326,8 @@
                     const reader = new FileReader();
                     reader.onload = function(re) {
                         $('#imagePreviewContainer').append(`
-                            <div class="position-relative">
-                                <img src="${re.target.result}" class="rounded-3 shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
+                            <div class="position-relative animate__animated animate__fadeIn">
+                                <img src="${re.target.result}" class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover; border: 2px solid white;">
                             </div>
                         `);
                     }
@@ -328,11 +339,14 @@
             $(document).on('click', '.delete-image', function() {
                 const id = $(this).data('id');
                 const $container = $(`#img_container_${id}`);
-                showConfirmModal("Delete this image?", () => {
-                    $.post("{{ url('products/image/delete') }}/" + id, { _token: "{{ csrf_token() }}", _method: 'DELETE' }, function(res) {
+                showConfirmModal("Are you sure you want to remove this image from the gallery?", () => {
+                    $.post("{{ route('products.image.delete', '') }}/" + id, { 
+                        _token: "{{ csrf_token() }}", 
+                        _method: 'DELETE' 
+                    }, function(res) {
                         toastr.success(res.msg);
-                        $container.remove();
-                    });
+                        $container.addClass('animate__animated animate__zoomOut').fadeOut(300, function() { $(this).remove(); });
+                    }).fail(() => toastr.error('Failed to delete image.'));
                 });
             });
 
@@ -340,12 +354,42 @@
                 return arr.reduce((a, b) => a.flatMap(d => b.map(e => [...d, e])), [[]]);
             }
 
+            function appendVariantCard(badges, hiddenInputs, index) {
+                $('#variantsSection').append(`
+                    <div class="variant-premium-card animate__animated animate__fadeInUp">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="variant-badges-container d-flex flex-wrap">${badges}</div>
+                            <button type="button" class="btn btn-sm btn-light-danger rounded-circle remove-variant shadow-sm" style="width:30px; height:30px">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="form-label-premium">SKU</label>
+                                <div class="input-group-premium">
+                                    <i class="bi bi-barcode input-icon"></i>
+                                    <input type="text" name="variants[${index}][sku]" class="form-control form-control-sm" placeholder="SKU-AUTO-${index}">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label-premium">Price ($)</label>
+                                <div class="input-group-premium">
+                                    <i class="bi bi-currency-dollar input-icon"></i>
+                                    <input type="number" step="0.01" name="variants[${index}][price]" class="form-control form-control-sm" placeholder="0.00" required>
+                                </div>
+                            </div>
+                        </div>
+                        ${hiddenInputs}
+                    </div>
+                `);
+            }
+
             // Generate variants
             $('#generateVariants').click(function() {
                 let selected = {};
                 $('.attribute-pill-group').each(function() {
                     let attrId = $(this).data('id');
-                    let attrName = $(this).find('.form-label-premium').text().split('\n')[0].trim();
+                    let attrName = $(this).find('.form-label-premium').first().text().trim();
                     let vals = [];
                     $(this).find('.attribute-check:checked').each(function() {
                         vals.push({ id: $(this).val(), name: $(this).next('.attr-label').text().trim(), attrName: attrName });
@@ -354,42 +398,83 @@
                 });
 
                 let keys = Object.keys(selected);
-                if (!keys.length) { toastr.warning('Please select attributes first!'); return; }
+                if (!keys.length) { toastr.warning('Please select some conditions first!'); return; }
 
-                $('#variantsSection').empty();
+                showConfirmModal("This will replace all current variants. Continue?", function() {
+                    $('#variantsSection').empty();
+                    variantIndex = 0;
+                    
+                    let arrays = keys.map(k => selected[k]);
+                    let combos = cartesian(arrays);
 
-                let arrays = keys.map(k => selected[k]);
-                let combos = cartesian(arrays);
-
-                combos.forEach((combo, index) => {
-                    let badges = combo.map(c => `<span class="variant-badge-pill">${c.attrName}: ${c.name}</span>`).join('');
-                    let hiddenInputs = combo.map(c => `<input type="hidden" name="variants[${index}][attributes][]" value="${c.id}">`).join('');
-                    $('#variantsSection').append(`
-                        <div class="variant-premium-card">
-                            <div class="mb-2">${badges}</div>
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <input type="text" name="variants[${index}][sku]" class="form-control form-control-sm" placeholder="SKU">
-                                </div>
-                                <div class="col-6">
-                                    <input type="number" step="0.01" name="variants[${index}][price]" class="form-control form-control-sm" placeholder="Price" required>
-                                </div>
-                            </div>
-                            ${hiddenInputs}
-                        </div>
-                    `);
+                    combos.forEach((combo) => {
+                        let badges = combo.map(c => `<span class="variant-badge-pill">${c.attrName}: ${c.name}</span>`).join('');
+                        let hiddenInputs = combo.map(c => `<input type="hidden" name="variants[${variantIndex}][attributes][]" value="${c.id}">`).join('');
+                        appendVariantCard(badges, hiddenInputs, variantIndex);
+                        variantIndex++;
+                    });
+                    
+                    toastr.success(`${combos.length} variants generated!`);
                 });
             });
 
+            // Add Manual Variant
+            $('#addManualVariant').click(function() {
+                let attrSelectors = allAttributes.map(attr => {
+                    let options = attr.values.map(val => `<option value="${val.id}">${val.value}</option>`).join('');
+                    return `
+                        <div class="col-6 mb-2">
+                            <label class="small text-muted fw-bold">${attr.name}</label>
+                            <select name="variants[${variantIndex}][attributes][]" class="form-select form-select-sm rounded-3">
+                                <option value="">None</option>
+                                ${options}
+                            </select>
+                        </div>
+                    `;
+                }).join('');
+
+                $('#variantsSection').append(`
+                    <div class="variant-premium-card border-primary animate__animated animate__fadeInUp" style="background: #f0f7ff">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-primary rounded-pill">Manual Entry</span>
+                            <button type="button" class="btn btn-sm btn-light-danger rounded-circle remove-variant shadow-sm" style="width:30px; height:30px">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            ${attrSelectors}
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="form-label-premium">SKU</label>
+                                <div class="input-group-premium">
+                                    <i class="bi bi-barcode input-icon"></i>
+                                    <input type="text" name="variants[${variantIndex}][sku]" class="form-control form-control-sm" placeholder="SKU-MANUAL">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label-premium">Price ($)</label>
+                                <div class="input-group-premium">
+                                    <i class="bi bi-currency-dollar input-icon"></i>
+                                    <input type="number" step="0.01" name="variants[${variantIndex}][price]" class="form-control form-control-sm" placeholder="0.00" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+                variantIndex++;
+            });
+
             $(document).on('click', '.remove-variant', function() {
-                $(this).closest('.variant-premium-card').remove();
+                $(this).closest('.variant-premium-card').fadeOut(200, function() { $(this).remove(); });
             });
 
             // Form submission
             $('#form_update_product').on('submit', function(e) {
                 e.preventDefault();
                 const $btn = $('#btnSubmitProduct');
-                $btn.prop('disabled', true).text('Updating...');
+                const oldContent = $btn.html();
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Updating...');
                 
                 $.ajax({
                     url: $(this).attr('action'),
@@ -398,11 +483,11 @@
                     processData: false,
                     contentType: false,
                     success: function(res) {
-                        toastr.success(res.msg);
+                        toastr.success(res.msg || 'Updated successfully!');
                         window.location.href = res.location;
                     },
                     error: function(err) {
-                        $btn.prop('disabled', false).text('Update Product');
+                        $btn.prop('disabled', false).html(oldContent);
                         if(err.status === 422) {
                             const errors = err.responseJSON.errors;
                             Object.keys(errors).forEach(key => toastr.error(errors[key][0]));

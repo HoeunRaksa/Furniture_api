@@ -47,33 +47,13 @@
                                             </div>
 
                                             <div class="row g-3">
-                                                <div class="col-sm-4">
+                                                <div class="col-sm-12">
                                                     <div class="status-toggle-card">
                                                         <div class="form-check form-switch p-0 m-0 d-flex align-items-center justify-content-between w-100">
                                                             <label class="form-check-label fw-bold m-0" for="active">
-                                                                <i class="bi bi-check-circle me-1 text-success"></i> Active
+                                                                <i class="bi bi-check-circle me-1 text-success"></i> Product Active Status
                                                             </label>
                                                             <input type="checkbox" name="active" class="form-check-input" id="active" value="1" checked>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <div class="status-toggle-card">
-                                                        <div class="form-check form-switch p-0 m-0 d-flex align-items-center justify-content-between w-100">
-                                                            <label class="form-check-label fw-bold m-0" for="isFeatured">
-                                                                <i class="bi bi-star-fill me-1 text-warning"></i> Featured
-                                                            </label>
-                                                            <input type="checkbox" name="is_featured" class="form-check-input" id="isFeatured" value="1">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <div class="status-toggle-card">
-                                                        <div class="form-check form-switch p-0 m-0 d-flex align-items-center justify-content-between w-100">
-                                                            <label class="form-check-label fw-bold m-0" for="isRecommended">
-                                                                <i class="bi bi-hand-thumbs-up-fill me-1 text-info"></i> Recommend
-                                                            </label>
-                                                            <input type="checkbox" name="is_recommended" class="form-check-input" id="isRecommended" value="1">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -85,17 +65,19 @@
                                     <div class="premium-card mb-4">
                                         <div class="card-header-premium">
                                             <i class="bi bi-text-left me-2"></i>
-                                            <span>Detailed Description</span>
+                                            <span>Product Description & Features</span>
                                         </div>
                                         <div class="p-4">
                                             <div class="mb-3">
-                                                <textarea name="description" class="form-control rounded-4 mb-3" rows="3" placeholder="General description..."></textarea>
+                                                <label class="form-label-premium">General Description</label>
+                                                <textarea name="description" class="form-control rounded-4 mb-3" rows="3" placeholder="Enter a brief overview of the product..."></textarea>
                                             </div>
+                                            <label class="form-label-premium">Key Features (Bullet Points)</label>
                                             <div id="descriptionLines" class="mb-3">
                                                 <div class="description-line mb-2">
                                                     <div class="input-group-premium">
                                                         <i class="bi bi-dash input-icon"></i>
-                                                        <input type="text" name="description_lines[]" class="form-control" placeholder="E.g. 100% Organic Cotton">
+                                                        <input type="text" name="description_lines[]" class="form-control" placeholder="E.g. High-quality Oak Wood">
                                                         <button type="button" class="btn-remove-line remove-line">
                                                             <i class="bi bi-x"></i>
                                                         </button>
@@ -112,7 +94,7 @@
                                     <div class="premium-card">
                                         <div class="card-header-premium">
                                             <i class="bi bi-image me-2"></i>
-                                            <span>Product Visuals (Multiple)</span>
+                                            <span>Product Visuals (Gallery)</span>
                                         </div>
                                         <div class="p-4">
                                             <div class="image-upload-wrapper">
@@ -157,13 +139,18 @@
                                                     </div>
                                                 @endforeach
                                             </div>
-                                            <div class="alert alert-info border-0 rounded-4 p-3 small">
+                                            <div class="alert alert-info border-0 rounded-4 p-3 small mb-3">
                                                 <i class="bi bi-info-circle-fill me-2"></i>
-                                                Select attributes, then generate combinations.
+                                                Select attributes to generate variations automatically.
                                             </div>
-                                            <button type="button" id="generateVariants" class="btn btn-premium-primary w-100">
-                                                <i class="bi bi-magic me-2"></i> Generate Combinations
-                                            </button>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" id="generateVariants" class="btn btn-premium-primary flex-grow-1">
+                                                    <i class="bi bi-magic me-2"></i> Auto-Generate
+                                                </button>
+                                                <button type="button" id="addManualVariant" class="btn btn-outline-primary rounded-4">
+                                                    <i class="bi bi-plus-lg"></i> Manual
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -177,7 +164,7 @@
                                             <div id="variantsSection" class="variants-container">
                                                 <div class="text-center py-4 text-muted" id="noVariantsPlaceholder">
                                                     <i class="bi bi-layers fs-1 opacity-25 mb-2 d-block"></i>
-                                                    <p class="small">No variants generated yet.</p>
+                                                    <p class="small">No variants added yet.</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -206,9 +193,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-4">
-                                                    <select name="is_percentage" class="form-select border-2 py-2">
-                                                        <option value="1">%</option>
-                                                        <option value="0">$</option>
+                                                    <select name="is_percentage" class="form-select border-2 py-2 rounded-4">
+                                                        <option value="1">% Off</option>
+                                                        <option value="0">$ Off</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -220,8 +207,8 @@
                             {{-- Final Submit --}}
                             <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3 align-items-center">
                                 <a href="{{ route('products.index') }}" class="btn btn-light rounded-pill px-4">Cancel</a>
-                                <button type="submit" id="btnSubmitProduct" class="btn btn-primary rounded-pill px-5 fw-bold">
-                                    Save Product
+                                <button type="submit" id="btnSubmitProduct" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                                    Finalize & Save Product
                                 </button>
                             </div>
                         </form>
@@ -230,6 +217,9 @@
             </div>
         </div>
     </div>
+
+    {{-- Data Bridge for JS --}}
+    <div id="js-data-bridge" data-attributes='@json($attributes->load("values"))' style="display: none;"></div>
 
     <style>
         .premium-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; }
@@ -257,10 +247,14 @@
 @section('scripts')
     <script>
         $(function() {
+            // Global data from bridge
+            const bridge = document.getElementById('js-data-bridge');
+            const allAttributes = JSON.parse(bridge.dataset.attributes);
+
             // Add description line
             $('#addLine').click(function() {
                 const $newLine = $(`
-                    <div class="description-line mb-2">
+                    <div class="description-line mb-2" style="display:none">
                         <div class="input-group-premium">
                             <i class="bi bi-dash input-icon"></i>
                             <input type="text" name="description_lines[]" class="form-control" placeholder="Description feature line">
@@ -271,22 +265,26 @@
                     </div>
                 `);
                 $('#descriptionLines').append($newLine);
+                $newLine.slideDown(200);
             });
 
             $(document).on('click', '.remove-line', function() {
-                $(this).closest('.description-line').remove();
+                $(this).closest('.description-line').slideUp(200, function() { $(this).remove(); });
             });
 
             // Image handling (Multiple)
             $('#productImages').on('change', function(e) {
                 $('#imagePreviewContainer').empty();
                 const files = e.target.files;
+                if (files.length > 0) {
+                    $('.image-upload-wrapper').addClass('border-primary');
+                }
                 for (let i = 0; i < files.length; i++) {
                     const reader = new FileReader();
                     reader.onload = function(re) {
                         $('#imagePreviewContainer').append(`
-                            <div class="position-relative">
-                                <img src="${re.target.result}" class="rounded-3 shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
+                            <div class="position-relative animate__animated animate__fadeIn">
+                                <img src="${re.target.result}" class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover; border: 2px solid white;">
                             </div>
                         `);
                     }
@@ -298,12 +296,44 @@
                 return arr.reduce((a, b) => a.flatMap(d => b.map(e => [...d, e])), [[]]);
             }
 
+            let variantIndex = 0;
+
+            function appendVariantCard(badges, hiddenInputs, index) {
+                $('#variantsSection').append(`
+                    <div class="variant-premium-card animate__animated animate__fadeInUp">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="variant-badges-container d-flex flex-wrap">${badges}</div>
+                            <button type="button" class="btn btn-sm btn-light-danger rounded-circle remove-variant shadow-sm" style="width:30px; height:30px">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="form-label-premium">SKU</label>
+                                <div class="input-group-premium">
+                                    <i class="bi bi-barcode input-icon"></i>
+                                    <input type="text" name="variants[${index}][sku]" class="form-control form-control-sm" placeholder="SKU-AUTO-${index}">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label-premium">Price ($)</label>
+                                <div class="input-group-premium">
+                                    <i class="bi bi-currency-dollar input-icon"></i>
+                                    <input type="number" step="0.01" name="variants[${index}][price]" class="form-control form-control-sm" placeholder="0.00" required>
+                                </div>
+                            </div>
+                        </div>
+                        ${hiddenInputs}
+                    </div>
+                `);
+            }
+
             // Generate variants
             $('#generateVariants').click(function() {
                 let selected = {};
                 $('.attribute-pill-group').each(function() {
                     let attrId = $(this).data('id');
-                    let attrName = $(this).find('span').first().text();
+                    let attrName = $(this).find('.form-label-premium').first().text().trim();
                     let vals = [];
                     $(this).find('.attribute-check:checked').each(function() {
                         vals.push({ id: $(this).val(), name: $(this).next('.attr-label').text().trim(), attrName: attrName });
@@ -312,39 +342,90 @@
                 });
 
                 let keys = Object.keys(selected);
-                if (!keys.length) { toastr.warning('Please select attributes first!'); return; }
+                if (!keys.length) { toastr.warning('Please select some attributes first!'); return; }
 
                 $('#noVariantsPlaceholder').hide();
-                $('#variantsSection').empty();
-
                 let arrays = keys.map(k => selected[k]);
                 let combos = cartesian(arrays);
 
-                combos.forEach((combo, index) => {
+                combos.forEach((combo) => {
                     let badges = combo.map(c => `<span class="variant-badge-pill">${c.attrName}: ${c.name}</span>`).join('');
-                    let hiddenInputs = combo.map(c => `<input type="hidden" name="variants[${index}][attributes][]" value="${c.id}">`).join('');
-                    $('#variantsSection').append(`
-                        <div class="variant-premium-card">
-                            <div class="mb-2">${badges}</div>
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <input type="text" name="variants[${index}][sku]" class="form-control form-control-sm" placeholder="SKU">
-                                </div>
-                                <div class="col-6">
-                                    <input type="number" step="0.01" name="variants[${index}][price]" class="form-control form-control-sm" placeholder="Price" required>
+                    let hiddenInputs = combo.map(c => `<input type="hidden" name="variants[${variantIndex}][attributes][]" value="${c.id}">`).join('');
+                    appendVariantCard(badges, hiddenInputs, variantIndex);
+                    variantIndex++;
+                });
+                
+                toastr.success(`${combos.length} variants generated!`);
+            });
+
+            // Add Manual Variant
+            $('#addManualVariant').click(function() {
+                $('#noVariantsPlaceholder').hide();
+                
+                let attrSelectors = allAttributes.map(attr => {
+                    let options = attr.values.map(val => `<option value="${val.id}">${val.value}</option>`).join('');
+                    return `
+                        <div class="col-6 mb-2">
+                            <label class="small text-muted fw-bold">${attr.name}</label>
+                            <select name="variants[${variantIndex}][attributes][]" class="form-select form-select-sm rounded-3">
+                                <option value="">None</option>
+                                ${options}
+                            </select>
+                        </div>
+                    `;
+                }).join('');
+
+                $('#variantsSection').append(`
+                    <div class="variant-premium-card border-primary animate__animated animate__fadeInUp" style="background: #f0f7ff">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-primary rounded-pill">Manual Entry</span>
+                            <button type="button" class="btn btn-sm btn-light-danger rounded-circle remove-variant shadow-sm" style="width:30px; height:30px">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            ${attrSelectors}
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="form-label-premium">SKU</label>
+                                <div class="input-group-premium">
+                                    <i class="bi bi-barcode input-icon"></i>
+                                    <input type="text" name="variants[${variantIndex}][sku]" class="form-control form-control-sm" placeholder="SKU-MANUAL">
                                 </div>
                             </div>
-                            ${hiddenInputs}
+                            <div class="col-6">
+                                <label class="form-label-premium">Price ($)</label>
+                                <div class="input-group-premium">
+                                    <i class="bi bi-currency-dollar input-icon"></i>
+                                    <input type="number" step="0.01" name="variants[${variantIndex}][price]" class="form-control form-control-sm" placeholder="0.00" required>
+                                </div>
+                            </div>
                         </div>
-                    `);
+                    </div>
+                `);
+                variantIndex++;
+            });
+
+            $(document).on('click', '.remove-variant', function() {
+                $(this).closest('.variant-premium-card').fadeOut(200, function() { 
+                    $(this).remove(); 
+                    if ($('.variant-premium-card').length === 0) $('#noVariantsPlaceholder').show();
                 });
             });
 
             // Form submission
             $('#form_add_product').on('submit', function(e) {
                 e.preventDefault();
+                const variantCount = $('.variant-premium-card').length;
+                if (variantCount === 0) {
+                    toastr.warning('Please add at least one variant (Auto or Manual).');
+                    return;
+                }
+
                 const $btn = $('#btnSubmitProduct');
-                $btn.prop('disabled', true).text('Processing...');
+                const oldContent = $btn.html();
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Saving...');
                 
                 $.ajax({
                     url: "{{ route('products.store') }}",
@@ -353,16 +434,16 @@
                     processData: false,
                     contentType: false,
                     success: function(res) {
-                        toastr.success(res.msg);
+                        toastr.success(res.msg || 'Success!');
                         window.location.href = res.location;
                     },
                     error: function(err) {
-                        $btn.prop('disabled', false).text('Save Product');
+                        $btn.prop('disabled', false).html(oldContent);
                         if(err.status === 422) {
                             const errors = err.responseJSON.errors;
                             Object.keys(errors).forEach(key => toastr.error(errors[key][0]));
                         } else {
-                            toastr.error('Error creating product.');
+                            toastr.error('Error while saving product.');
                         }
                     }
                 });

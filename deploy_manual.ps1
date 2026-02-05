@@ -6,7 +6,7 @@ param(
     [string]$ServerIP = "54.165.46.134",
     
     [Parameter(Mandatory = $false)]
-    [string]$KeyPath = "C:\Users\hoeun\.ssh\K3.pem"
+    [string]$KeyPath = "C:\Users\Vathana\.ssh\K3.pem"
 )
 
 Write-Host "Deploying to server: $ServerIP" -ForegroundColor Green
@@ -31,10 +31,10 @@ echo "== GO TO PROJECT =="
 cd /var/www/Furniture_api
 
 echo "== FIX GIT SAFE DIRECTORY =="
+sudo git config --global --add safe.directory /var/www/Furniture_api
 sudo chown -R www-data:www-data /var/www/Furniture_api
-sudo -u www-data git config --global --add safe.directory /var/www/Furniture_api
 
-echo "== GIT RESET & PULL =="
+echo "== GIT RESET AND PULL =="
 sudo -u www-data git reset --hard
 sudo -u www-data git pull origin main
 
