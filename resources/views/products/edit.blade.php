@@ -16,12 +16,8 @@
                             @csrf
                             @method('PUT')
 
-                            <div class="premium-card mb-4">
-                                <div class="card-header-premium">
-                                    <i class="bi bi-info-circle-fill me-2"></i>
-                                    <span>General Information</span>
-                                </div>
-                                <div class="p-4">
+                            <x-widget title="General Information">
+                                <div class="p-2">
                                     <div class="mb-4">
                                         <label class="form-label-premium">Product Name <span class="text-danger">*</span></label>
                                         <div class="input-group-premium">
@@ -91,24 +87,16 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </x-widget>
 
-                            <div class="premium-card mb-4">
-                                <div class="card-header-premium">
-                                    <i class="bi bi-text-left me-2"></i>
-                                    <span>Product Description</span>
-                                </div>
-                                <div class="p-4">
+                            <x-widget title="Product Description">
+                                <div class="p-2">
                                     <textarea name="description" class="form-control rounded-4" rows="5">{{ $product->description }}</textarea>
                                 </div>
-                            </div>
+                            </x-widget>
 
-                            <div class="premium-card">
-                                <div class="card-header-premium">
-                                    <i class="bi bi-image me-2"></i>
-                                    <span>Product Visuals (Gallery)</span>
-                                </div>
-                                <div class="p-4">
+                            <x-widget title="Product Visuals (Gallery)">
+                                <div class="p-2">
                                     <div class="image-upload-wrapper mb-3">
                                         <label class="upload-zone" for="productImages">
                                             <div class="upload-icon">
@@ -133,7 +121,7 @@
                                     </div>
                                     <div class="mt-3 d-flex flex-wrap gap-2" id="imagePreviewContainer"></div>
                                 </div>
-                            </div>
+                            </x-widget>
 
                             <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3 align-items-center">
                                 <a href="{{ route('products.index') }}" class="btn btn-light rounded-pill px-4">Cancel</a>
@@ -149,8 +137,6 @@
     </div>
 
     <style>
-        .premium-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; }
-        .card-header-premium { background: #f8fafc; padding: 14px 24px; font-weight: 700; border-bottom: 1px solid #e2e8f0; }
         .form-label-premium { font-weight: 600; font-size: 0.8rem; color: #64748b; margin-bottom: 8px; display: block; text-transform: uppercase; }
         .input-group-premium { position: relative; display: flex; align-items: center; }
         .input-icon { position: absolute; left: 14px; color: #94a3b8; z-index: 10; }
