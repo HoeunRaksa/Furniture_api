@@ -118,6 +118,12 @@
                             onclick="markForDeletion('{{ $image->id }}', this)">
                             <i class="bi bi-x"></i>
                         </button>
+                        <button type="button" class="btn btn-sm btn-warning position-absolute bottom-0 start-0 m-1 p-0 rounded-circle d-flex align-items-center justify-content-center shadow-sm mark-existing-main-btn"
+                            style="width: 24px; height: 24px;"
+                            data-image-id="{{ $image->id }}"
+                            onclick="markExistingAsMain('{{ $image->id }}')">
+                            <i class="bi {{ $image->is_main ? 'bi-star-fill' : 'bi-star' }}" style="font-size: 0.9rem;"></i>
+                        </button>
                     </div>
                     @endforeach
                 </div>
@@ -204,6 +210,8 @@
 @push('scripts')
 <script>
     let uploadedFiles = [];
+    let mainImageIndex = null; // Track which NEW image is marked as main
+    let selectedMainImageId = null; // Track which EXISTING image is marked as main
 
     // Deferred Deletion for Existing Images
     window.markForDeletion = function(id, btn) {
@@ -218,10 +226,40 @@
         toastr.info('Image marked for deletion');
     };
 
+    // Mark existing image as main
+    window.markExistingAsMain = function(imageId) {
+        selectedMainImageId = imageId;
+
+        // Update all existing image star icons
+        $('.mark-existing-main-btn').each(function() {
+            const btn = $(this);
+            const btnImageId = btn.data('image-id');
+            const icon = btn.find('i');
+
+            if (btnImageId == imageId) {
+                icon.removeClass('bi-star').addClass('bi-star-fill');
+            } else {
+                icon.removeClass('bi-star-fill').addClass('bi-star');
+            }
+        });
+
+        // Clear new image selection
+        $('.mark-main-btn').find('i').removeClass('bi-star-fill').addClass('bi-star');
+        mainImageIndex = null;
+
+        toastr.success('Main image selected');
+    };
+
     // Remove New File locally
     window.removeNewFile = function(fileId) {
+        const indexToRemove = uploadedFiles.findIndex(f => f.tempId === fileId);
         uploadedFiles = uploadedFiles.filter(f => f.tempId !== fileId);
         $(`#preview-${fileId}`).remove();
+
+        // If we removed the selected main image, clear the selection
+        if (indexToRemove === mainImageIndex) {
+            mainImageIndex = null;
+        }
     };
 
     $(function() {
@@ -240,6 +278,7 @@
                 reader.onload = function(re) {
                     const fileId = Date.now() + '_' + file.name.replace(/\s/g, '');
                     file.tempId = fileId;
+                    const fileIndex = uploadedFiles.length - 1;
 
                     $('#imagePreviewContainer').append(`
                         <div class="position-relative d-inline-block me-2 mb-2" id="preview-${fileId}">
@@ -248,6 +287,13 @@
                                 style="width: 20px; height: 20px;"
                                 onclick="removeNewFile('${fileId}')">
                                 <i class="bi bi-x" style="font-size: 1rem;"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-warning position-absolute bottom-0 start-0 m-1 p-0 rounded-circle d-flex align-items-center justify-content-center shadow-sm mark-main-btn"
+                                style="width: 24px; height: 24px;"
+                                data-file-id="${fileId}"
+                                data-index="${fileIndex}"
+                                onclick="markNewAsMain('${fileId}', ${fileIndex})">
+                                <i class="bi bi-star" style="font-size: 0.9rem;"></i>
                             </button>
                         </div>
                     `);
@@ -258,6 +304,30 @@
             // Reset input so same files can be selected again if added iteratively
             $(this).val('');
         });
+
+        // Mark NEW image as main
+        window.markNewAsMain = function(fileId, index) {
+            mainImageIndex = index;
+
+            // Update all NEW image star icons
+            $('.mark-main-btn').each(function() {
+                const btn = $(this);
+                const btnIndex = parseInt(btn.data('index'));
+                const icon = btn.find('i');
+
+                if (btnIndex === index) {
+                    icon.removeClass('bi-star').addClass('bi-star-fill');
+                } else {
+                    icon.removeClass('bi-star-fill').addClass('bi-star');
+                }
+            });
+
+            // Clear existing image selection
+            $('.mark-existing-main-btn').find('i').removeClass('bi-star-fill').addClass('bi-star');
+            selectedMainImageId = null;
+
+            toastr.success('Main image selected');
+        };
 
         // Form submission
         $('#form_update_product').on('submit', function(e) {
@@ -277,6 +347,14 @@
             uploadedFiles.forEach(file => {
                 formData.append('images[]', file);
             });
+
+            // Add main image selection
+            if (selectedMainImageId) {
+                formData.append('main_image_id', selectedMainImageId);
+            }
+            if (mainImageIndex !== null) {
+                formData.append('main_image_index', mainImageIndex);
+            }
 
             $.ajax({
                 url: url,

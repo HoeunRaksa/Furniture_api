@@ -191,6 +191,7 @@
 <script>
     $(function() {
         let uploadedFiles = [];
+        let mainImageIndex = 0; // Track which image is marked as main
 
         // Image handling (Multiple) with Custom Array
         $('#productImages').on('change', function(e) {
@@ -202,9 +203,9 @@
 
                 const reader = new FileReader();
                 reader.onload = function(re) {
-                    // Create ID based on timestamp and name to identify file later if needed
                     const fileId = Date.now() + '_' + file.name.replace(/\s/g, '');
-                    file.tempId = fileId; // Attach temp ID to file object if browser allows, or rely on index
+                    file.tempId = fileId;
+                    const fileIndex = uploadedFiles.length - 1;
 
                     $('#imagePreviewContainer').append(`
                         <div class="position-relative d-inline-block me-2 mb-2" id="preview-${fileId}">
@@ -213,6 +214,13 @@
                                 style="width: 20px; height: 20px;" 
                                 onclick="removeNewFile('${fileId}')">
                                 <i class="bi bi-x" style="font-size: 1rem;"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-warning position-absolute bottom-0 start-0 m-1 p-0 rounded-circle d-flex align-items-center justify-content-center shadow-sm mark-main-btn" 
+                                style="width: 24px; height: 24px;" 
+                                data-file-id="${fileId}"
+                                data-index="${fileIndex}"
+                                onclick="markAsMain('${fileId}', ${fileIndex})">
+                                <i class="bi ${fileIndex === 0 ? 'bi-star-fill' : 'bi-star'}" style="font-size: 0.9rem;"></i>
                             </button>
                         </div>
                     `);
@@ -229,10 +237,37 @@
             }
         });
 
+        // Global function to mark image as main
+        window.markAsMain = function(fileId, index) {
+            mainImageIndex = index;
+
+            // Update all star icons
+            $('.mark-main-btn').each(function() {
+                const btn = $(this);
+                const btnIndex = parseInt(btn.data('index'));
+                const icon = btn.find('i');
+
+                if (btnIndex === index) {
+                    icon.removeClass('bi-star').addClass('bi-star-fill');
+                } else {
+                    icon.removeClass('bi-star-fill').addClass('bi-star');
+                }
+            });
+
+            toastr.success('Main image selected');
+        };
+
         // Global function to remove new file
         window.removeNewFile = function(fileId) {
+            const indexToRemove = uploadedFiles.findIndex(f => f.tempId === fileId);
             uploadedFiles = uploadedFiles.filter(f => f.tempId !== fileId);
             $(`#preview-${fileId}`).remove();
+
+            // If we removed the main image, reset to first
+            if (indexToRemove === mainImageIndex && uploadedFiles.length > 0) {
+                mainImageIndex = 0;
+                $('.mark-main-btn').first().find('i').removeClass('bi-star').addClass('bi-star-fill');
+            }
         };
 
         // Form submission
@@ -253,6 +288,9 @@
             uploadedFiles.forEach(file => {
                 formData.append('images[]', file);
             });
+
+            // Add main image index
+            formData.append('main_image_index', mainImageIndex);
 
             $.ajax({
                 url: "{{ route('products.store') }}",

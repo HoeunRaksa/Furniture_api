@@ -123,11 +123,14 @@ class ProductController extends Controller
                     File::makeDirectory($uploadPath, 0755, true);
                 }
 
-                foreach ($request->file('images') as $image) {
+                $mainImageIndex = $request->input('main_image_index', 0); // Default to first image
+
+                foreach ($request->file('images') as $index => $image) {
                     $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
                     $image->move($uploadPath, $filename);
                     $product->images()->create([
                         'image_url' => 'uploads/products/' . $filename,
+                        'is_main' => ($index == $mainImageIndex) // Mark as main if index matches
                     ]);
                 }
             }
@@ -208,6 +211,18 @@ class ProductController extends Controller
                 }
             }
 
+
+            // Handle main_image_id change for EXISTING images
+            if ($request->has('main_image_id')) {
+                // Reset all images to not main
+                $product->images()->update(['is_main' => false]);
+                // Set the selected image as main
+                $mainImage = $product->images()->find($request->main_image_id);
+                if ($mainImage) {
+                    $mainImage->update(['is_main' => true]);
+                }
+            }
+
             // Handle New Images
             if ($request->hasFile('images')) {
                 $uploadPath = public_path('uploads/products');
@@ -215,11 +230,22 @@ class ProductController extends Controller
                     File::makeDirectory($uploadPath, 0755, true);
                 }
 
-                foreach ($request->file('images') as $image) {
+                $mainImageIndex = $request->input('main_image_index');
+
+                foreach ($request->file('images') as $index => $image) {
                     $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
                     $image->move($uploadPath, $filename);
+
+                    // If main_image_index is set and matches, unset all existing main images first
+                    $isMain = false;
+                    if ($mainImageIndex !== null && $index == $mainImageIndex) {
+                        $product->images()->update(['is_main' => false]);
+                        $isMain = true;
+                    }
+
                     $product->images()->create([
                         'image_url' => 'uploads/products/' . $filename,
+                        'is_main' => $isMain
                     ]);
                 }
             }
