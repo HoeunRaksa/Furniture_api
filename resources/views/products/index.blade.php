@@ -17,11 +17,11 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="5%">ID</th>
-                                        <th width="15%">Product</th>
+                                        <th width="20%">Product</th>
                                         <th width="12%">Category</th>
                                         <th width="10%">Status</th>
-                                        <th width="30%">Variants</th>
-                                        <th width="18%">Description</th>
+                                        <th width="10%">Stock</th>
+                                        <th width="33%">Variants</th>
                                         <th width="10%">Actions</th>
                                     </tr>
                                 </thead>
@@ -94,8 +94,8 @@
                     },
                     { data: 'category', name: 'category.name' },
                     { data: 'status', name: 'status', orderable: false, searchable: false },
+                    { data: 'stock', name: 'stock', orderable: true, searchable: false },
                     { data: 'variants', name: 'variants', orderable: false, searchable: false },
-                    { data: 'description', name: 'description', orderable: false, searchable: false },
                     { data: 'action', name: 'action', orderable: false, searchable: false }
                 ],
                 order: [[0, 'desc']],

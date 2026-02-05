@@ -48,6 +48,11 @@ class ProductController extends Controller
                     }
                     return implode(' ', $badges);
                 })
+                ->addColumn('stock', function ($product) {
+                    $stock = $product->stock ?? 0;
+                    $class = $stock > 10 ? 'text-success' : ($stock > 0 ? 'text-warning' : 'text-danger');
+                    return '<span class="fw-bold ' . $class . '">' . $stock . '</span>';
+                })
                 ->addColumn('variants', function ($product) {
                     if ($product->variants->isEmpty()) {
                         return '<span class="text-muted">No Variants</span>';
@@ -63,8 +68,7 @@ class ProductController extends Controller
                         })->join(' ');
 
                         $html .= '<div class="variant-item">';
-                        $html .= '<div><span class="variant-sku">SKU: ' . ($variant->sku ?: 'N/A') . '</span> | ';
-                        $html .= '<span class="variant-price">$' . number_format($variant->price, 2) . '</span></div>';
+                        $html .= '<div><span class="variant-sku">SKU: ' . ($variant->sku ?: 'N/A') . '</span></div>';
 
                         if ($attributes) {
                             $html .= '<div class="variant-attrs">' . $attributes . '</div>';
@@ -74,23 +78,6 @@ class ProductController extends Controller
                     }
 
                     $html .= '</div>';
-                    return $html;
-                })
-                ->addColumn('description', function ($product) {
-                    if ($product->descriptionLines->isEmpty()) {
-                        return '<span class="text-muted">No Description</span>';
-                    }
-
-                    $html = '';
-                    foreach ($product->descriptionLines->take(3) as $line) {
-                        $html .= '<div class="desc-line">' . e($line->text) . '</div>';
-                    }
-
-                    if ($product->descriptionLines->count() > 3) {
-                        $remaining = $product->descriptionLines->count() - 3;
-                        $html .= '<small class="text-muted">+' . $remaining . ' more...</small>';
-                    }
-
                     return $html;
                 })
                 ->addColumn('action', function ($product) {
@@ -108,10 +95,7 @@ class ProductController extends Controller
                         </button>
                     </div>';
                 })
-                ->addColumn('image_url', function($product) {
-                    return $product->images->first()?->image_url ? asset($product->images->first()->image_url) : null;
-                })
-                ->rawColumns(['category', 'status', 'variants', 'description', 'action'])
+                ->rawColumns(['category', 'status', 'stock', 'variants', 'action'])
                 ->make(true);
         }
     }

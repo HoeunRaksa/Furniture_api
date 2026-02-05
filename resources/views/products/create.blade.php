@@ -46,6 +46,14 @@
                                                 </div>
                                             </div>
 
+                                            <div class="mb-4">
+                                                <label class="form-label-premium">Total Stock Availability</label>
+                                                <div class="input-group-premium">
+                                                    <i class="bi bi-archive input-icon"></i>
+                                                    <input type="number" name="stock" class="form-control" placeholder="Enter total stock quantity" value="0">
+                                                </div>
+                                            </div>
+
                                             <div class="row g-3">
                                                 <div class="col-sm-12">
                                                     <div class="status-toggle-card">
