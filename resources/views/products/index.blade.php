@@ -4,33 +4,30 @@
     <div class="container-fluid py-4">
         <div class="row">
             <div class="col-12">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
-                        <h5 class="fw-bold mb-0">Products Management</h5>
+                <x-widget title="Products Management">
+                    <div class="d-flex justify-content-end mb-3">
                         <a href="{{ route('products.create') }}" class="btn btn-primary rounded-pill px-4 shadow-sm hover-lift">
                             <i class="bi bi-plus-lg me-2"></i> Add New Product
                         </a>
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="productsTable" class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th width="5%">ID</th>
-                                        <th width="30%">Product</th>
-                                        <th width="15%">Category</th>
-                                        <th width="10%">Price</th>
-                                        <th width="10%">Discount</th>
-                                        <th width="10%">Stock</th>
-                                        <th width="10%">Featured</th>
-                                        <th width="10%">Status</th>
-                                        <th width="10%">Actions</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
+                    <div class="table-responsive">
+                        <table id="productsTable" class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="5%">ID</th>
+                                    <th width="30%">Product</th>
+                                    <th width="15%">Category</th>
+                                    <th width="10%">Price</th>
+                                    <th width="10%">Discount</th>
+                                    <th width="10%">Stock</th>
+                                    <th width="10%">Featured</th>
+                                    <th width="10%">Status</th>
+                                    <th width="10%">Actions</th>
+                                </tr>
+                            </thead>
+                        </table>
                     </div>
-                </div>
+                </x-widget>
             </div>
         </div>
     </div>
