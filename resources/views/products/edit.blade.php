@@ -47,6 +47,23 @@
                                                 </div>
                                             </div>
 
+                                            <div class="row mb-4 g-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label-premium">Price ($)</label>
+                                                    <div class="input-group-premium">
+                                                        <i class="bi bi-currency-dollar input-icon"></i>
+                                                        <input type="number" step="0.01" name="price" class="form-control" value="{{ $product->price ?? 0 }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label-premium">Discount ($)</label>
+                                                    <div class="input-group-premium">
+                                                        <i class="bi bi-tag-fill input-icon"></i>
+                                                        <input type="number" step="0.01" name="discount" class="form-control" value="{{ $product->discount ?? 0 }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <div class="mb-4">
                                                 <label class="form-label-premium">Total Stock Availability</label>
                                                 <div class="input-group-premium">
@@ -57,13 +74,23 @@
 
                                             <div class="row g-3">
                                             <div class="row g-3">
-                                                <div class="col-sm-12">
+                                                <div class="col-sm-6">
                                                     <div class="status-toggle-card">
                                                         <div class="form-check form-switch p-0 m-0 d-flex align-items-center justify-content-between w-100">
-                                                            <label class="form-check-label fw-bold m-0" for="active">
-                                                                <i class="bi bi-check-circle me-1 text-success"></i> Product Active Status
+                                                            <label class="form-check-label fw-bold m-0" for="is_active">
+                                                                <i class="bi bi-check-circle me-1 text-success"></i> Active
                                                             </label>
-                                                            <input type="checkbox" name="active" class="form-check-input" id="active" value="1" {{ $product->active ? 'checked' : '' }}>
+                                                            <input type="checkbox" name="is_active" class="form-check-input" id="is_active" value="1" {{ $product->is_active ? 'checked' : '' }}>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="status-toggle-card">
+                                                        <div class="form-check form-switch p-0 m-0 d-flex align-items-center justify-content-between w-100">
+                                                            <label class="form-check-label fw-bold m-0" for="is_featured">
+                                                                <i class="bi bi-star-fill me-1 text-warning"></i> Featured
+                                                            </label>
+                                                            <input type="checkbox" name="is_featured" class="form-check-input" id="is_featured" value="1" {{ $product->is_featured ? 'checked' : '' }}>
                                                         </div>
                                                     </div>
                                                 </div>
