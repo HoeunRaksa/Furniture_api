@@ -6,11 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\ProductImage;
-use App\Models\Attribute;
-use App\Models\AttributeValue;
-use App\Models\ProductVariant;
-use App\Models\ProductDiscount;
-use App\Models\ProductDescriptionLine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -83,8 +78,7 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::all();
-        $attributes = Attribute::with('values')->get();
-        return view('products.create', compact('categories', 'attributes'));
+        return view('products.create', compact('categories'));
     }
 
     /**
@@ -100,9 +94,8 @@ class ProductController extends Controller
             'discount' => 'nullable|numeric',
             'stock' => 'nullable|integer',
             'images.*' => 'nullable|image|mimes:jpg,png,jpeg,webp|max:5120',
-            'description_lines' => 'nullable|array',
-            'variants' => 'nullable|array',
             'is_active' => 'nullable|boolean',
+            'is_featured' => 'nullable|boolean',
         ]);
 
         try {
@@ -115,9 +108,9 @@ class ProductController extends Controller
                 'price' => $request->price ?? 0,
                 'discount' => $request->discount ?? 0,
                 'stock' => $request->stock ?? 0,
-                'active' => $request->boolean('active', true),
                 'is_featured' => $request->boolean('is_featured', false),
-                'is_active' => $request->boolean('is_active', true)
+                'is_active' => $request->boolean('is_active', true),
+                'active' => $request->boolean('is_active', true) // Sync legacy active column if it exists
             ]);
 
             // Handle Images
@@ -134,42 +127,6 @@ class ProductController extends Controller
                         'image_url' => 'uploads/products/' . $filename,
                     ]);
                 }
-            }
-
-            // Description Lines
-            if ($request->description_lines) {
-                foreach ($request->description_lines as $index => $line) {
-                    if ($line) {
-                        $product->descriptionLines()->create([
-                            'text' => $line,
-                            'sort_order' => $index,
-                        ]);
-                    }
-                }
-            }
-
-            // Variants
-            if ($request->variants) {
-                foreach ($request->variants as $variantData) {
-                    $variant = $product->variants()->create([
-                        'sku' => $variantData['sku'] ?? null,
-                        'price' => $variantData['price'] ?? 0,
-                    ]);
-
-                    if (isset($variantData['attributes'])) {
-                        $variant->attributes()->attach($variantData['attributes']);
-                    }
-                }
-            }
-
-            // Discount
-            if ($request->filled('discount_value')) {
-                $product->discounts()->create([
-                    'name' => $request->discount_name ?? $product->name . ' Discount',
-                    'value' => $request->discount_value,
-                    'is_percentage' => $request->boolean('is_percentage', true),
-                    'active' => true,
-                ]);
             }
 
             DB::commit();
@@ -194,10 +151,9 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product = Product::with(['images', 'variants.attributes', 'discounts', 'descriptionLines'])->findOrFail($id);
+        $product = Product::with(['images'])->findOrFail($id);
         $categories = Category::all();
-        $attributes = Attribute::with('values')->get();
-        return view('products.edit', compact('product', 'categories', 'attributes'));
+        return view('products.edit', compact('product', 'categories'));
     }
 
     /**
@@ -213,9 +169,8 @@ class ProductController extends Controller
             'discount' => 'nullable|numeric',
             'stock' => 'nullable|integer',
             'images.*' => 'nullable|image|mimes:jpg,png,jpeg,webp|max:5120',
-            'description_lines' => 'nullable|array',
-            'variants' => 'nullable|array',
             'is_active' => 'nullable|boolean',
+            'is_featured' => 'nullable|boolean',
         ]);
 
         try {
@@ -229,9 +184,9 @@ class ProductController extends Controller
                 'price' => $request->price ?? 0,
                 'discount' => $request->discount ?? 0,
                 'stock' => $request->stock ?? 0,
-                'active' => $request->boolean('active', true),
                 'is_featured' => $request->boolean('is_featured', false),
-                'is_active' => $request->boolean('is_active', true)
+                'is_active' => $request->boolean('is_active', true),
+                'active' => $request->boolean('is_active', true)
             ]);
 
             // Handle Images
@@ -248,50 +203,6 @@ class ProductController extends Controller
                         'image_url' => 'uploads/products/' . $filename,
                     ]);
                 }
-            }
-
-            // Update Description Lines
-            $product->descriptionLines()->delete();
-            if ($request->description_lines) {
-                foreach ($request->description_lines as $index => $line) {
-                    if ($line) {
-                        $product->descriptionLines()->create([
-                            'text' => $line,
-                            'sort_order' => $index,
-                        ]);
-                    }
-                }
-            }
-
-            // Update Variants
-            foreach ($product->variants as $variant) {
-                /** @var \App\Models\ProductVariant $variant */
-                $variant->attributes()->detach();
-                $variant->delete();
-            }
-
-            if ($request->variants) {
-                foreach ($request->variants as $variantData) {
-                    $variant = $product->variants()->create([
-                        'sku' => $variantData['sku'] ?? null,
-                        'price' => $variantData['price'] ?? 0,
-                    ]);
-
-                    if (isset($variantData['attributes'])) {
-                        $variant->attributes()->attach($variantData['attributes']);
-                    }
-                }
-            }
-
-            // Update Discount
-            if ($request->filled('discount_value')) {
-                $product->discounts()->update(['active' => false]);
-                $product->discounts()->create([
-                    'name' => $request->discount_name ?? $product->name . ' Discount',
-                    'value' => $request->discount_value,
-                    'is_percentage' => $request->boolean('is_percentage', true),
-                    'active' => true,
-                ]);
             }
 
             DB::commit();
