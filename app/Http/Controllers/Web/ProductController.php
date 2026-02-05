@@ -48,11 +48,6 @@ class ProductController extends Controller
                     }
                     return implode(' ', $badges);
                 })
-                ->addColumn('stock', function ($product) {
-                    $stock = $product->stock ?? 0;
-                    $class = $stock > 10 ? 'text-success' : ($stock > 0 ? 'text-warning' : 'text-danger');
-                    return '<span class="fw-bold ' . $class . '">' . $stock . '</span>';
-                })
                 ->addColumn('variants', function ($product) {
                     if ($product->variants->isEmpty()) {
                         return '<span class="text-muted">No Variants</span>';
@@ -95,7 +90,7 @@ class ProductController extends Controller
                         </button>
                     </div>';
                 })
-                ->rawColumns(['category', 'status', 'stock', 'variants', 'action'])
+                ->rawColumns(['category', 'status', 'variants', 'action'])
                 ->make(true);
         }
     }
