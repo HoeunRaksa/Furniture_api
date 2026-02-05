@@ -23,40 +23,40 @@ class WebAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'username' => 'required|string',
             'password' => 'required|string',
         ]);
 
         try {
             Log::info('Web login attempt', [
-                'email' => $request->email,
+                'username' => $request->username,
             ]);
 
-            $credentials = $request->only('email', 'password');
+            $credentials = $request->only('username', 'password');
 
             if (Auth::attempt($credentials, $request->filled('remember'))) {
                 $request->session()->regenerate();
 
-                Log::info('Web login successful', ['email' => $request->email]);
+                Log::info('Web login successful', ['username' => $request->username]);
 
                 return redirect()->intended(route('home'));
             }
 
-            Log::warning('Web login failed: invalid credentials', ['email' => $request->email]);
+            Log::warning('Web login failed: invalid credentials', ['username' => $request->username]);
 
             return back()->withErrors([
-                'email' => 'Invalid credentials',
+                'username' => 'Invalid credentials',
             ])->withInput();
 
         } catch (\Throwable $e) {
             Log::error('Web login exception', [
-                'email' => $request->email,
+                'username' => $request->username,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
             return back()->withErrors([
-                'email' => 'Something went wrong. Please try again later.',
+                'username' => 'Something went wrong. Please try again later.',
             ])->withInput();
         }
     }

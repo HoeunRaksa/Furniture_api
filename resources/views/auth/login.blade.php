@@ -341,12 +341,12 @@
             <form method="POST" action="{{ route('login') }}" id="loginForm">
                 @csrf
 
-                <!-- Email -->
+                <!-- Username -->
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input type="email" name="email" id="email" class="form-input" 
-                               placeholder="Enter your email" value="{{ old('email') }}" required />
-                        <i class="bi bi-envelope"></i>
+                        <input type="text" name="username" id="username" class="form-input" 
+                               placeholder="Enter your username" value="{{ old('username') }}" required />
+                        <i class="bi bi-person"></i>
                     </div>
                 </div>
 
