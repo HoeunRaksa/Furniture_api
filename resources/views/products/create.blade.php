@@ -4,15 +4,13 @@
     <div class="container-fluid py-4">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-white border-0 py-3 d-flex align-items-center">
-                        <a href="{{ route('products.index') }}" class="btn btn-light btn-sm rounded-circle me-3">
-                            <i class="bi bi-arrow-left"></i>
-                        </a>
-                        <h5 class="fw-bold mb-0">Create New Product</h5>
-                    </div>
-                    <div class="card-body p-4">
-                        <form id="form_add_product" enctype="multipart/form-data">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="{{ route('products.index') }}" class="btn btn-light btn-sm rounded-circle me-3 shadow-sm">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h5 class="fw-bold mb-0">Create New Product</h5>
+                </div>
+                <form id="form_add_product" enctype="multipart/form-data">
                             @csrf
 
                             <x-widget title="General Information">
@@ -116,11 +114,9 @@
                                 </button>
                             </div>
                         </form>
-                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <style>
         .form-label-premium { font-weight: 600; font-size: 0.8rem; color: #64748b; margin-bottom: 8px; display: block; text-transform: uppercase; }
