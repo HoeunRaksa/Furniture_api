@@ -272,25 +272,27 @@
         })();
     </script>
 
-    @if(session('success'))
-    <script>
-        $(document).ready(function() { toastr.success("{{ session('success') }}"); });
-    </script>
-    @endif
+    <!-- Flash Messages (Data Attributes) -->
+    <div id="flash-messages" 
+         data-success="{{ session('success') }}" 
+         data-error="{{ session('error') }}"
+         data-errors='@json($errors->all())'>
+    </div>
 
-    @if(session('error'))
     <script>
-        $(document).ready(function() { toastr.error("{{ session('error') }}"); });
-    </script>
-    @endif
+        $(document).ready(function() {
+            const flash = $('#flash-messages');
+            const success = flash.data('success');
+            const error = flash.data('error');
+            const errors = flash.data('errors');
 
-    @if($errors->any())
-        @foreach($errors->all() as $error)
-        <script>
-            $(document).ready(function() { toastr.error("{{ $error }}"); });
-        </script>
-        @endforeach
-    @endif
+            if (success) toastr.success(success);
+            if (error) toastr.error(error);
+            if (errors && errors.length > 0) {
+                errors.forEach(err => toastr.error(err));
+            }
+        });
+    </script>
 
     <script src="{{ asset('js/notifications.js') }}"></script>
     @include('includes.js')
