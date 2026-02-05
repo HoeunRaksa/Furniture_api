@@ -37,6 +37,7 @@ class ProductController extends Controller
                 ->select('products.*');
 
             return DataTables::of($products)
+                ->addColumn('image_url', fn($product) => $product->images->first()?->image_url ? asset($product->images->first()->image_url) : null)
                 ->addColumn('category', fn($product) => $product->category?->name ?? '<span class="badge bg-secondary">No Category</span>')
                 ->addColumn('status', function ($product) {
                     $badges = [];
