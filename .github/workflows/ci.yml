@@ -69,6 +69,14 @@ jobs:
             sudo -u www-data sed -i 's/^APP_ENV=.*/APP_ENV=production/' .env
             sudo -u www-data sed -i 's/^APP_DEBUG=.*/APP_DEBUG=false/' .env
 
+            echo "== DATABASE USER VERIFICATION =="
+            # Ensure the database and user exist with correct permissions
+            sudo mysql -e "CREATE DATABASE IF NOT EXISTS furniture_db;"
+            sudo mysql -e "CREATE USER IF NOT EXISTS 'furniture_user'@'localhost' IDENTIFIED BY 'StrongPassword123!';"
+            sudo mysql -e "ALTER USER 'furniture_user'@'localhost' IDENTIFIED BY 'StrongPassword123!';"
+            sudo mysql -e "GRANT ALL PRIVILEGES ON furniture_db.* TO 'furniture_user'@'localhost';"
+            sudo mysql -e "FLUSH PRIVILEGES;"
+
             echo "== LARAVEL OPTIMIZE =="
             sudo -u www-data php artisan migrate --force
             sudo -u www-data php artisan config:cache
