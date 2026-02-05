@@ -4,57 +4,48 @@
     <div class="container-fluid py-4">
         <div class="row">
             <div class="col-md-8">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="fw-bold mb-0">Attribute Management</h5>
-                            <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createAttributeModal">
-                                <i class="bi bi-plus-lg me-2"></i> Add Attribute
-                            </button>
-                        </div>
+            <div class="col-md-8">
+                <x-widget title="Attribute Management">
+                    <div class="d-flex justify-content-end mb-3">
+                        <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createAttributeModal">
+                            <i class="bi bi-plus-lg me-2"></i> Add Attribute
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover" id="attributesTable">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Attribute Name</th>
-                                        <th>Values Count</th>
-                                        <th class="text-center">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="attributesTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Attribute Name</th>
+                                    <th>Values Count</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
-                </div>
+                </x-widget>
             </div>
             
             <div id="valuesSection" class="col-md-4 d-none">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="fw-bold mb-0">Values for: <span id="currentAttributeName" class="text-primary"></span></h5>
-                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" onclick="showAddValueForm()">
-                                <i class="bi bi-plus"></i>
-                            </button>
-                        </div>
+                <x-widget title="Values for: <span id='currentAttributeName' class='text-primary'></span>">
+                    <div class="d-flex justify-content-end mb-3">
+                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" onclick="showAddValueForm()">
+                            <i class="bi bi-plus"></i> Add Value
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <div id="addValueForm" class="d-none mb-4 p-3 bg-light rounded-3">
-                            <form id="storeValueForm">
-                                @csrf
-                                <input type="hidden" name="attribute_id" id="currentAttributeId">
-                                <div class="input-group">
-                                    <input type="text" name="value" class="form-control" placeholder="Value (e.g. Red, XL, Metal)" required>
-                                    <button class="btn btn-primary" type="submit">Add</button>
-                                </div>
-                            </form>
-                        </div>
-                        <ul class="list-group list-group-flush" id="valuesList"></ul>
+                    <div id="addValueForm" class="d-none mb-4 p-3 bg-light rounded-3">
+                        <form id="storeValueForm">
+                            @csrf
+                            <input type="hidden" name="attribute_id" id="currentAttributeId">
+                            <div class="input-group">
+                                <input type="text" name="value" class="form-control" placeholder="Value (e.g. Red, XL, Metal)" required>
+                                <button class="btn btn-primary" type="submit">Add</button>
+                            </div>
+                        </form>
                     </div>
-                </div>
+                    <ul class="list-group list-group-flush" id="valuesList"></ul>
+                </x-widget>
             </div>
         </div>
     </div>

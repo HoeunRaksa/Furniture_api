@@ -5,31 +5,26 @@
         @include('categories.edit')
         @include('categories.create')
         
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-header bg-white border-0 py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold mb-0">Category List</h5>
-                    <button class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
-                        <i class="bi bi-plus-lg me-2"></i> Create New Category
-                    </button>
-                </div>
+        <x-widget title="Category List">
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+                    <i class="bi bi-plus-lg me-2"></i> Create New Category
+                </button>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover" id="categoriesTable">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Created At</th>
-                                <th class="text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table class="table table-hover" id="categoriesTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Created At</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
-        </div>
+        </x-widget>
     </div>
 @endsection
 

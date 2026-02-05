@@ -2,28 +2,23 @@
 
 @section('content')
     <div class="container-fluid py-4">
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-header bg-white border-0 py-3">
-                <h5 class="fw-bold mb-0">Sales & Orders</h5>
+        <x-widget title="Sales & Orders">
+            <div class="table-responsive">
+                <table class="table table-hover" id="ordersTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover" id="ordersTable">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Customer</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th class="text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        </x-widget>
     </div>
 
     <!-- View Order Modal -->

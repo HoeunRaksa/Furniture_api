@@ -2,34 +2,29 @@
 
 @section('content')
     <div class="container-fluid py-4">
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-header bg-white border-0 py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold mb-0">User Management</h5>
-                    <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createUserModal">
-                        <i class="bi bi-person-plus me-2"></i> Add User
-                    </button>
-                </div>
+        <x-widget title="User Management">
+            <div class="d-flex justify-content-end mb-3">
+                <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                    <i class="bi bi-person-plus me-2"></i> Add User
+                </button>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle" id="usersTable">
-                        <thead class="table-light">
-                            <tr>
-                                <th style="width: 50px;">#</th>
-                                <th>Name</th>
-                                <th style="width: 150px;">Contact & City</th>
-                                <th>Email</th>
-                                <th style="width: 100px;">Role</th>
-                                <th style="width: 80px;" class="text-center">Status</th>
-                                <th style="width: 80px;" class="text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="usersTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th>Name</th>
+                            <th style="width: 150px;">Contact & City</th>
+                            <th>Email</th>
+                            <th style="width: 100px;">Role</th>
+                            <th style="width: 80px;" class="text-center">Status</th>
+                            <th style="width: 80px;" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
-        </div>
+        </x-widget>
     </div>
 
     <!-- Create Modal -->

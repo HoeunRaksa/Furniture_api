@@ -70,16 +70,14 @@
     <!-- Placeholder for Charts or Recent Activity -->
     <div class="row">
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                <h5 class="fw-bold mb-4">Sales Activity</h5>
+            <x-widget title="Sales Activity">
                 <div class="bg-light rounded-4 d-flex align-items-center justify-content-center" style="height: 300px;">
                     <p class="text-muted italic">Sales chart will appear here</p>
                 </div>
-            </div>
+            </x-widget>
         </div>
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                <h5 class="fw-bold mb-4">Top Categories</h5>
+            <x-widget title="Top Categories">
                 <div class="list-group list-group-flush">
                     <div class="list-group-item border-0 d-flex justify-content-between align-items-center px-0">
                         <span>Living Room</span>
@@ -98,7 +96,7 @@
                         <span class="badge bg-primary rounded-pill">10%</span>
                     </div>
                 </div>
-            </div>
+            </x-widget>
         </div>
     </div>
 </div>

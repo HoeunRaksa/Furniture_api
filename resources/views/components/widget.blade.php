@@ -2,7 +2,7 @@
     <!-- Widget Header -->
     <div class="d-flex align-items-center justify-content-between mb-2">
         <h2 class="font-bold mb-0 animate-fade-in-left" style="color: #1e293b; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.025em;">
-            {{ $title }}
+            {!! $title !!}
         </h2>
         <div class="widget-header-line flex-grow-1 mx-2" style="height: 1px; background: #e2e8f0; border-radius: 2px;"></div>
     </div>
