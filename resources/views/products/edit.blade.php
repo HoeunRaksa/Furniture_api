@@ -115,7 +115,7 @@
                         <img src="{{ asset($image->image_url) }}" class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
                         <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-0 rounded-circle d-flex align-items-center justify-content-center"
                             style="width: 20px; height: 20px;"
-                            onclick="deleteImage('{{ $image->id }}', this)">
+                            onclick="markForDeletion('{{ $image->id }}', this)">
                             <i class="bi bi-x"></i>
                         </button>
                     </div>
@@ -203,41 +203,60 @@
 
 @push('scripts')
 <script>
-    // Exposed to global scope for onclick events
-    window.deleteImage = function(id, btn) {
-        if (!confirm('Delete this image?')) return;
-        $.ajax({
-            url: '/products/image/delete/' + id,
-            type: 'DELETE',
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(res) {
-                $(btn).parent().fadeOut();
-                toastr.success('Image deleted');
-            }
-        });
+    let uploadedFiles = [];
+
+    // Deferred Deletion for Existing Images
+    window.markForDeletion = function(id, btn) {
+        if (!confirm('Mark this image for deletion? (Will happen on Update)')) return;
+
+        // Hide the image
+        $(btn).parent().fadeOut();
+
+        // Append a hidden input to the form
+        $('#form_update_product').append(`<input type="hidden" name="deleted_images[]" value="${id}">`);
+
+        toastr.info('Image marked for deletion');
+    };
+
+    // Remove New File locally
+    window.removeNewFile = function(fileId) {
+        uploadedFiles = uploadedFiles.filter(f => f.tempId !== fileId);
+        $(`#preview-${fileId}`).remove();
     };
 
     $(function() {
-        // Image handling (Multiple)
+        // Image handling (Multiple) for NEW images
         $('#productImages').on('change', function(e) {
-            $('#imagePreviewContainer').empty();
-            const files = e.target.files;
+            const files = Array.from(e.target.files);
+
             if (files.length > 0) {
                 $('.image-upload-wrapper').addClass('border-primary');
             }
-            Array.from(files).forEach(file => {
+
+            files.forEach(file => {
+                uploadedFiles.push(file);
+
                 const reader = new FileReader();
                 reader.onload = function(re) {
+                    const fileId = Date.now() + '_' + file.name.replace(/\s/g, '');
+                    file.tempId = fileId;
+
                     $('#imagePreviewContainer').append(`
-                        <div class="position-relative">
-                            <img src="${re.target.result}" class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover; border: 2px solid #fff;">
+                        <div class="position-relative d-inline-block me-2 mb-2" id="preview-${fileId}">
+                            <img src="${re.target.result}" class="rounded-3 shadow-sm border" style="width: 100px; height: 100px; object-fit: cover;">
+                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-0 rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                style="width: 20px; height: 20px;"
+                                onclick="removeNewFile('${fileId}')">
+                                <i class="bi bi-x" style="font-size: 1rem;"></i>
+                            </button>
                         </div>
                     `);
                 }
                 reader.readAsDataURL(file);
             });
+
+            // Reset input so same files can be selected again if added iteratively
+            $(this).val('');
         });
 
         // Form submission
@@ -249,10 +268,20 @@
             const oldContent = $btn.html();
             $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Updating...');
 
+            var formData = new FormData(this);
+
+            // Remove the empty 'images[]' from original input if present
+            formData.delete('images[]');
+
+            // Append all files from our custom array
+            uploadedFiles.forEach(file => {
+                formData.append('images[]', file);
+            });
+
             $.ajax({
                 url: url,
                 method: 'POST', // POST for FormData (will mock PUT via _method)
-                data: new FormData(this),
+                data: formData,
                 processData: false,
                 contentType: false,
                 success: function(res) {

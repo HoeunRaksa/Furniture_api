@@ -190,25 +190,50 @@
 @push('scripts')
 <script>
     $(function() {
-        // Image handling (Multiple)
+        let uploadedFiles = [];
+
+        // Image handling (Multiple) with Custom Array
         $('#productImages').on('change', function(e) {
-            $('#imagePreviewContainer').empty();
-            const files = e.target.files;
-            if (files.length > 0) {
-                $('.image-upload-wrapper').addClass('border-primary');
-            }
-            Array.from(files).forEach(file => {
+            const files = Array.from(e.target.files);
+
+            // Add new files to our array
+            files.forEach(file => {
+                uploadedFiles.push(file);
+
                 const reader = new FileReader();
                 reader.onload = function(re) {
+                    // Create ID based on timestamp and name to identify file later if needed
+                    const fileId = Date.now() + '_' + file.name.replace(/\s/g, '');
+                    file.tempId = fileId; // Attach temp ID to file object if browser allows, or rely on index
+
                     $('#imagePreviewContainer').append(`
-                        <div class="position-relative">
-                            <img src="${re.target.result}" class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover; border: 2px solid #fff;">
+                        <div class="position-relative d-inline-block me-2 mb-2" id="preview-${fileId}">
+                            <img src="${re.target.result}" class="rounded-3 shadow-sm border" style="width: 100px; height: 100px; object-fit: cover;">
+                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-0 rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                                style="width: 20px; height: 20px;" 
+                                onclick="removeNewFile('${fileId}')">
+                                <i class="bi bi-x" style="font-size: 1rem;"></i>
+                            </button>
                         </div>
                     `);
                 }
                 reader.readAsDataURL(file);
             });
+
+            // Reset the input value so the same file selected again triggers change if needed
+            // But usually we just keep accumulating in uploadedFiles
+            $(this).val('');
+
+            if (uploadedFiles.length > 0) {
+                $('.image-upload-wrapper').addClass('border-primary');
+            }
         });
+
+        // Global function to remove new file
+        window.removeNewFile = function(fileId) {
+            uploadedFiles = uploadedFiles.filter(f => f.tempId !== fileId);
+            $(`#preview-${fileId}`).remove();
+        };
 
         // Form submission
         $('#form_add_product').on('submit', function(e) {
@@ -218,12 +243,23 @@
             const oldContent = $btn.html();
             $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Saving...');
 
+            // Create FormData manually
+            var formData = new FormData(this);
+
+            // Remove the empty 'images[]' from original input if present
+            formData.delete('images[]');
+
+            // Append all files from our custom array
+            uploadedFiles.forEach(file => {
+                formData.append('images[]', file);
+            });
+
             $.ajax({
                 url: "{{ route('products.store') }}",
                 method: 'POST',
-                data: new FormData(this),
-                processData: false,
-                contentType: false,
+                data: formData,
+                processData: false, // Important
+                contentType: false, // Important
                 success: function(res) {
                     toastr.success(res.msg || 'Success!');
                     window.location.href = res.location;

@@ -180,6 +180,8 @@ class ProductController extends Controller
             DB::beginTransaction();
 
             $product = Product::findOrFail($id);
+
+            // Handle active/featured boolean
             $product->update([
                 'category_id' => $request->category_id,
                 'name' => $request->name,
@@ -192,7 +194,21 @@ class ProductController extends Controller
                 'active' => $request->boolean('is_active', true)
             ]);
 
-            // Handle Images
+            // Handle Deleted Images (Deferred Deletion)
+            if ($request->has('deleted_images')) {
+                foreach ($request->deleted_images as $imageId) {
+                    $image = ProductImage::find($imageId);
+                    if ($image) {
+                        $path = public_path($image->image_url);
+                        if (File::exists($path)) {
+                            File::delete($path);
+                        }
+                        $image->delete();
+                    }
+                }
+            }
+
+            // Handle New Images
             if ($request->hasFile('images')) {
                 $uploadPath = public_path('uploads/products');
                 if (!File::exists($uploadPath)) {
