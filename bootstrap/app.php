@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.auth' => ApiAuthMiddleware::class,
             'role' => RoleMiddleware::class,
         ]);
+
+        $middleware->web(append: [
+            \App\Http\Middleware\SetBusinessSession::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // ✅ REQUIRED — do not remove
