@@ -201,8 +201,24 @@
 </style>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
+    // Exposed to global scope for onclick events
+    window.deleteImage = function(id, btn) {
+        if (!confirm('Delete this image?')) return;
+        $.ajax({
+            url: '/products/image/delete/' + id,
+            type: 'DELETE',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(res) {
+                $(btn).parent().fadeOut();
+                toastr.success('Image deleted');
+            }
+        });
+    };
+
     $(function() {
         // Image handling (Multiple)
         $('#productImages').on('change', function(e) {
@@ -255,20 +271,5 @@
             });
         });
     });
-
-    function deleteImage(id, btn) {
-        if (!confirm('Delete this image?')) return;
-        $.ajax({
-            url: '/products/image/delete/' + id,
-            type: 'DELETE',
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(res) {
-                $(btn).parent().fadeOut();
-                toastr.success('Image deleted');
-            }
-        });
-    }
 </script>
-@endsection
+@endpush

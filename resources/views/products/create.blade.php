@@ -187,7 +187,7 @@
 </style>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
     $(function() {
         // Image handling (Multiple)
@@ -241,4 +241,4 @@
         });
     });
 </script>
-@endsection
+@endpush
