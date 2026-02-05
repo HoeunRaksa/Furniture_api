@@ -53,11 +53,21 @@ jobs:
               --optimize-autoloader \
               --no-interaction
 
-            echo "== ENV CHECK =="
+            echo "== ENV CHECK & UPDATE =="
             if [ ! -f .env ]; then
               sudo -u www-data cp .env.example .env
               sudo -u www-data php artisan key:generate
             fi
+            
+            # Ensure production credentials are set
+            sudo -u www-data sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+            sudo -u www-data sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+            sudo -u www-data sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env
+            sudo -u www-data sed -i 's/^DB_DATABASE=.*/DB_DATABASE=furniture_db/' .env
+            sudo -u www-data sed -i 's/^DB_USERNAME=.*/DB_USERNAME=furniture_user/' .env
+            sudo -u www-data sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=StrongPassword123!/' .env
+            sudo -u www-data sed -i 's/^APP_ENV=.*/APP_ENV=production/' .env
+            sudo -u www-data sed -i 's/^APP_DEBUG=.*/APP_DEBUG=false/' .env
 
             echo "== LARAVEL OPTIMIZE =="
             sudo -u www-data php artisan migrate --force
