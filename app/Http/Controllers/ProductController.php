@@ -74,8 +74,8 @@ class ProductController extends Controller
                 }
             }
 
-            // Load images with full URLs
-            $product->load('images');
+            // Load relationships with full URLs
+            $product->load(['images', 'category']);
             $product->images->transform(function ($image) {
                 if ($image->image_url) {
                     $image->full_url = url($image->image_url);
@@ -116,7 +116,7 @@ class ProductController extends Controller
     public function show($id)
     {
         try {
-            $product = Product::with('images')->findOrFail($id);
+            $product = Product::with(['images', 'category'])->findOrFail($id);
 
             // Add full URL for images
             $product->images->transform(function ($image) {
@@ -185,8 +185,8 @@ class ProductController extends Controller
                 }
             }
 
-            // Load images with full URLs
-            $product->load('images');
+            // Load relationships with full URLs
+            $product->load(['images', 'category']);
             $product->images->transform(function ($image) {
                 if ($image->image_url) {
                     $image->full_url = url($image->image_url);
@@ -276,8 +276,8 @@ class ProductController extends Controller
                 }
             }
 
-            // Load images with full URLs
-            $product->load('images');
+            // Load relationships with full URLs
+            $product->load(['images', 'category']);
             $product->images->transform(function ($image) {
                 if ($image->image_url) {
                     $image->full_url = url($image->image_url);
