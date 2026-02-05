@@ -113,7 +113,7 @@
                                                 <img src="{{ asset($image->image_url) }}" class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
                                                 <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-0 rounded-circle d-flex align-items-center justify-content-center" 
                                                         style="width: 20px; height: 20px;" 
-                                                        onclick="deleteImage({{ $image->id }}, this)">
+                                                        onclick="deleteImage('{{ $image->id }}', this)">
                                                     <i class="bi bi-x"></i>
                                                 </button>
                                             </div>
