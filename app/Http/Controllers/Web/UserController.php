@@ -24,18 +24,23 @@ class UserController extends Controller
                 ->addColumn('full_name', function ($user) {
                     return trim(($user->prefix ? $user->prefix . ' ' : '') . $user->first_name . ' ' . $user->last_name) ?: $user->name;
                 })
+                ->addColumn('details', function ($user) {
+                    $html = '<div><i class="bi bi-telephone small me-1"></i> ' . ($user->phone ?: 'N/A') . '</div>';
+                    $html .= '<div class="small text-muted"><i class="bi bi-geo-alt small me-1"></i> ' . ($user->city ?: 'N/A') . '</div>';
+                    return $html;
+                })
                 ->addColumn('status', function ($user) {
-                    return $user->is_active 
-                        ? '<span class="badge bg-success">Active</span>' 
-                        : '<span class="badge bg-danger">Inactive</span>';
+                    $checked = $user->is_active ? 'checked' : '';
+                    return '<div class="form-check form-switch d-flex justify-content-center">
+                                <input class="form-check-input toggle-status" type="checkbox" data-id="'.$user->id.'" '.$checked.'>
+                            </div>';
                 })
                 ->addColumn('actions', function ($user) {
                     /** @var \App\Models\User $user */
-                    $edit = '<button data-id="' . $user->id . '" class="btn btn-sm btn-primary edit-user me-1">Edit</button>';
-                    $delete = $user->id === \Illuminate\Support\Facades\Auth::id() ? '' : '<button data-url="' . route('users.destroy', $user->id) . '" class="btn btn-sm btn-danger delete-user">Delete</button>';
-                    return $edit . $delete;
+                    $delete = $user->id === \Illuminate\Support\Facades\Auth::id() ? '' : '<button data-url="' . route('users.destroy', $user->id) . '" class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-user"><i class="bi bi-trash"></i></button>';
+                    return '<div class="d-flex justify-content-center">' . $delete . '</div>';
                 })
-                ->rawColumns(['status', 'actions'])
+                ->rawColumns(['details', 'status', 'actions'])
                 ->make(true);
         }
     }

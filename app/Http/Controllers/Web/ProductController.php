@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\ProductImage;
+use App\Models\Attribute;
+use App\Models\AttributeValue;
+use App\Models\ProductVariant;
+use App\Models\ProductDiscount;
+use App\Models\ProductDescriptionLine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -60,7 +65,8 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('products.create', compact('categories'));
+        $attributes = Attribute::with('values')->get();
+        return view('products.create', compact('categories', 'attributes'));
     }
 
     /**
@@ -70,21 +76,32 @@ class ProductController extends Controller
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:225',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric',
+            'price' => 'nullable|numeric',
             'discount' => 'nullable|numeric',
-            'stock' => 'required|integer',
-            'images.*' => 'required|image|mimes:jpg,png,jpeg,webp|max:5120',
+            'stock' => 'nullable|integer',
+            'images.*' => 'nullable|image|mimes:jpg,png,jpeg,webp|max:5120',
+            'description_lines' => 'nullable|array',
+            'variants' => 'nullable|array',
         ]);
 
         try {
             DB::beginTransaction();
 
-            $product = Product::create($request->only([
-                'category_id', 'name', 'description', 'price', 'discount', 'stock',
-            ]));
+            $product = Product::create([
+                'category_id' => $request->category_id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $request->price ?? 0,
+                'discount' => $request->discount ?? 0,
+                'stock' => $request->stock ?? 0,
+                'active' => $request->boolean('active', true),
+                'is_featured' => $request->boolean('is_featured', false),
+                'is_recommended' => $request->boolean('is_recommended', false),
+            ]);
 
+            // Handle Images
             if ($request->hasFile('images')) {
                 $uploadPath = public_path('uploads/products');
                 if (!File::exists($uploadPath)) {
@@ -98,6 +115,42 @@ class ProductController extends Controller
                         'image_url' => 'uploads/products/' . $filename,
                     ]);
                 }
+            }
+
+            // Description Lines
+            if ($request->description_lines) {
+                foreach ($request->description_lines as $index => $line) {
+                    if ($line) {
+                        $product->descriptionLines()->create([
+                            'text' => $line,
+                            'sort_order' => $index,
+                        ]);
+                    }
+                }
+            }
+
+            // Variants
+            if ($request->variants) {
+                foreach ($request->variants as $variantData) {
+                    $variant = $product->variants()->create([
+                        'sku' => $variantData['sku'] ?? null,
+                        'price' => $variantData['price'] ?? 0,
+                    ]);
+
+                    if (isset($variantData['attributes'])) {
+                        $variant->attributes()->attach($variantData['attributes']);
+                    }
+                }
+            }
+
+            // Discount
+            if ($request->filled('discount_value')) {
+                $product->discounts()->create([
+                    'name' => $request->discount_name ?? $product->name . ' Discount',
+                    'value' => $request->discount_value,
+                    'is_percentage' => $request->boolean('is_percentage', true),
+                    'active' => true,
+                ]);
             }
 
             DB::commit();
@@ -122,9 +175,10 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product = Product::with('images')->findOrFail($id);
+        $product = Product::with(['images', 'variants.attributes', 'discounts', 'descriptionLines'])->findOrFail($id);
         $categories = Category::all();
-        return view('products.edit', compact('product', 'categories'));
+        $attributes = Attribute::with('values')->get();
+        return view('products.edit', compact('product', 'categories', 'attributes'));
     }
 
     /**
@@ -134,22 +188,33 @@ class ProductController extends Controller
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:225',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric',
+            'price' => 'nullable|numeric',
             'discount' => 'nullable|numeric',
-            'stock' => 'required|integer',
+            'stock' => 'nullable|integer',
             'images.*' => 'nullable|image|mimes:jpg,png,jpeg,webp|max:5120',
+            'description_lines' => 'nullable|array',
+            'variants' => 'nullable|array',
         ]);
 
         try {
             DB::beginTransaction();
 
             $product = Product::findOrFail($id);
-            $product->update($request->only([
-                'category_id', 'name', 'description', 'price', 'discount', 'stock',
-            ]));
+            $product->update([
+                'category_id' => $request->category_id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $request->price ?? 0,
+                'discount' => $request->discount ?? 0,
+                'stock' => $request->stock ?? 0,
+                'active' => $request->boolean('active', true),
+                'is_featured' => $request->boolean('is_featured', false),
+                'is_recommended' => $request->boolean('is_recommended', false),
+            ]);
 
+            // Handle Images
             if ($request->hasFile('images')) {
                 $uploadPath = public_path('uploads/products');
                 if (!File::exists($uploadPath)) {
@@ -163,6 +228,49 @@ class ProductController extends Controller
                         'image_url' => 'uploads/products/' . $filename,
                     ]);
                 }
+            }
+
+            // Update Description Lines
+            $product->descriptionLines()->delete();
+            if ($request->description_lines) {
+                foreach ($request->description_lines as $index => $line) {
+                    if ($line) {
+                        $product->descriptionLines()->create([
+                            'text' => $line,
+                            'sort_order' => $index,
+                        ]);
+                    }
+                }
+            }
+
+            // Update Variants
+            $product->variants()->each(function($variant) {
+                $variant->attributes()->detach();
+                $variant->delete();
+            });
+
+            if ($request->variants) {
+                foreach ($request->variants as $variantData) {
+                    $variant = $product->variants()->create([
+                        'sku' => $variantData['sku'] ?? null,
+                        'price' => $variantData['price'] ?? 0,
+                    ]);
+
+                    if (isset($variantData['attributes'])) {
+                        $variant->attributes()->attach($variantData['attributes']);
+                    }
+                }
+            }
+
+            // Update Discount
+            if ($request->filled('discount_value')) {
+                $product->discounts()->update(['active' => false]);
+                $product->discounts()->create([
+                    'name' => $request->discount_name ?? $product->name . ' Discount',
+                    'value' => $request->discount_value,
+                    'is_percentage' => $request->boolean('is_percentage', true),
+                    'active' => true,
+                ]);
             }
 
             DB::commit();
@@ -224,21 +332,22 @@ class ProductController extends Controller
     {
         try {
             $image = ProductImage::findOrFail($id);
+            $imagePath = public_path($image->image_url);
             
-            if ($image->image_url && File::exists(public_path($image->image_url))) {
-                File::delete(public_path($image->image_url));
+            if (File::exists($imagePath)) {
+                File::delete($imagePath);
             }
-
+            
             $image->delete();
 
             return response()->json([
                 'success' => true,
-                'msg' => 'Image removed'
+                'msg' => 'Image deleted successfully'
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'msg' => 'Failed to remove image'
+                'msg' => 'Error deleting image: ' . $e->getMessage()
             ], 500);
         }
     }

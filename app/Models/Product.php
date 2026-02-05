@@ -13,6 +13,7 @@ class Product extends Model
         'category_id',
         'name',
         'description', 'price', 'discount', 'stock',
+        'active', 'is_featured', 'is_recommended'
     ];
 
     public function images()
@@ -23,5 +24,20 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    public function discounts()
+    {
+        return $this->hasMany(ProductDiscount::class);
+    }
+
+    public function descriptionLines()
+    {
+        return $this->hasMany(ProductDescriptionLine::class)->orderBy('sort_order');
     }
 }

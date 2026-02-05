@@ -238,6 +238,25 @@
                     @yield('content')
                 </div>
             </main>
+
+            <!-- GLOBAL CONFIRM MODAL -->
+            <div class="modal fade" id="globalConfirmModal" tabindex="-1" aria-labelledby="globalConfirmModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 rounded-4 shadow">
+                        <div class="modal-header border-0">
+                            <h5 class="modal-title fw-bold" id="globalConfirmModalLabel">Confirm Action</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body py-4" id="globalConfirmModalBody">
+                            Are you sure you want to proceed?
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger rounded-pill px-4" id="globalConfirmModalConfirmBtn">Yes, Proceed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -278,6 +297,49 @@
             toastr.warning = wrap(toastr.warning, 'error-audio');
             toastr.info = wrap(toastr.info, 'success-audio');
         })();
+
+        // Global Confirm Modal Logic
+        let confirmCallback = null;
+        const globalConfirmModalEl = document.getElementById('globalConfirmModal');
+        let globalConfirmModal = null;
+
+        function getGlobalConfirmModal() {
+            if (!globalConfirmModal && globalConfirmModalEl) {
+                globalConfirmModal = new bootstrap.Modal(globalConfirmModalEl);
+            }
+            return globalConfirmModal;
+        }
+
+        window.showConfirmModal = function(message = "Are you sure?", onConfirm = null) {
+            document.getElementById('globalConfirmModalBody').innerHTML = message;
+            confirmCallback = onConfirm;
+            const modal = getGlobalConfirmModal();
+            if (modal) modal.show();
+        };
+
+        document.getElementById('globalConfirmModalConfirmBtn')?.addEventListener('click', function() {
+            const modal = getGlobalConfirmModal();
+            if (modal) modal.hide();
+            if (typeof confirmCallback === "function") {
+                confirmCallback();
+            }
+            confirmCallback = null;
+        });
+
+        // Logout Confirmation
+        $(document).on('submit', '.logout-form', function(e) {
+            e.preventDefault();
+            const form = this;
+            showConfirmModal("Are you sure you want to logout?", () => form.submit());
+        });
+
+        // Modal Backdrop Cleanup
+        $(document).on('hidden.bs.modal', '.modal', function () {
+            if ($('.modal:visible').length === 0) {
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css({'overflow': '', 'padding-right': ''});
+            }
+        });
     </script>
 
     <!-- Flash Messages (Data Attributes) -->

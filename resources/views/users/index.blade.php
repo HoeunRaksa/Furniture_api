@@ -13,15 +13,16 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover" id="usersTable">
+                    <table class="table table-hover align-middle" id="usersTable">
                         <thead class="table-light">
                             <tr>
-                                <th>#</th>
+                                <th style="width: 50px;">#</th>
                                 <th>Name</th>
+                                <th style="width: 150px;">Contact & City</th>
                                 <th>Email</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                                <th class="text-center">Actions</th>
+                                <th style="width: 100px;">Role</th>
+                                <th style="width: 80px;" class="text-center">Status</th>
+                                <th style="width: 80px;" class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -83,16 +84,25 @@
                 columns: [
                     { data: 'id', name: 'id' },
                     { data: 'full_name', name: 'name' },
+                    { data: 'details', name: 'details' },
                     { data: 'email', name: 'email' },
                     { data: 'role', name: 'role' },
                     { data: 'status', name: 'status', className: 'text-center' },
                     { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-center' }
                 ],
-                order: [[0, 'desc']]
+                order: [[0, 'desc']],
+                language: {
+                    paginate: {
+                        next: '<i class="bi bi-chevron-right"></i>',
+                        previous: '<i class="bi bi-chevron-left"></i>'
+                    }
+                }
             });
 
             $('#createUserForm').on('submit', function(e) {
                 e.preventDefault();
+                const $btn = $(this).find('button[type="submit"]');
+                $btn.prop('disabled', true).text('Creating...');
                 $.ajax({
                     url: "{{ route('users.store') }}",
                     method: "POST",
@@ -104,13 +114,18 @@
                             $('#createUserModal').modal('hide');
                             table.ajax.reload();
                         }
+                        $btn.prop('disabled', false).text('Create');
+                    },
+                    error: function() {
+                        toastr.error('Error creating user');
+                        $btn.prop('disabled', false).text('Create');
                     }
                 });
             });
 
             $(document).on('click', '.delete-user', function() {
                 const url = $(this).data('url');
-                if (confirm('Are you sure you want to delete this user?')) {
+                showConfirmModal("Delete this user? This action cannot be undone.", () => {
                     $.ajax({
                         url: url,
                         method: "DELETE",
@@ -124,7 +139,7 @@
                             }
                         }
                     });
-                }
+                });
             });
         });
     </script>
