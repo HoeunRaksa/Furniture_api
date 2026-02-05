@@ -9,38 +9,33 @@ use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
-    public function index()
-    {
-        try {
-            $products = Product::with('images')->latest()->get();
+   public function index()
+{
+    try {
+        $products = Product::with(['images', 'category'])->latest()->get();
 
-            // Add full URL for images
-            $products->transform(function ($product) {
-                $product->images->transform(function ($image) {
-                    if ($image->image_url) {
-                        $image->full_url = url($image->image_url);
-                    }
-
-                    return $image;
-                });
-
-                return $product;
+        $products->each(function ($product) {
+            $product->images->each(function ($image) {
+                if ($image->image_url) {
+                    $image->full_url = url($image->image_url);
+                }
             });
+        });
 
-            return response()->json([
-                'success' => true,
-                'data' => $products,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Failed to fetch products', ['error' => $e->getMessage()]);
+        return response()->json([
+            'success' => true,
+            'data' => $products,
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Failed to fetch products', ['error' => $e->getMessage()]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch products',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch products',
+        ], 500);
     }
+}
+
 
     public function store(Request $request)
     {
