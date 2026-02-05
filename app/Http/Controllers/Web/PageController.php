@@ -10,18 +10,6 @@ use Illuminate\View\View;
 class PageController extends Controller
 {
     /**
-     * Public welcome page
-     */
-    public function welcome(): View
-    {
-        $categories_count = \App\Models\Category::where('is_active', true)->count();
-        $products_count = \App\Models\Product::count();
-        $customers_count = \App\Models\User::where('role', 'customer')->count() ?: '1.2k+';
-
-        return view('welcome', compact('categories_count', 'products_count', 'customers_count'));
-    }
-
-    /**
      * Admin dashboard
      */
     public function admin(): View
