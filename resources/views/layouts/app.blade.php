@@ -285,11 +285,11 @@
     @endif
 
     @if($errors->any())
-    <script>
-        $(document).ready(function() {
-            @foreach($errors->all() as $error) toastr.error("{{ $error }}"); @endforeach
-        });
-    </script>
+        @foreach($errors->all() as $error)
+        <script>
+            $(document).ready(function() { toastr.error("{{ $error }}"); });
+        </script>
+        @endforeach
     @endif
 
     <script src="{{ asset('js/notifications.js') }}"></script>
