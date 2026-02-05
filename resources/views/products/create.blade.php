@@ -4,117 +4,122 @@
     <div class="container-fluid py-4">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="d-flex align-items-center mb-4">
-                    <a href="{{ route('products.index') }}" class="btn btn-light btn-sm rounded-circle me-3 shadow-sm">
-                        <i class="bi bi-arrow-left"></i>
-                    </a>
-                    <h5 class="fw-bold mb-0">Create New Product</h5>
-                </div>
-                <form id="form_add_product" enctype="multipart/form-data">
-                            @csrf
+                <x-widget title="Create New Product">
+                    <form id="form_add_product" enctype="multipart/form-data">
+                        @csrf
+                        
+                        <div class="d-flex justify-content-end mb-3">
+                             <a href="{{ route('products.index') }}" class="btn btn-light btn-sm rounded-circle shadow-sm" title="Back">
+                                <i class="bi bi-arrow-left"></i>
+                            </a>
+                        </div>
 
-                            <x-widget title="General Information">
-                                <div class="p-2">
-                                    <div class="mb-4">
-                                        <label class="form-label-premium">Product Name <span class="text-danger">*</span></label>
-                                        <div class="input-group-premium">
-                                            <i class="bi bi-tag input-icon"></i>
-                                            <input type="text" name="name" class="form-control" placeholder="Enter product name" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label class="form-label-premium">Category <span class="text-danger">*</span></label>
-                                        <div class="input-group-premium">
-                                            <i class="bi bi-grid-fill input-icon"></i>
-                                            <select name="category_id" class="form-select" required>
-                                                <option value="">Select Category</option>
-                                                @foreach ($categories as $category)
-                                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-4 g-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label-premium">Price ($)</label>
-                                            <div class="input-group-premium">
-                                                <i class="bi bi-currency-dollar input-icon"></i>
-                                                <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label-premium">Discount ($)</label>
-                                            <div class="input-group-premium">
-                                                <i class="bi bi-tag-fill input-icon"></i>
-                                                <input type="number" step="0.01" name="discount" class="form-control" placeholder="0.00">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label class="form-label-premium">Total Stock Availability</label>
-                                        <div class="input-group-premium">
-                                            <i class="bi bi-archive input-icon"></i>
-                                            <input type="number" name="stock" class="form-control" placeholder="Enter total stock quantity" value="0">
-                                        </div>
-                                    </div>
-
-                                    <div class="row g-3">
-                                        <div class="col-sm-6">
-                                            <div class="status-toggle-card">
-                                                <div class="form-check form-switch p-0 m-0 d-flex align-items-center justify-content-between w-100">
-                                                    <label class="form-check-label fw-bold m-0" for="is_active">
-                                                        <i class="bi bi-check-circle me-1 text-success"></i> Active
-                                                    </label>
-                                                    <input type="checkbox" name="is_active" class="form-check-input" id="is_active" value="1" checked>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="status-toggle-card">
-                                                <div class="form-check form-switch p-0 m-0 d-flex align-items-center justify-content-between w-100">
-                                                    <label class="form-check-label fw-bold m-0" for="is_featured">
-                                                        <i class="bi bi-star-fill me-1 text-warning"></i> Featured
-                                                    </label>
-                                                    <input type="checkbox" name="is_featured" class="form-check-input" id="is_featured" value="1">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                        <!-- General Information -->
+                        <h6 class="text-uppercase text-muted fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">General Information</h6>
+                        <div class="p-2">
+                            <div class="mb-4">
+                                <label class="form-label-premium">Product Name <span class="text-danger">*</span></label>
+                                <div class="input-group-premium">
+                                    <i class="bi bi-tag input-icon"></i>
+                                    <input type="text" name="name" class="form-control" placeholder="Enter product name" required>
                                 </div>
-                            </x-widget>
-
-                            <x-widget title="Product Description">
-                                <div class="p-2">
-                                    <textarea name="description" class="form-control rounded-4" rows="5" placeholder="Enter product description..."></textarea>
-                                </div>
-                            </x-widget>
-
-                            <x-widget title="Product Visuals (Gallery)">
-                                <div class="p-2">
-                                    <div class="image-upload-wrapper">
-                                        <label class="upload-zone" for="productImages">
-                                            <div class="upload-icon">
-                                                <i class="bi bi-cloud-arrow-up-fill"></i>
-                                            </div>
-                                            <p class="m-0">Click to select multiple images (Max 5MB each)</p>
-                                            <input type="file" name="images[]" id="productImages" class="d-none" accept="image/*" multiple>
-                                        </label>
-                                    </div>
-                                    <div class="mt-3 d-flex flex-wrap gap-2" id="imagePreviewContainer"></div>
-                                </div>
-                            </x-widget>
-
-                            <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3 align-items-center">
-                                <a href="{{ route('products.index') }}" class="btn btn-light rounded-pill px-4">Cancel</a>
-                                <button type="submit" id="btnSubmitProduct" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
-                                    Save Product
-                                </button>
                             </div>
-                        </form>
-                </div>
+
+                            <div class="mb-4">
+                                <label class="form-label-premium">Category <span class="text-danger">*</span></label>
+                                <div class="input-group-premium">
+                                    <i class="bi bi-grid-fill input-icon"></i>
+                                    <select name="category_id" class="form-select" required>
+                                        <option value="">Select Category</option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4 g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label-premium">Price ($)</label>
+                                    <div class="input-group-premium">
+                                        <i class="bi bi-currency-dollar input-icon"></i>
+                                        <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-premium">Discount ($)</label>
+                                    <div class="input-group-premium">
+                                        <i class="bi bi-tag-fill input-icon"></i>
+                                        <input type="number" step="0.01" name="discount" class="form-control" placeholder="0.00">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label-premium">Total Stock Availability</label>
+                                <div class="input-group-premium">
+                                    <i class="bi bi-archive input-icon"></i>
+                                    <input type="number" name="stock" class="form-control" placeholder="Enter total stock quantity" value="0">
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <div class="status-toggle-card">
+                                        <div class="form-check form-switch p-0 m-0 d-flex align-items-center justify-content-between w-100">
+                                            <label class="form-check-label fw-bold m-0" for="is_active">
+                                                <i class="bi bi-check-circle me-1 text-success"></i> Active
+                                            </label>
+                                            <input type="checkbox" name="is_active" class="form-check-input" id="is_active" value="1" checked>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="status-toggle-card">
+                                        <div class="form-check form-switch p-0 m-0 d-flex align-items-center justify-content-between w-100">
+                                            <label class="form-check-label fw-bold m-0" for="is_featured">
+                                                <i class="bi bi-star-fill me-1 text-warning"></i> Featured
+                                            </label>
+                                            <input type="checkbox" name="is_featured" class="form-check-input" id="is_featured" value="1">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4 border-light">
+
+                        <!-- Description -->
+                        <h6 class="text-uppercase text-muted fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">Product Description</h6>
+                        <div class="p-2">
+                            <textarea name="description" class="form-control rounded-4" rows="5" placeholder="Enter product description..."></textarea>
+                        </div>
+
+                        <hr class="my-4 border-light">
+
+                        <!-- Visuals -->
+                        <h6 class="text-uppercase text-muted fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">Product Visuals (Gallery)</h6>
+                        <div class="p-2">
+                             <div class="image-upload-wrapper">
+                                <label class="upload-zone" for="productImages">
+                                    <div class="upload-icon">
+                                        <i class="bi bi-cloud-arrow-up-fill"></i>
+                                    </div>
+                                    <p class="m-0">Click to select multiple images (Max 5MB each)</p>
+                                    <input type="file" name="images[]" id="productImages" class="d-none" accept="image/*" multiple>
+                                </label>
+                            </div>
+                            <div class="mt-3 d-flex flex-wrap gap-2" id="imagePreviewContainer"></div>
+                        </div>
+
+                        <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3 align-items-center">
+                            <a href="{{ route('products.index') }}" class="btn btn-light rounded-pill px-4">Cancel</a>
+                            <button type="submit" id="btnSubmitProduct" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                                Save Product
+                            </button>
+                        </div>
+                    </form>
+                </x-widget>
             </div>
         </div>
 
