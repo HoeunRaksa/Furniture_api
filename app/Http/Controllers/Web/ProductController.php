@@ -33,7 +33,7 @@ class ProductController extends Controller
     public function data(Request $request)
     {
         if ($request->ajax()) {
-            $products = Product::with(['category', 'variants.attributes.attribute', 'descriptionLines', 'images'])
+            $products = Product::with(['category', 'images'])
                 ->select('products.*');
 
             return DataTables::of($products)
@@ -47,33 +47,6 @@ class ProductController extends Controller
                         $badges[] = '<span class="status-badge text-white bg-secondary">Inactive</span>';
                     }
                     return implode(' ', $badges);
-                })
-                ->addColumn('variants', function ($product) {
-                    if ($product->variants->isEmpty()) {
-                        return '<span class="text-muted">No Variants</span>';
-                    }
-
-                    $count = $product->variants->count();
-                    $html = '<div class="mb-1"><span class="variant-count-badge">' . $count . ' Variant' . ($count > 1 ? 's' : '') . '</span></div>';
-                    $html .= '<div class="variants-scrollable">';
-
-                    foreach ($product->variants as $variant) {
-                        $attributes = $variant->attributes->map(function ($attrValue) {
-                            return '<span class="variant-badge">' . $attrValue->attribute->name . ': ' . $attrValue->value . '</span>';
-                        })->join(' ');
-
-                        $html .= '<div class="variant-item">';
-                        $html .= '<div><span class="variant-sku">SKU: ' . ($variant->sku ?: 'N/A') . '</span></div>';
-
-                        if ($attributes) {
-                            $html .= '<div class="variant-attrs">' . $attributes . '</div>';
-                        }
-
-                        $html .= '</div>';
-                    }
-
-                    $html .= '</div>';
-                    return $html;
                 })
                 ->addColumn('action', function ($product) {
                     return '
@@ -90,7 +63,7 @@ class ProductController extends Controller
                         </button>
                     </div>';
                 })
-                ->rawColumns(['category', 'status', 'variants', 'action'])
+                ->rawColumns(['category', 'status', 'action'])
                 ->make(true);
         }
     }

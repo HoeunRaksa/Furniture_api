@@ -17,11 +17,10 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="5%">ID</th>
-                                        <th width="25%">Product</th>
-                                        <th width="15%">Category</th>
-                                        <th width="10%">Status</th>
-                                        <th width="35%">Variants</th>
-                                        <th width="10%">Actions</th>
+                                        <th width="45%">Product</th>
+                                        <th width="20%">Category</th>
+                                        <th width="15%">Status</th>
+                                        <th width="15%">Actions</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -48,18 +47,7 @@
         #productsTable tbody td { padding: 15px 12px; vertical-align: middle; }
         .product-image { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .product-info { display: flex; align-items: center; gap: 12px; }
-        .variant-badge { display: inline-block; padding: 2px 8px; margin: 1px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.75rem; color: #475569; }
-        .variant-item { padding: 6px 10px; margin: 4px 0; background: #fff; border: 1px solid #e2e8f0; border-left: 3px solid #667eea; border-radius: 6px; font-size: 0.8rem; }
-        .variant-sku { font-weight: 600; color: #1e293b; }
-        .variant-price { color: #10b981; font-weight: 700; }
-        .variant-attrs { font-size: 0.7rem; color: #64748b; margin-top: 2px; }
-        .desc-line { padding: 2px 0; font-size: 0.8rem; color: #475569; }
-        .desc-line:before { content: "• "; color: #667eea; font-weight: bold; }
         .status-badge { font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
-        .variants-scrollable { max-height: 150px; overflow-y: auto; padding-right: 5px; }
-        .variants-scrollable::-webkit-scrollbar { width: 4px; }
-        .variants-scrollable::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .variant-count-badge { background: #667eea; color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
     </style>
 @endsection
 
@@ -93,7 +81,6 @@
                     },
                     { data: 'category', name: 'category.name' },
                     { data: 'status', name: 'status', orderable: false, searchable: false },
-                    { data: 'variants', name: 'variants', orderable: false, searchable: false },
                     { data: 'action', name: 'action', orderable: false, searchable: false }
                 ],
                 order: [[0, 'desc']],
