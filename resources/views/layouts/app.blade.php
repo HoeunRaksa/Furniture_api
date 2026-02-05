@@ -270,6 +270,7 @@
             toastr.warning = wrap(toastr.warning, 'error-audio');
             toastr.info = wrap(toastr.info, 'success-audio');
         })();
+    </script>
 
     @if(session('success'))
     <script>
