@@ -507,6 +507,10 @@
             const userId = $(this).data('id');
             const isSelf = $(this).hasClass('edit-self') || userId == "{{ auth()->id() }}";
 
+            // Default to view mode
+            $('#profileViewSection').show();
+            $('#profileEditSection').hide();
+
             if (isSelf && "{{ auth()->user()->role }}" !== 'admin') {
                 $('#role_selection_container').addClass('d-none');
             } else {
@@ -518,6 +522,12 @@
                 method: 'GET',
                 success: function(res) {
                     if (res.success) {
+                        // Populate View Section
+                        $('#view_username').text(res.user.username);
+                        $('#view_email').text(res.user.email);
+                        $('#view_role').text(res.user.role.charAt(0).toUpperCase() + res.user.role.slice(1));
+
+                        // Populate Edit Section fields
                         $('#edit_user_id').val(res.user.id);
                         $('#edit_username').val(res.user.username);
                         $('#edit_email').val(res.user.email);
@@ -527,12 +537,25 @@
                         const avatarUrl = res.user.profile_image ?
                             '{{ asset("") }}' + res.user.profile_image :
                             '{{ asset("images/default-avatar.png") }}';
+
+                        $('#view_avatar').attr('src', avatarUrl);
                         $('#edit_avatar_preview').attr('src', avatarUrl);
 
                         $('#editUserModal').modal('show');
                     }
                 }
             });
+        });
+
+        // Toggle Buttons
+        $('#switchToEditBtn').on('click', function() {
+            $('#profileViewSection').hide();
+            $('#profileEditSection').fadeIn();
+        });
+
+        $('#switchToViewBtn, #cancelEditBtn').on('click', function() {
+            $('#profileEditSection').hide();
+            $('#profileViewSection').fadeIn();
         });
 
         $('#edit_profile_image').on('change', function(e) {
