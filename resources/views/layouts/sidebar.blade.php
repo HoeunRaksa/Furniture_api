@@ -16,12 +16,12 @@
         </a>
 
         <!-- Section Label -->
-        @if(auth()->user() && auth()->user()->role === 'admin')
+        @if(auth()->user() && (auth()->user()->hasPermission('view_products') || auth()->user()->hasPermission('view_orders') || auth()->user()->hasPermission('view_users')))
         <div class="px-4 mt-8 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-none">Management</div>
         @endif
 
         <!-- Inventory Dropdown -->
-        @if(auth()->user() && auth()->user()->role === 'admin')
+        @if(auth()->user() && (auth()->user()->hasPermission('view_products') || auth()->user()->hasPermission('view_categories')))
         @php
         $inventoryActive =
         request()->routeIs('products.*') ||
@@ -43,6 +43,7 @@
             <div x-show="open" x-collapse
                 class="mt-1 space-y-1 pl-4 ml-6 border-l-2 border-slate-100">
 
+                @if(auth()->user()->hasPermission('view_products'))
                 <a href="{{ route('products.index') }}"
                     class="block px-4 py-2 text-sm rounded-lg transition-colors relative
                    {{ request()->routeIs('products.index') ? 'text-indigo-600 font-medium bg-indigo-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
@@ -53,17 +54,21 @@
                    {{ request()->routeIs('products.create') ? 'text-indigo-600 font-medium bg-indigo-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
                     Add Product
                 </a>
+                @endif
+
+                @if(auth()->user()->hasPermission('view_categories'))
                 <a href="{{ route('categories.index') }}"
                     class="block px-4 py-2 text-sm rounded-lg transition-colors relative
                    {{ request()->routeIs('categories.index') ? 'text-indigo-600 font-medium bg-indigo-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
                     Categories
                 </a>
+                @endif
             </div>
         </div>
         @endif
 
         <!-- Sales Orders -->
-        @if(auth()->user() && auth()->user()->role === 'admin')
+        @if(auth()->user() && auth()->user()->hasPermission('view_orders'))
         @php
         $salesActive = request()->routeIs('orders.*');
         @endphp
@@ -92,9 +97,9 @@
         @endif
 
         <!-- User Management -->
-        @if(auth()->user() && auth()->user()->role === 'admin')
+        @if(auth()->user() && auth()->user()->hasPermission('view_users'))
         @php
-        $userActive = request()->routeIs('users.*');
+        $userActive = request()->routeIs('users.*') || request()->routeIs('roles.*');
         @endphp
 
         <div x-data="{ open: {{ $userActive ? 'true' : 'false' }} }">
@@ -117,11 +122,13 @@
                     User List
                 </a>
 
+                @if(auth()->user()->role === 'admin')
                 <a href="{{ route('roles.index') }}"
                     class="block px-4 py-2 text-sm rounded-lg transition-colors relative
                    {{ request()->routeIs('roles.index') ? 'text-purple-600 font-medium bg-purple-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
                     Roles & Permissions
                 </a>
+                @endif
             </div>
         </div>
         @endif

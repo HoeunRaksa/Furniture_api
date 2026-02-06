@@ -44,8 +44,8 @@ Route::middleware(['auth'])->group(function () {
         // Additional admin routes can go here
     });
 
-    // Category Routes (Admin Only)
-    Route::prefix('categories')->name('categories.')->middleware('role:admin')->group(function () {
+    // Category Routes (Admin & Staff)
+    Route::prefix('categories')->name('categories.')->middleware('permission:view_categories')->group(function () {
         Route::get('/', [CategoryController::class, 'index'])->name('index');
         Route::get('/data', [CategoryController::class, 'data'])->name('data');
         Route::post('/store', [CategoryController::class, 'store'])->name('store');
@@ -54,8 +54,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/mass-destroy', [CategoryController::class, 'massDestroy'])->name('mass-destroy');
     });
 
-    // User Routes (Admin Only)
-    Route::prefix('users')->name('users.')->middleware('role:admin')->group(function () {
+    // User Routes (Admin & Staff with permission)
+    Route::prefix('users')->name('users.')->middleware('permission:view_users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/data', [UserController::class, 'data'])->name('data');
         Route::post('/store', [UserController::class, 'store'])->name('store');
@@ -65,8 +65,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/mass-destroy', [UserController::class, 'massDestroy'])->name('mass-destroy');
     });
 
-    // Product Routes (Admin Only)
-    Route::prefix('products')->name('products.')->middleware('role:admin')->group(function () {
+    // Product Routes (Admin & Staff)
+    Route::prefix('products')->name('products.')->middleware('permission:view_products')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/data', [ProductController::class, 'data'])->name('data');
         Route::get('/create', [ProductController::class, 'create'])->name('create');
@@ -78,8 +78,8 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/image/delete/{id}', [ProductController::class, 'deleteImage'])->name('image.delete');
     });
 
-    // Orders Routes (Admin Only)
-    Route::prefix('orders')->name('orders.')->middleware('role:admin')->group(function () {
+    // Orders Routes (Admin & Staff)
+    Route::prefix('orders')->name('orders.')->middleware('permission:view_orders')->group(function () {
         Route::get('/', [OrdersController::class, 'index'])->name('index');
         Route::get('/data', [OrdersController::class, 'data'])->name('data');
         Route::get('/show/{id}', [OrdersController::class, 'show'])->name('show');
