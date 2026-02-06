@@ -146,6 +146,66 @@
         #error-audio {
             display: none;
         }
+
+        /* Classic DataTable Button Styling */
+        .dt-buttons {
+            margin-bottom: 10px;
+        }
+
+        .dt-button {
+            background: #fff !important;
+            border: 2px solid #2c3e50 !important;
+            color: #2c3e50 !important;
+            padding: 8px 16px !important;
+            margin-right: 6px !important;
+            border-radius: 4px !important;
+            font-weight: 600 !important;
+            font-size: 0.8rem !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            transition: all 0.2s ease !important;
+            box-shadow: none !important;
+        }
+
+        .dt-button:hover {
+            background: #2c3e50 !important;
+            color: #fff !important;
+            border-color: #2c3e50 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(44, 62, 80, 0.2) !important;
+        }
+
+        .dt-button:active,
+        .dt-button:focus {
+            background: #1a252f !important;
+            color: #fff !important;
+            outline: none !important;
+            box-shadow: 0 1px 2px rgba(44, 62, 80, 0.3) !important;
+        }
+
+        /* Column visibility dropdown */
+        .dt-button-collection {
+            border: 2px solid #2c3e50 !important;
+            border-radius: 4px !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .dt-button-collection .dt-button {
+            border: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            text-align: left !important;
+        }
+
+        .dt-button-collection .dt-button:hover {
+            background: #f8f9fa !important;
+            color: #2c3e50 !important;
+        }
+
+        .dt-button-collection .dt-button.active {
+            background: #e9ecef !important;
+            color: #2c3e50 !important;
+        }
     </style>
 </head>
 

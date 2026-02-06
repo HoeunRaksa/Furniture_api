@@ -18,7 +18,7 @@
                 </div>
                 @else
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle" id="productsTableRaw">
+                    <table class="table table-hover align-middle" id="productsTable">
                         <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                             <tr>
                                 <th class="py-3 px-3 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 700;">Product</th>
@@ -89,42 +89,61 @@
                         </tbody>
                     </table>
                 </div>
-
-                <div class="mt-4 px-3">
-                    {{ $products->links() }}
-                </div>
                 @endif
             </x-widget>
         </div>
     </div>
 </div>
 
+@push('scripts')
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Simple delete confirmation
-        const deleteBtns = document.querySelectorAll('.delete-product');
-        deleteBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const url = this.dataset.url;
-                showConfirmModal('Are you sure you want to delete this product?', () => {
-                    fetch(url, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.reload();
-                            } else {
-                                alert('Error deleting product');
-                            }
-                        });
-                });
+    $(document).ready(function() {
+        $('#productsTable').DataTable({
+            dom: '<"d-flex justify-content-between mb-2"lfB>rtip',
+            buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
+            order: [
+                [0, 'asc']
+            ],
+            pageLength: 10,
+            language: {
+                search: "Search products:",
+                lengthMenu: "Show _MENU_ products",
+                info: "Showing _START_ to _END_ of _TOTAL_ products",
+                infoEmpty: "No products available",
+                infoFiltered: "(filtered from _MAX_ total products)"
+            }
+        });
+
+        // Delete confirmation
+        $(document).on('click', '.delete-product', function() {
+            const url = $(this).data('url');
+            showConfirmModal('Are you sure you want to delete this product?', () => {
+                fetch(url, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            alert('Error deleting product');
+                        }
+                    });
             });
         });
     });
 </script>
+@endpush
 @endsection
