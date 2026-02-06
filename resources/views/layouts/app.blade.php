@@ -274,7 +274,7 @@
 
             <!-- GLOBAL CONFIRM MODAL -->
             <div class="modal fade" id="globalConfirmModal" tabindex="-1" aria-labelledby="globalConfirmModalLabel" aria-hidden="true" data-bs-backdrop="static">
-                <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-dialog">
                     <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
                         <!-- Modal Header with Gradient -->
                         <div class="modal-header bg-white border-bottom" style="border-bottom: 2px solid #2c3e50 !important; padding: 1.5rem 2rem;">
