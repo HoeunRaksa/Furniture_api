@@ -27,8 +27,10 @@ class ProductController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $products,
-                'categories' => $categories,
+                'data' => [
+                    'products' => $products,
+                    'categories' => $categories,
+                ],
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to fetch products', ['error' => $e->getMessage()]);
