@@ -418,6 +418,7 @@
                                 </div>
                                 <div class="modal-footer border-0 pt-0">
                                     <button type="button" class="btn btn-light rounded-pill px-4" id="cancelEditBtn">Back</button>
+                                    <button type="button" class="btn btn-light rounded-pill px-4 d-none" id="closeEditModalBtn" data-bs-dismiss="modal" data-mdb-dismiss="modal">Cancel</button>
                                     <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm" id="editUserSubmitBtn">Update Profile</button>
                                 </div>
                             </form>
@@ -537,14 +538,23 @@
             const isSelfLink = $btn.hasClass('edit-self');
             const isSelfId = userId == "{{ auth()->id() }}";
 
+            // RESET VISIBILITY
+            $('#switchToViewBtn, #cancelEditBtn').addClass('d-none');
+            $('#closeEditModalBtn').removeClass('d-none');
+
             // IF clicking "My Profile" (edit-self), show View Section first
             // ELSE (clicking edit-user in list), go DIRECTLY to Edit Section
             if (isSelfLink) {
                 $('#profileViewSection').show();
                 $('#profileEditSection').hide();
+                // We'll show navigation buttons when switching to edit
+                // but for now we reset them as we are in VIEW mode
             } else {
                 $('#profileViewSection').hide();
                 $('#profileEditSection').show();
+                // Standard Cancel for direct edits
+                $('#closeEditModalBtn').removeClass('d-none');
+                $('#switchToViewBtn, #cancelEditBtn').addClass('d-none');
             }
 
             if (isSelfId && "{{ auth()->user()->role }}" !== 'admin') {
@@ -587,6 +597,9 @@
         $('#switchToEditBtn').on('click', function() {
             $('#profileViewSection').hide();
             $('#profileEditSection').fadeIn();
+            // Show navigation buttons for the "My Profile" flow
+            $('#switchToViewBtn, #cancelEditBtn').removeClass('d-none');
+            $('#closeEditModalBtn').addClass('d-none');
         });
 
         $('#switchToViewBtn, #cancelEditBtn').on('click', function() {
