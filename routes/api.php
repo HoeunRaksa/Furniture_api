@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\OrderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,6 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/favorites/{product_id}', [FavoriteController::class, 'destroy']);
     Route::post('/favorites/toggle', [FavoriteController::class, 'toggle']);
     Route::get('/favorites/check/{product_id}', [FavoriteController::class, 'check']);
+
+    // Order Routes
+    Route::post('/orders', [OrderController::class, 'store']);
 });
 
 /*
@@ -50,7 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
     // Admin Dashboard
-    Route::get('/admin/dashboard', fn () => response()->json([
+    Route::get('/admin/dashboard', fn() => response()->json([
         'success' => true,
         'message' => 'Admin dashboard',
     ]));
