@@ -15,6 +15,7 @@ class ProductController extends Controller
     {
         try {
             $products = Product::with(['images', 'category'])->latest()->get();
+            $categories = \App\Models\Category::where('is_active', true)->get();
 
             $products->each(function ($product) {
                 $product->images->each(function ($image) {
@@ -27,6 +28,7 @@ class ProductController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $products,
+                'categories' => $categories,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to fetch products', ['error' => $e->getMessage()]);
@@ -52,7 +54,12 @@ class ProductController extends Controller
 
         try {
             $product = Product::create($request->only([
-                'category_id', 'name', 'description', 'price', 'discount', 'stock',
+                'category_id',
+                'name',
+                'description',
+                'price',
+                'discount',
+                'stock',
             ]));
 
             if ($request->hasFile('images')) {
@@ -64,14 +71,14 @@ class ProductController extends Controller
 
                 foreach ($request->file('images') as $image) {
                     // Generate unique filename
-                    $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
+                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
 
                     // Move to public directory
                     $image->move($uploadPath, $filename);
 
                     // Create image record
                     $product->images()->create([
-                        'image_url' => 'uploads/products/'.$filename,
+                        'image_url' => 'uploads/products/' . $filename,
                     ]);
                 }
             }
@@ -163,7 +170,12 @@ class ProductController extends Controller
 
         try {
             $product->update($request->only([
-                'category_id', 'name', 'description', 'price', 'discount', 'stock',
+                'category_id',
+                'name',
+                'description',
+                'price',
+                'discount',
+                'stock',
             ]));
 
             if ($request->hasFile('images')) {
@@ -175,14 +187,14 @@ class ProductController extends Controller
 
                 foreach ($request->file('images') as $image) {
                     // Generate unique filename
-                    $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
+                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
 
                     // Move to public directory
                     $image->move($uploadPath, $filename);
 
                     // Create image record
                     $product->images()->create([
-                        'image_url' => 'uploads/products/'.$filename,
+                        'image_url' => 'uploads/products/' . $filename,
                     ]);
                 }
             }
@@ -266,14 +278,14 @@ class ProductController extends Controller
 
                 foreach ($request->file('images') as $image) {
                     // Generate unique filename
-                    $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
+                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
 
                     // Move to public directory
                     $image->move($uploadPath, $filename);
 
                     // Create image record
                     $product->images()->create([
-                        'image_url' => 'uploads/products/'.$filename,
+                        'image_url' => 'uploads/products/' . $filename,
                     ]);
                 }
             }
