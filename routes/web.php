@@ -58,11 +58,11 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('users')->name('users.')->middleware('permission:view_users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/data', [UserController::class, 'data'])->name('data');
-        Route::post('/store', [UserController::class, 'store'])->name('store')->middleware('permission:manage_users');
-        Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit')->middleware('permission:manage_users');
-        Route::put('/{id}', [UserController::class, 'update'])->name('update')->middleware('permission:manage_users');
-        Route::delete('/destroy/{id}', [UserController::class, 'destroy'])->name('destroy')->middleware('permission:manage_users');
-        Route::post('/mass-destroy', [UserController::class, 'massDestroy'])->name('mass-destroy')->middleware('permission:manage_users');
+        Route::post('/store', [UserController::class, 'store'])->name('store')->middleware('permission:create_users');
+        Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit')->middleware('permission:edit_users');
+        Route::put('/{id}', [UserController::class, 'update'])->name('update')->middleware('permission:edit_users');
+        Route::delete('/destroy/{id}', [UserController::class, 'destroy'])->name('destroy')->middleware('permission:delete_users');
+        Route::post('/mass-destroy', [UserController::class, 'massDestroy'])->name('mass-destroy')->middleware('permission:delete_users');
     });
 
     // Product Routes (Admin & Staff)
@@ -88,15 +88,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Business Routes (Admin Only)
-    Route::prefix('business')->name('business.')->middleware('role:admin')->group(function () {
+    Route::prefix('business')->name('business.')->middleware('permission:view_business')->group(function () {
         Route::get('/', [BusinessController::class, 'index'])->name('index');
-        Route::post('/update', [BusinessController::class, 'update'])->name('update');
+        Route::post('/update', [BusinessController::class, 'update'])->name('update')->middleware('permission:manage_business');
     });
 
     // Role Permissions Routes (Admin Only)
-    Route::prefix('roles')->name('roles.')->middleware('role:admin')->group(function () {
+    Route::prefix('roles')->name('roles.')->middleware('permission:view_roles')->group(function () {
         Route::get('/', [RoleController::class, 'index'])->name('index');
-        Route::post('/update/{role}', [RoleController::class, 'update'])->name('update');
+        Route::post('/update/{role}', [RoleController::class, 'update'])->name('update')->middleware('permission:manage_roles');
     });
 });
 

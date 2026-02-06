@@ -53,7 +53,7 @@
 
                     <div class="text-end mt-4">
                         <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm"
-                            title="{{ auth()->user()->role === 'admin' ? 'Save Changes' : 'You do not have permission to perform this action' }}">
+                            title="{{ auth()->user()->hasPermission('manage_business') ? 'Save Changes' : 'You do not have permission to perform this action' }}">
                             Save Changes
                         </button>
                     </div>

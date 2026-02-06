@@ -46,8 +46,27 @@ class UserController extends Controller
                 })
                 ->addColumn('actions', function ($user) {
                     /** @var \App\Models\User $user */
-                    $edit = '<button data-id="' . $user->id . '" class="btn btn-sm btn-light text-primary rounded-circle p-2 edit-user me-1"><i class="bi bi-pencil"></i></button>';
-                    $delete = $user->id === Auth::id() ? '' : '<button data-url="' . route('users.destroy', $user->id) . '" class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-user"><i class="bi bi-trash"></i></button>';
+                    $me = Auth::user();
+
+                    $canEdit = $me->hasPermission('edit_users');
+                    $canDelete = $me->hasPermission('delete_users');
+
+                    $editTitle = $canEdit ? 'Edit User' : 'You do not have permission to perform this action';
+                    $deleteTitle = $canDelete ? 'Delete User' : 'You do not have permission to perform this action';
+
+                    $edit = '<button data-id="' . $user->id . '" class="btn btn-sm btn-light text-primary rounded-circle p-2 edit-user me-1" title="' . $editTitle . '"><i class="bi bi-pencil"></i></button>';
+
+                    $deleteAttrs = '';
+                    if ($user->id === Auth::id()) {
+                        // Cannot delete self
+                        $deleteAttrs = 'disabled title="Cannot delete yourself"';
+                    } else {
+                        // Permission check
+                        $deleteAttrs = 'data-url="' . route('users.destroy', $user->id) . '" title="' . $deleteTitle . '"';
+                    }
+
+                    $delete = '<button ' . $deleteAttrs . ' class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-user"><i class="bi bi-trash"></i></button>';
+
                     return '<div class="d-flex justify-content-center">' . $edit . $delete . '</div>';
                 })
                 ->rawColumns(['checkbox', 'avatar', 'status', 'actions'])

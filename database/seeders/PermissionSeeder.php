@@ -28,10 +28,17 @@ class PermissionSeeder extends Seeder
 
             // Users
             ['name' => 'view_users', 'label' => 'View Users', 'group' => 'Users'],
-            ['name' => 'manage_users', 'label' => 'Manage Users', 'group' => 'Users'],
+            ['name' => 'create_users', 'label' => 'Create Users', 'group' => 'Users'],
+            ['name' => 'edit_users', 'label' => 'Edit Users', 'group' => 'Users'],
+            ['name' => 'delete_users', 'label' => 'Delete Users', 'group' => 'Users'],
 
-            // Settings
-            ['name' => 'manage_settings', 'label' => 'Manage Settings', 'group' => 'Settings'],
+            // Roles
+            ['name' => 'view_roles', 'label' => 'View Roles', 'group' => 'Roles'],
+            ['name' => 'manage_roles', 'label' => 'Manage Roles', 'group' => 'Roles'],
+
+            // Business
+            ['name' => 'view_business', 'label' => 'View Business Settings', 'group' => 'Business'],
+            ['name' => 'manage_business', 'label' => 'Manage Business Settings', 'group' => 'Business'],
         ];
 
         foreach ($permissions as $perm) {
@@ -46,7 +53,18 @@ class PermissionSeeder extends Seeder
         }
 
         // Remove sensitive perms from staff
-        $sensitive = ['manage_users', 'manage_settings', 'delete_products'];
+        // Staff should generally only view, not manage these core admin areas
+        $sensitive = [
+            'manage_settings', // Legacy
+            'manage_business',
+            'manage_roles',
+            'create_users',
+            'edit_users',
+            'delete_users',
+            'delete_products',
+            'manage_categories',
+            'manage_orders'
+        ];
         $ids = Permission::whereIn('name', $sensitive)->pluck('id');
         RolePermission::where('role', 'staff')->whereIn('permission_id', $ids)->delete();
     }

@@ -58,7 +58,7 @@
                         @if($role !== 'admin')
                         <div class="p-4 border-top bg-light">
                             <button type="submit" class="btn btn-dark w-100 py-2 rounded-3 shadow-sm"
-                                title="{{ auth()->user()->role === 'admin' ? 'Save Permissions' : 'You do not have permission to perform this action' }}">
+                                title="{{ auth()->user()->hasPermission('manage_roles') ? 'Save Permissions' : 'You do not have permission to perform this action' }}">
                                 Save {{ ucfirst($role) }} Permissions
                             </button>
                         </div>

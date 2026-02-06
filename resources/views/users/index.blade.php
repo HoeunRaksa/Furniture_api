@@ -4,10 +4,12 @@
 <div class="container-fluid py-4">
     <x-widget title="User Management">
         <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
-            <button type="button" id="deleteSelectedBtn" class="btn btn-danger rounded-pill px-4 shadow-sm d-none">
+            <button type="button" id="deleteSelectedBtn" class="btn btn-danger rounded-pill px-4 shadow-sm d-none"
+                title="{{ auth()->user()->hasPermission('delete_users') ? 'Delete Selected' : 'You do not have permission to perform this action' }}">
                 <i class="bi bi-trash me-2"></i> Delete Selected (<span id="selectedCount">0</span>)
             </button>
-            <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createUserModal">
+            <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createUserModal"
+                title="{{ auth()->user()->hasPermission('create_users') ? 'Add User' : 'You do not have permission to perform this action' }}">
                 <i class="bi bi-person-plus me-2"></i> Add User
             </button>
         </div>
