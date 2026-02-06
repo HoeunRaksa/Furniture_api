@@ -5,10 +5,12 @@
     <x-widget title="User Management">
         <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
             <button type="button" id="deleteSelectedBtn" class="btn btn-danger rounded-pill px-4 shadow-sm d-none"
+                data-authorized="{{ auth()->user()->hasPermission('delete_users') ? 'true' : 'false' }}"
                 title="{{ auth()->user()->hasPermission('delete_users') ? 'Delete Selected' : 'You do not have permission to perform this action' }}">
                 <i class="bi bi-trash me-2"></i> Delete Selected (<span id="selectedCount">0</span>)
             </button>
             <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createUserModal"
+                data-authorized="{{ auth()->user()->hasPermission('create_users') ? 'true' : 'false' }}"
                 title="{{ auth()->user()->hasPermission('create_users') ? 'Add User' : 'You do not have permission to perform this action' }}">
                 <i class="bi bi-person-plus me-2"></i> Add User
             </button>
@@ -168,6 +170,10 @@
 
         // Delete Selected
         $('#deleteSelectedBtn').on('click', function() {
+            if ($(this).data('authorized') === false) {
+                toastr.error('You do not have permission to perform this action.');
+                return;
+            }
             const ids = [];
             $('.user-checkbox:checked').each(function() {
                 ids.push($(this).val());
@@ -212,6 +218,14 @@
         // Create user
         $('#createUserForm').on('submit', function(e) {
             e.preventDefault();
+            // Check authorization on the button triggering the modal or implied context
+            // Since this is a form submit, we check if the button that opened it was authorized
+            const $triggerBtn = $('button[data-bs-target="#createUserModal"]');
+            if ($triggerBtn.length && $triggerBtn.data('authorized') === false) {
+                toastr.error('You do not have permission to perform this action.');
+                return;
+            }
+
             const $btn = $(this).find('button[type="submit"]');
             $btn.prop('disabled', true).text('Creating...');
 
@@ -276,6 +290,10 @@
 
         // Delete user
         $(document).on('click', '.delete-user', function() {
+            if ($(this).data('authorized') === false) {
+                toastr.error('You do not have permission to perform this action.');
+                return;
+            }
             const url = $(this).data('url');
             showConfirmModal("Delete this user? This action cannot be undone.", () => {
                 $.ajax({

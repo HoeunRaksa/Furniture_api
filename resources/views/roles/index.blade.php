@@ -38,7 +38,10 @@
                             @php
                             $hasPerm = $rolePermissions->get($role)?->contains('permission_id', $perm->id);
                             $isChecked = $hasPerm || $role === 'admin';
-                            $isDisabled = $role === 'admin';
+
+                            // User Logic: Disable if they can't manage roles OR if the role itself is admin (locked)
+                            $canManage = auth()->user()->hasPermission('manage_roles');
+                            $isDisabled = !$canManage || $role === 'admin';
                             @endphp
                             <label class="list-group-item px-4 py-3 d-flex align-items-center justify-content-between cursor-pointer permission-row">
                                 <span class="d-flex align-items-center">
@@ -56,12 +59,20 @@
                         </div>
 
                         @if($role !== 'admin')
+                        @if(auth()->user()->hasPermission('manage_roles'))
                         <div class="p-4 border-top bg-light">
-                            <button type="submit" class="btn btn-dark w-100 py-2 rounded-3 shadow-sm"
-                                title="{{ auth()->user()->hasPermission('manage_roles') ? 'Save Permissions' : 'You do not have permission to perform this action' }}">
+                            <button type="submit" class="btn btn-dark w-100 py-2 rounded-3 shadow-sm">
                                 Save {{ ucfirst($role) }} Permissions
                             </button>
                         </div>
+                        @else
+                        <div class="p-4 border-top bg-light text-center">
+                            <div class="alert alert-warning mb-0 border-0 fs-6">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                You have <strong>read-only</strong> access. You cannot modify permissions.
+                            </div>
+                        </div>
+                        @endif
                         @else
                         <div class="p-4 border-top bg-light text-center">
                             <small class="text-muted"><i class="bi bi-info-circle me-1"></i> Admin has full access by default.</small>

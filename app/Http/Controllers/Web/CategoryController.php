@@ -37,8 +37,12 @@ class CategoryController extends Controller
                     return $row->created_at ? $row->created_at->format('Y-m-d H:i:s A') : '-';
                 })
                 ->addColumn('actions', function ($row) {
-                    $edit = '<button data-id="' . $row->id . '" data-name="' . $row->name . '" type="button" class="edit-category btn btn-sm btn-light text-primary rounded-circle p-2 me-1" title="Edit"><i class="bi bi-pencil"></i></button>';
-                    $delete = '<button data-url="' . route('categories.destroy', $row->id) . '" class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-category" title="Delete"><i class="bi bi-trash"></i></button>';
+                    $me = \Illuminate\Support\Facades\Auth::user();
+                    $canManage = $me->hasPermission('manage_categories'); // Categories share one manage perm for now or split? Seeder has manage_categories.
+                    $authVal = $canManage ? 'true' : 'false';
+
+                    $edit = '<button data-id="' . $row->id . '" data-name="' . $row->name . '" data-authorized="' . $authVal . '" type="button" class="edit-category btn btn-sm btn-light text-primary rounded-circle p-2 me-1" title="Edit"><i class="bi bi-pencil"></i></button>';
+                    $delete = '<button data-url="' . route('categories.destroy', $row->id) . '" data-authorized="' . $authVal . '" class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-category" title="Delete"><i class="bi bi-trash"></i></button>';
                     return '<div class="d-flex justify-content-center">' . $edit . $delete . '</div>';
                 })
                 ->rawColumns(['checkbox', 'actions'])

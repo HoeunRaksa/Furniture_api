@@ -7,10 +7,12 @@
 
     <x-widget title="Category List">
         <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
-            <button type="button" id="deleteSelectedBtn" class="btn btn-danger rounded-pill px-4 shadow-sm d-none">
+            <button type="button" id="deleteSelectedBtn" class="btn btn-danger rounded-pill px-4 shadow-sm d-none"
+                data-authorized="{{ auth()->user()->hasPermission('manage_categories') ? 'true' : 'false' }}">
                 <i class="bi bi-trash me-2"></i> Delete Selected (<span id="selectedCount">0</span>)
             </button>
-            <button class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+            <button class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createCategoryModal"
+                data-authorized="{{ auth()->user()->hasPermission('manage_categories') ? 'true' : 'false' }}">
                 <i class="bi bi-plus-lg me-2"></i> Create New Category
             </button>
         </div>
@@ -97,6 +99,10 @@
 
         // Delete Selected
         $('#deleteSelectedBtn').on('click', function() {
+            if ($(this).data('authorized') === false) {
+                toastr.error('You do not have permission to perform this action.');
+                return;
+            }
             const ids = [];
             $('.category-checkbox:checked').each(function() {
                 ids.push($(this).val());
@@ -143,6 +149,10 @@
         // Delete Category
         $(document).on('click', '.delete-category', function(e) {
             e.preventDefault();
+            if ($(this).data('authorized') === false) {
+                toastr.error('You do not have permission to perform this action.');
+                return;
+            }
             let url = $(this).data('url');
 
             showConfirmModal("Are you sure you want to delete this category?", () => {
@@ -212,6 +222,11 @@
         // Create Category
         $('#createCategoryModal form').on('submit', function(e) {
             e.preventDefault();
+            const $triggerBtn = $('button[data-bs-target="#createCategoryModal"]');
+            if ($triggerBtn.length && $triggerBtn.data('authorized') === false) {
+                toastr.error('You do not have permission to perform this action.');
+                return;
+            }
             $.ajax({
                 url: "{{ route('categories.store') }}",
                 method: "POST",

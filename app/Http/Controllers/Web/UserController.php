@@ -54,7 +54,8 @@ class UserController extends Controller
                     $editTitle = $canEdit ? 'Edit User' : 'You do not have permission to perform this action';
                     $deleteTitle = $canDelete ? 'Delete User' : 'You do not have permission to perform this action';
 
-                    $edit = '<button data-id="' . $user->id . '" class="btn btn-sm btn-light text-primary rounded-circle p-2 edit-user me-1" title="' . $editTitle . '"><i class="bi bi-pencil"></i></button>';
+                    $editAuth = $canEdit ? 'true' : 'false';
+                    $edit = '<button data-id="' . $user->id . '" data-authorized="' . $editAuth . '" class="btn btn-sm btn-light text-primary rounded-circle p-2 edit-user me-1" title="' . $editTitle . '"><i class="bi bi-pencil"></i></button>';
 
                     $deleteAttrs = '';
                     if ($user->id === Auth::id()) {
@@ -62,7 +63,8 @@ class UserController extends Controller
                         $deleteAttrs = 'disabled title="Cannot delete yourself"';
                     } else {
                         // Permission check
-                        $deleteAttrs = 'data-url="' . route('users.destroy', $user->id) . '" title="' . $deleteTitle . '"';
+                        $deleteAuth = $canDelete ? 'true' : 'false';
+                        $deleteAttrs = 'data-url="' . route('users.destroy', $user->id) . '" data-authorized="' . $deleteAuth . '" title="' . $deleteTitle . '"';
                     }
 
                     $delete = '<button ' . $deleteAttrs . ' class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-user"><i class="bi bi-trash"></i></button>';

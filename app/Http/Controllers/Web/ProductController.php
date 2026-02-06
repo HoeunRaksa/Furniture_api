@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
@@ -56,15 +57,21 @@ class ProductController extends Controller
                     return implode(' ', $badges);
                 })
                 ->addColumn('action', function ($product) {
+                    $me = Auth::user();
+                    $canEdit = $me->hasPermission('edit_products');
+                    $canDelete = $me->hasPermission('delete_products');
+
                     return '
                     <div class="btn-group btn-group-sm" role="group">
                         <a href="' . route('products.edit', $product->id) . '" 
                            class="btn btn-outline-primary" 
+                           data-authorized="' . ($canEdit ? 'true' : 'false') . '"
                            title="Edit">
                             <i class="bi bi-pencil"></i>
                         </a>
                         <button data-url="' . route('products.destroy', $product->id) . '" 
                            class="btn btn-outline-danger delete-product" 
+                           data-authorized="' . ($canDelete ? 'true' : 'false') . '"
                            title="Delete">
                             <i class="bi bi-trash"></i>
                         </button>
