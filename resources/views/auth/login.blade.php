@@ -10,7 +10,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet" />
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    
+
     <style>
         * {
             margin: 0;
@@ -31,9 +31,17 @@
         }
 
         @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* Floating particles */
@@ -57,16 +65,21 @@
         }
 
         @keyframes float {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translateY(100vh) rotate(0deg);
                 opacity: 0;
             }
+
             10% {
                 opacity: 1;
             }
+
             90% {
                 opacity: 1;
             }
+
             100% {
                 transform: translateY(-100vh) rotate(720deg);
                 opacity: 0;
@@ -95,14 +108,14 @@
             padding: 40px;
             width: 400px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3),
-                        0 0 0 1px rgba(255, 255, 255, 0.1);
+                0 0 0 1px rgba(255, 255, 255, 0.1);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .login-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4),
-                        0 0 0 1px rgba(255, 255, 255, 0.15);
+                0 0 0 1px rgba(255, 255, 255, 0.15);
         }
 
         .logo-container {
@@ -113,7 +126,9 @@
         }
 
         @keyframes fadeIn {
-            to { opacity: 1; }
+            to {
+                opacity: 1;
+            }
         }
 
         .logo-icon {
@@ -157,9 +172,17 @@
             transform: translateX(-20px);
         }
 
-        .form-group:nth-child(1) { animation-delay: 0.3s; }
-        .form-group:nth-child(2) { animation-delay: 0.4s; }
-        .form-group:nth-child(3) { animation-delay: 0.5s; }
+        .form-group:nth-child(1) {
+            animation-delay: 0.3s;
+        }
+
+        .form-group:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .form-group:nth-child(3) {
+            animation-delay: 0.5s;
+        }
 
         @keyframes slideIn {
             to {
@@ -198,7 +221,7 @@
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
 
-        .form-input:focus + i,
+        .form-input:focus+i,
         .input-wrapper:focus-within i {
             color: #667eea;
         }
@@ -256,7 +279,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s ease;
         }
 
@@ -286,9 +309,19 @@
         }
 
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
         }
 
         .error-message.show {
@@ -302,12 +335,13 @@
     <div class="particles">
         @for ($i = 0; $i < 20; $i++)
             @php
-                $left = rand(0, 100);
-                $delay = $i * 0.5;
-                $duration = rand(15, 25);
+            $left=rand(0, 100);
+            $delay=$i * 0.5;
+            $duration=rand(15, 25);
             @endphp
-            <div class="particle" data-left="{{ $left }}" data-delay="{{ $delay }}" data-duration="{{ $duration }}"></div>
-        @endfor
+            <div class="particle" data-left="{{ $left }}" data-delay="{{ $delay }}" data-duration="{{ $duration }}">
+    </div>
+    @endfor
     </div>
 
     <script>
@@ -344,8 +378,8 @@
                 <!-- Username -->
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input type="text" name="username" id="username" class="form-input" 
-                               placeholder="Enter your username" value="{{ old('username') }}" required />
+                        <input type="text" name="username" id="username" class="form-input"
+                            placeholder="Username or Email" value="{{ old('username') }}" required />
                         <i class="bi bi-person"></i>
                     </div>
                 </div>
@@ -353,8 +387,8 @@
                 <!-- Password -->
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input type="password" name="password" id="password" class="form-input" 
-                               placeholder="Enter your password" required autocomplete="current-password" />
+                        <input type="password" name="password" id="password" class="form-input"
+                            placeholder="Enter your password" required autocomplete="current-password" />
                         <i class="bi bi-lock"></i>
                     </div>
                 </div>
@@ -405,4 +439,5 @@
         document.head.appendChild(style);
     </script>
 </body>
+
 </html>
