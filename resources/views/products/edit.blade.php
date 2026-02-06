@@ -215,72 +215,73 @@
 
     // Deferred Deletion for Existing Images
     window.markForDeletion = function(id, btn) {
-            showConfirmModal('Mark this image for deletion? (Will happen on Update)', () => {
+        showConfirmModal('Mark this image for deletion? (Will happen on Update)', () => {
 
-                        // Hide the image
-                        $(btn).parent().fadeOut();
+            // Hide the image
+            $(btn).parent().fadeOut();
 
-                        // Append a hidden input to the form
-                        $('#form_update_product').append(`<input type="hidden" name="deleted_images[]" value="${id}">`);
+            // Append a hidden input to the form
+            $('#form_update_product').append(`<input type="hidden" name="deleted_images[]" value="${id}">`);
 
-                        toastr.info('Image marked for deletion');
-                    };
+            toastr.info('Image marked for deletion');
+        });
+    };
 
-                    // Mark existing image as main
-                    window.markExistingAsMain = function(imageId) {
-                        selectedMainImageId = imageId;
+    // Mark existing image as main
+    window.markExistingAsMain = function(imageId) {
+        selectedMainImageId = imageId;
 
-                        // Update all existing image star icons
-                        $('.mark-existing-main-btn').each(function() {
-                            const btn = $(this);
-                            const btnImageId = btn.data('image-id');
-                            const icon = btn.find('i');
+        // Update all existing image star icons
+        $('.mark-existing-main-btn').each(function() {
+            const btn = $(this);
+            const btnImageId = btn.data('image-id');
+            const icon = btn.find('i');
 
-                            if (btnImageId == imageId) {
-                                icon.removeClass('bi-star').addClass('bi-star-fill');
-                            } else {
-                                icon.removeClass('bi-star-fill').addClass('bi-star');
-                            }
-                        });
+            if (btnImageId == imageId) {
+                icon.removeClass('bi-star').addClass('bi-star-fill');
+            } else {
+                icon.removeClass('bi-star-fill').addClass('bi-star');
+            }
+        });
 
-                        // Clear new image selection
-                        $('.mark-main-btn').find('i').removeClass('bi-star-fill').addClass('bi-star');
-                        mainImageIndex = null;
+        // Clear new image selection
+        $('.mark-main-btn').find('i').removeClass('bi-star-fill').addClass('bi-star');
+        mainImageIndex = null;
 
-                        toastr.success('Main image selected');
-                    };
+        toastr.success('Main image selected');
+    };
 
-                    // Remove New File locally
-                    window.removeNewFile = function(fileId) {
-                        const indexToRemove = uploadedFiles.findIndex(f => f.tempId === fileId);
-                        uploadedFiles = uploadedFiles.filter(f => f.tempId !== fileId);
-                        $(`#preview-${fileId}`).remove();
+    // Remove New File locally
+    window.removeNewFile = function(fileId) {
+        const indexToRemove = uploadedFiles.findIndex(f => f.tempId === fileId);
+        uploadedFiles = uploadedFiles.filter(f => f.tempId !== fileId);
+        $(`#preview-${fileId}`).remove();
 
-                        // If we removed the selected main image, clear the selection
-                        if (indexToRemove === mainImageIndex) {
-                            mainImageIndex = null;
-                        }
-                    };
+        // If we removed the selected main image, clear the selection
+        if (indexToRemove === mainImageIndex) {
+            mainImageIndex = null;
+        }
+    };
 
-                    $(function() {
-                        // Image handling (Multiple) for NEW images
-                        $('#productImages').on('change', function(e) {
-                            const files = Array.from(e.target.files);
+    $(function() {
+        // Image handling (Multiple) for NEW images
+        $('#productImages').on('change', function(e) {
+            const files = Array.from(e.target.files);
 
-                            if (files.length > 0) {
-                                $('.image-upload-wrapper').addClass('border-primary');
-                            }
+            if (files.length > 0) {
+                $('.image-upload-wrapper').addClass('border-primary');
+            }
 
-                            files.forEach(file => {
-                                uploadedFiles.push(file);
+            files.forEach(file => {
+                uploadedFiles.push(file);
 
-                                const reader = new FileReader();
-                                reader.onload = function(re) {
-                                    const fileId = Date.now() + '_' + file.name.replace(/\s/g, '');
-                                    file.tempId = fileId;
-                                    const fileIndex = uploadedFiles.length - 1;
+                const reader = new FileReader();
+                reader.onload = function(re) {
+                    const fileId = Date.now() + '_' + file.name.replace(/\s/g, '');
+                    file.tempId = fileId;
+                    const fileIndex = uploadedFiles.length - 1;
 
-                                    $('#imagePreviewContainer').append(`
+                    $('#imagePreviewContainer').append(`
                         <div class="position-relative d-inline-block me-2 mb-2" id="preview-${fileId}">
                             <img src="${re.target.result}" class="rounded-3 shadow-sm border" style="width: 100px; height: 100px; object-fit: cover;">
                             <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 p-0 rounded-circle d-flex align-items-center justify-content-center shadow-sm"
@@ -297,86 +298,86 @@
                             </button>
                         </div>
                     `);
-                                }
-                                reader.readAsDataURL(file);
-                            });
+                }
+                reader.readAsDataURL(file);
+            });
 
-                            // Reset input so same files can be selected again if added iteratively
-                            $(this).val('');
-                        });
+            // Reset input so same files can be selected again if added iteratively
+            $(this).val('');
+        });
 
-                        // Mark NEW image as main
-                        window.markNewAsMain = function(fileId, index) {
-                            mainImageIndex = index;
+        // Mark NEW image as main
+        window.markNewAsMain = function(fileId, index) {
+            mainImageIndex = index;
 
-                            // Update all NEW image star icons
-                            $('.mark-main-btn').each(function() {
-                                const btn = $(this);
-                                const btnIndex = parseInt(btn.data('index'));
-                                const icon = btn.find('i');
+            // Update all NEW image star icons
+            $('.mark-main-btn').each(function() {
+                const btn = $(this);
+                const btnIndex = parseInt(btn.data('index'));
+                const icon = btn.find('i');
 
-                                if (btnIndex === index) {
-                                    icon.removeClass('bi-star').addClass('bi-star-fill');
-                                } else {
-                                    icon.removeClass('bi-star-fill').addClass('bi-star');
-                                }
-                            });
+                if (btnIndex === index) {
+                    icon.removeClass('bi-star').addClass('bi-star-fill');
+                } else {
+                    icon.removeClass('bi-star-fill').addClass('bi-star');
+                }
+            });
 
-                            // Clear existing image selection
-                            $('.mark-existing-main-btn').find('i').removeClass('bi-star-fill').addClass('bi-star');
-                            selectedMainImageId = null;
+            // Clear existing image selection
+            $('.mark-existing-main-btn').find('i').removeClass('bi-star-fill').addClass('bi-star');
+            selectedMainImageId = null;
 
-                            toastr.success('Main image selected');
-                        };
+            toastr.success('Main image selected');
+        };
 
-                        // Form submission
-                        $('#form_update_product').on('submit', function(e) {
-                            e.preventDefault();
-                            const url = $(this).attr('action');
+        // Form submission
+        $('#form_update_product').on('submit', function(e) {
+            e.preventDefault();
+            const url = $(this).attr('action');
 
-                            const $btn = $('#btnSubmitProduct');
-                            const oldContent = $btn.html();
-                            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Updating...');
+            const $btn = $('#btnSubmitProduct');
+            const oldContent = $btn.html();
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Updating...');
 
-                            var formData = new FormData(this);
+            var formData = new FormData(this);
 
-                            // Remove the empty 'images[]' from original input if present
-                            formData.delete('images[]');
+            // Remove the empty 'images[]' from original input if present
+            formData.delete('images[]');
 
-                            // Append all files from our custom array
-                            uploadedFiles.forEach(file => {
-                                formData.append('images[]', file);
-                            });
+            // Append all files from our custom array
+            uploadedFiles.forEach(file => {
+                formData.append('images[]', file);
+            });
 
-                            // Add main image selection
-                            if (selectedMainImageId) {
-                                formData.append('main_image_id', selectedMainImageId);
-                            }
-                            if (mainImageIndex !== null) {
-                                formData.append('main_image_index', mainImageIndex);
-                            }
+            // Add main image selection
+            if (selectedMainImageId) {
+                formData.append('main_image_id', selectedMainImageId);
+            }
+            if (mainImageIndex !== null) {
+                formData.append('main_image_index', mainImageIndex);
+            }
 
-                            $.ajax({
-                                url: url,
-                                method: 'POST', // POST for FormData (will mock PUT via _method)
-                                data: formData,
-                                processData: false,
-                                contentType: false,
-                                success: function(res) {
-                                    toastr.success(res.msg || 'Success!');
-                                    window.location.href = res.location;
-                                },
-                                error: function(err) {
-                                    $btn.prop('disabled', false).html(oldContent);
-                                    if (err.status === 422) {
-                                        const errors = err.responseJSON.errors;
-                                        Object.keys(errors).forEach(key => toastr.error(errors[key][0]));
-                                    } else {
-                                        toastr.error('Error while updating product.');
-                                    }
-                                }
-                            });
-                        });
-                    });
+            $.ajax({
+                url: url,
+                method: 'POST', // POST for FormData (will mock PUT via _method)
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    toastr.success(res.msg || 'Success!');
+                    window.location.href = res.location;
+                },
+                error: function(err) {
+                    $btn.prop('disabled', false).html(oldContent);
+                    if (err.status === 422) {
+                        const errors = err.responseJSON.errors;
+                        Object.keys(errors).forEach(key => toastr.error(errors[key][0]));
+                    } else {
+                        toastr.error('Error while updating product.');
+                    }
+                }
+            });
+        });
+    });
 </script>
 @endpush

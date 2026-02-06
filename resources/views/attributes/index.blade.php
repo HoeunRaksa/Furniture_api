@@ -263,21 +263,21 @@
 
         function deleteValue(id) {
             showConfirmModal('Delete this value?', () => {
-                    $.ajax({
-                        url: `/attributes/value/destroy/${id}`,
-                        method: "DELETE",
-                        data: {
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function(res) {
-                            if (res.success) {
-                                toastr.success(res.msg);
-                                loadValues($('#currentAttributeId').val());
-                                $('#attributesTable').DataTable().ajax.reload(null, false);
-                            }
+                $.ajax({
+                    url: `/attributes/value/destroy/${id}`,
+                    method: "DELETE",
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            toastr.success(res.msg);
+                            loadValues($('#currentAttributeId').val());
+                            $('#attributesTable').DataTable().ajax.reload(null, false);
                         }
-                    });
-                }
-            }
+                    }
+                });
+            });
+        }
     </script>
     @endpush
