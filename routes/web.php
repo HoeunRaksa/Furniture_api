@@ -69,13 +69,13 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('products')->name('products.')->middleware('permission:view_products')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/data', [ProductController::class, 'data'])->name('data');
-        Route::get('/create', [ProductController::class, 'create'])->name('create');
-        Route::post('/store', [ProductController::class, 'store'])->name('store');
-        Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('edit');
-        Route::put('/update/{id}', [ProductController::class, 'update'])->name('update');
-        Route::delete('/destroy/{id}', [ProductController::class, 'destroy'])->name('destroy');
-        Route::post('/mass-destroy', [ProductController::class, 'massDestroy'])->name('mass-destroy');
-        Route::delete('/image/delete/{id}', [ProductController::class, 'deleteImage'])->name('image.delete');
+        Route::get('/create', [ProductController::class, 'create'])->name('create')->middleware('permission:create_products');
+        Route::post('/store', [ProductController::class, 'store'])->name('store')->middleware('permission:create_products');
+        Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('edit')->middleware('permission:edit_products');
+        Route::put('/update/{id}', [ProductController::class, 'update'])->name('update')->middleware('permission:edit_products');
+        Route::delete('/destroy/{id}', [ProductController::class, 'destroy'])->name('destroy')->middleware('permission:delete_products');
+        Route::post('/mass-destroy', [ProductController::class, 'massDestroy'])->name('mass-destroy')->middleware('permission:delete_products');
+        Route::delete('/image/delete/{id}', [ProductController::class, 'deleteImage'])->name('image.delete')->middleware('permission:edit_products');
     });
 
     // Orders Routes (Admin & Staff)
