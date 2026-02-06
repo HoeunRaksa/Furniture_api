@@ -278,6 +278,16 @@
                     }
                 });
             });
+
+            // Reset CREATE attribute modal when closed
+            $('#createAttributeModal').on('hidden.bs.modal', function() {
+                $('#createAttributeForm')[0].reset();
+            });
+
+            // Reset EDIT attribute modal when closed
+            $('#editAttributeModal').on('hidden.bs.modal', function() {
+                $('#editAttributeForm')[0].reset();
+            });
         }
     </script>
     @endpush

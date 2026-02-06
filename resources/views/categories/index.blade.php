@@ -135,6 +135,16 @@
                 }
             });
         });
+
+        // Reset CREATE category modal when closed
+        $('#createCategoryModal').on('hidden.bs.modal', function() {
+            $('#createCategoryModal form')[0].reset();
+        });
+
+        // Reset EDIT category modal when closed
+        $('#editCategoryModal').on('hidden.bs.modal', function() {
+            $('#editCategoryModal form')[0].reset();
+        });
     });
 </script>
 @endpush
