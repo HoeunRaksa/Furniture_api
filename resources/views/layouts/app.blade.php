@@ -532,14 +532,22 @@
         // Global User Edit Logic
         $(document).on('click', '.edit-user, .edit-self', function(e) {
             e.preventDefault();
-            const userId = $(this).data('id');
-            const isSelf = $(this).hasClass('edit-self') || userId == "{{ auth()->id() }}";
+            const $btn = $(this);
+            const userId = $btn.data('id');
+            const isSelfLink = $btn.hasClass('edit-self');
+            const isSelfId = userId == "{{ auth()->id() }}";
 
-            // Default to view mode
-            $('#profileViewSection').show();
-            $('#profileEditSection').hide();
+            // IF clicking "My Profile" (edit-self), show View Section first
+            // ELSE (clicking edit-user in list), go DIRECTLY to Edit Section
+            if (isSelfLink) {
+                $('#profileViewSection').show();
+                $('#profileEditSection').hide();
+            } else {
+                $('#profileViewSection').hide();
+                $('#profileEditSection').show();
+            }
 
-            if (isSelf && "{{ auth()->user()->role }}" !== 'admin') {
+            if (isSelfId && "{{ auth()->user()->role }}" !== 'admin') {
                 $('#role_selection_container').addClass('d-none');
             } else {
                 $('#role_selection_container').removeClass('d-none');
