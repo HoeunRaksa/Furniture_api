@@ -11,30 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            // Rename name column to username
-            $table->renameColumn('name', 'username');
-
-            // Drop extra profile fields
-            $table->dropColumn([
-                'prefix',
-                'first_name',
-                'last_name',
-                'gender',
-                'phone',
-                'city',
-                'address',
-                'profile_completion'
-            ]);
-        });
-
-        // Drop the duplicate username column if it exists from previous migration
+        // First, drop the old username column if it exists from previous migration
         if (Schema::hasColumn('users', 'username')) {
             Schema::table('users', function (Blueprint $table) {
-                // The renameColumn above already created a username from name
-                // So we need to drop the old username column if it exists
+                $table->dropColumn('username');
             });
         }
+
+        // Drop extra profile fields
+        Schema::table('users', function (Blueprint $table) {
+            $columns = ['prefix', 'first_name', 'last_name', 'gender', 'phone', 'city', 'address', 'profile_completion'];
+            foreach ($columns as $column) {
+                if (Schema::hasColumn('users', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+        });
+
+        // Finally, rename name column to username
+        Schema::table('users', function (Blueprint $table) {
+            $table->renameColumn('name', 'username');
+        });
     }
 
     /**
