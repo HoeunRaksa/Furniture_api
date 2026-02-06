@@ -30,13 +30,17 @@
 <div class="modal fade" id="createUserModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-4 shadow">
-            <form id="createUserForm">
+            <form id="createUserForm" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title fw-bold">Add New User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body py-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Profile Image</label>
+                        <input type="file" name="profile_image" class="form-control rounded-3" accept="image/*">
+                    </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-muted">Username</label>
                         <input type="text" name="username" class="form-control rounded-3" required>
@@ -54,8 +58,14 @@
                         <select name="role" class="form-select rounded-3">
                             <option value="admin">Admin</option>
                             <option value="staff">Staff</option>
-                            <option value="user">User</option>
+                            <option value="user" selected>User</option>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_active" value="1" id="create_is_active" checked>
+                            <label class="form-check-label fw-bold small text-muted" for="create_is_active">Active</label>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
@@ -71,15 +81,24 @@
 <div class="modal fade" id="editUserModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-4 shadow">
-            <form id="editUserForm">
+            <form id="editUserForm" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <input type="hidden" id="edit_user_id">
+                <input type="hidden" id="edit_is_last_admin" value="0">
+                <input type="hidden" id="edit_current_role">
                 <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title fw-bold">Edit User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body py-4">
+                    <div class="mb-3 text-center">
+                        <img id="edit_avatar_preview" src="" alt="Preview" class="rounded-circle border" style="width: 80px; height: 80px; object-fit: cover;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Profile Image</label>
+                        <input type="file" id="edit_profile_image" name="profile_image" class="form-control rounded-3" accept="image/*">
+                    </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-muted">Username</label>
                         <input type="text" id="edit_username" name="username" class="form-control rounded-3" required>
@@ -99,6 +118,10 @@
                             <option value="staff">Staff</option>
                             <option value="user">User</option>
                         </select>
+                        <div id="last_admin_warning" class="alert alert-warning mt-2" style="display: none;">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>Warning:</strong> You are the last admin! Changing your role will lock you out of admin functions.
+                        </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
@@ -168,14 +191,20 @@
             }
         });
 
+        // Create user with FormData for file upload
         $('#createUserForm').on('submit', function(e) {
             e.preventDefault();
             const $btn = $(this).find('button[type="submit"]');
             $btn.prop('disabled', true).text('Creating...');
+
+            const formData = new FormData(this);
+
             $.ajax({
                 url: "{{ route('users.store') }}",
                 method: "POST",
-                data: $(this).serialize(),
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(res) {
                     if (res.success) {
                         toastr.success(res.msg);
@@ -192,7 +221,7 @@
             });
         });
 
-        // Edit user button handler
+        // Edit user - load data
         $(document).on('click', '.edit-user', function() {
             const userId = $(this).data('id');
             $.ajax({
@@ -206,6 +235,22 @@
                         $('#edit_role').val(res.user.role);
                         $('#edit_is_active').prop('checked', res.user.is_active);
                         $('#edit_password').val('');
+                        $('#edit_current_role').val(res.user.role);
+
+                        // Set avatar preview
+                        const avatarUrl = res.user.profile_image ?
+                            '{{ asset("") }}' + res.user.profile_image :
+                            '{{ asset("images/default-avatar.png") }}';
+                        $('#edit_avatar_preview').attr('src', avatarUrl);
+
+                        // Check if last admin
+                        const isLastAdmin = res.user.role === 'admin' && res.admin_count === 1;
+                        $('#edit_is_last_admin').val(isLastAdmin ? '1' : '0');
+
+                        if (isLastAdmin) {
+                            $('#last_admin_warning').hide();
+                        }
+
                         $('#editUserModal').modal('show');
                     }
                 },
@@ -215,32 +260,54 @@
             });
         });
 
-        // Update user form handler
+        // Show warning when last admin tries to change role
+        $('#edit_role').on('change', function() {
+            const isLastAdmin = $('#edit_is_last_admin').val() === '1';
+            const currentRole = $('#edit_current_role').val();
+            const newRole = $(this).val();
+
+            if (isLastAdmin && currentRole === 'admin' && newRole !== 'admin') {
+                $('#last_admin_warning').slideDown();
+            } else {
+                $('#last_admin_warning').slideUp();
+            }
+        });
+
+        // Update user with FormData for file upload
         $('#editUserForm').on('submit', function(e) {
             e.preventDefault();
             const userId = $('#edit_user_id').val();
             const $btn = $(this).find('button[type="submit"]');
             $btn.prop('disabled', true).text('Updating...');
 
+            const formData = new FormData(this);
+            formData.append('_method', 'PUT');
+
             $.ajax({
                 url: `/users/${userId}`,
-                method: 'PUT',
-                data: $(this).serialize(),
+                method: 'POST', // Use POST with _method for FormData
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(res) {
                     if (res.success) {
                         toastr.success(res.msg);
                         $('#editUserModal').modal('hide');
                         table.ajax.reload();
+                    } else {
+                        toastr.error(res.msg);
                     }
                     $btn.prop('disabled', false).text('Update');
                 },
-                error: function() {
-                    toastr.error('Error updating user');
+                error: function(xhr) {
+                    const msg = xhr.responseJSON?.msg || 'Error updating user';
+                    toastr.error(msg);
                     $btn.prop('disabled', false).text('Update');
                 }
             });
         });
 
+        // Delete user
         $(document).on('click', '.delete-user', function() {
             const url = $(this).data('url');
             showConfirmModal("Delete this user? This action cannot be undone.", () => {
@@ -257,6 +324,10 @@
                         } else {
                             toastr.error(res.msg);
                         }
+                    },
+                    error: function(xhr) {
+                        const msg = xhr.responseJSON?.msg || 'Error deleting user';
+                        toastr.error(msg);
                     }
                 });
             });
