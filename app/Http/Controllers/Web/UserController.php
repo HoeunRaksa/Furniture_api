@@ -50,11 +50,12 @@ class UserController extends Controller
 
                     $canEdit = $me->hasPermission('edit_users');
                     $canDelete = $me->hasPermission('delete_users');
+                    $isSelf = $user->id === $me->id;
 
-                    $editTitle = $canEdit ? 'Edit User' : 'You do not have permission to perform this action';
+                    $editTitle = ($canEdit || $isSelf) ? 'Edit User' : 'You do not have permission to perform this action';
                     $deleteTitle = $canDelete ? 'Delete User' : 'You do not have permission to perform this action';
 
-                    $editAuth = $canEdit ? 'true' : 'false';
+                    $editAuth = ($canEdit || $isSelf) ? 'true' : 'false';
                     $edit = '<button data-id="' . $user->id . '" data-authorized="' . $editAuth . '" class="btn btn-sm btn-light text-primary rounded-circle p-2 edit-user me-1" title="' . $editTitle . '"><i class="bi bi-pencil"></i></button>';
 
                     $deleteAttrs = '';
@@ -112,6 +113,11 @@ class UserController extends Controller
 
     public function edit($id)
     {
+        // Permission check: explicit or self
+        if (!Auth::user()->hasPermission('edit_users') && Auth::id() != $id) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $user = User::findOrFail($id);
         $adminCount = User::where('role', 'admin')->count();
         return response()->json([
@@ -123,6 +129,11 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Permission check: explicit or self
+        if (!Auth::user()->hasPermission('edit_users') && Auth::id() != $id) {
+            return response()->json(['success' => false, 'msg' => 'Unauthorized action.'], 403);
+        }
+
         $user = User::findOrFail($id);
 
         $request->validate([

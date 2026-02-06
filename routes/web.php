@@ -59,8 +59,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/data', [UserController::class, 'data'])->name('data');
         Route::post('/store', [UserController::class, 'store'])->name('store')->middleware('permission:create_users');
-        Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit')->middleware('permission:edit_users');
-        Route::put('/{id}', [UserController::class, 'update'])->name('update')->middleware('permission:edit_users');
+        Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [UserController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [UserController::class, 'destroy'])->name('destroy')->middleware('permission:delete_users');
         Route::post('/mass-destroy', [UserController::class, 'massDestroy'])->name('mass-destroy')->middleware('permission:delete_users');
     });
