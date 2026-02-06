@@ -186,7 +186,7 @@
             // Delete
             $(document).on('click', '.delete-attribute', function() {
                 const url = $(this).data('url');
-                if (confirm('Delete this attribute and all its values?')) {
+                showConfirmModal('Delete this attribute and all its values?', () => {
                     $.ajax({
                         url: url,
                         method: "DELETE",
@@ -203,7 +203,7 @@
                             }
                         }
                     });
-                }
+                });
             });
 
             // View Values

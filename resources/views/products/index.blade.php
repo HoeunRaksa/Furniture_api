@@ -105,8 +105,8 @@
         const deleteBtns = document.querySelectorAll('.delete-product');
         deleteBtns.forEach(btn => {
             btn.addEventListener('click', function() {
-                if (confirm('Are you sure you want to delete this product?')) {
-                    const url = this.dataset.url;
+                const url = this.dataset.url;
+                showConfirmModal('Are you sure you want to delete this product?', () => {
                     fetch(url, {
                             method: 'DELETE',
                             headers: {
@@ -122,7 +122,7 @@
                                 alert('Error deleting product');
                             }
                         });
-                }
+                });
             });
         });
     });

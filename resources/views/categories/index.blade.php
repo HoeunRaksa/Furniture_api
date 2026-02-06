@@ -68,7 +68,7 @@
             e.preventDefault();
             let url = $(this).data('url');
 
-            if (confirm("Are you sure you want to delete this category?")) {
+            showConfirmModal("Are you sure you want to delete this category?", () => {
                 $.ajax({
                     url: url,
                     type: 'DELETE',
@@ -84,7 +84,7 @@
                         }
                     }
                 });
-            }
+            });
         });
 
         // Edit Category Modal setup

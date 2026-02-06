@@ -144,7 +144,7 @@
 
         $(document).on('click', '.delete-order', function() {
             const url = $(this).data('url');
-            if (confirm('Are you sure you want to delete this order?')) {
+            showConfirmModal('Are you sure you want to delete this order?', () => {
                 $.ajax({
                     url: url,
                     method: "DELETE",
@@ -158,7 +158,7 @@
                         }
                     }
                 });
-            }
+            });
         });
     });
 </script>
