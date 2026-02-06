@@ -27,7 +27,7 @@
         <div class="modal-content border-0 rounded-4 shadow">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-bold">Order Details #<span id="orderIdHeader"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" data-mdb-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row mb-4">

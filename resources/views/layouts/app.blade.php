@@ -283,7 +283,7 @@
                         <button class="flex items-center gap-2 text-white btn btn-link no-underline p-0" data-bs-toggle="dropdown">
                             <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 overflow-hidden shadow-inner">
                                 @if (auth()->user() && auth()->user()->profile_image)
-                                <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" class="w-full h-full object-cover">
+                                <img src="{{ asset(auth()->user()->profile_image) }}" class="w-full h-full object-cover">
                                 @else
                                 <i class="bi bi-person text-white"></i>
                                 @endif
@@ -344,7 +344,7 @@
                                 </div>
                                 <h5 class="modal-title fw-bold mb-0 text-dark" id="globalConfirmModalLabel" style="font-size: 1.125rem; letter-spacing: 0.5px;">CONFIRMATION</h5>
                             </div>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" data-mdb-dismiss="modal" aria-label="Close"></button>
                         </div>
 
                         <!-- Modal Body -->
@@ -356,7 +356,7 @@
 
                         <!-- Modal Footer -->
                         <div class="modal-footer bg-light border-top p-3" style="border-top: 1px solid #dee2e6 !important;">
-                            <button type="button" class="btn btn-outline-secondary px-4 fw-medium" data-bs-dismiss="modal" style="border-radius: 4px; border-width: 2px;">
+                            <button type="button" class="btn btn-outline-secondary px-4 fw-medium" data-bs-dismiss="modal" data-mdb-dismiss="modal" style="border-radius: 4px; border-width: 2px;">
                                 Cancel
                             </button>
                             <button type="button" class="btn btn-dark px-4 fw-medium" id="globalConfirmModalConfirmBtn" style="background: #2c3e50; border: none; border-radius: 4px;">
