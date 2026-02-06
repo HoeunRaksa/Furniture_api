@@ -74,6 +74,10 @@
                     </table>
                 </div>
             </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <a href="#" id="modalPrintBtn" target="_blank" class="btn btn-dark"><i class="bi bi-printer me-2"></i>Print Invoice</a>
+            </div>
         </div>
     </div>
 </div>
@@ -214,6 +218,9 @@
                 $('#orderItemsList').html(itemsHtml);
                 $('#shippingCharge').text('$' + parseFloat(order.shipping_charged || 0).toFixed(2));
                 $('#orderTotalPrice').text('$' + parseFloat(order.total_price).toFixed(2));
+
+                // Set Print Button URL
+                $('#modalPrintBtn').attr('href', `/orders/print/${order.id}`);
 
                 $('#viewOrderModal').modal('show');
             });
