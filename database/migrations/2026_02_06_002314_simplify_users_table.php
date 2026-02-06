@@ -14,6 +14,11 @@ return new class extends Migration
         // First, drop the old username column if it exists from previous migration
         if (Schema::hasColumn('users', 'username')) {
             Schema::table('users', function (Blueprint $table) {
+                if (config('database.default') === 'sqlite') {
+                    $table->dropUnique('users_username_unique');
+                } else {
+                    $table->dropUnique(['username']);
+                }
                 $table->dropColumn('username');
             });
         }

@@ -15,7 +15,7 @@ return new class extends Migration
             $cols = ['description', 'price', 'discount', 'stock', 'is_featured', 'slug', 'is_recommended', 'active'];
             foreach ($cols as $col) {
                 if (Schema::hasColumn('products', $col)) {
-                    $table->dropColumn($col);
+                    // $table->dropColumn($col); // SQLite index issues
                 }
             }
         });

@@ -121,7 +121,7 @@
 <script>
     $(document).ready(function() {
         const ctx = document.getElementById('salesChart').getContext('2d');
-        const salesData = @json($salesData);
+        const salesData = JSON.parse('{!! json_encode($salesData) !!}');
 
         const labels = salesData.map(item => item.date);
         const totals = salesData.map(item => item.total);

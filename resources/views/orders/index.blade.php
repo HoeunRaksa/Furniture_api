@@ -7,10 +7,10 @@
             <table class="table table-hover" id="ordersTable">
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
+                        <th class="ps-3">Invoice</th>
                         <th>Customer</th>
                         <th>Total</th>
-                        <th>Status</th>
+                        <th class="text-center">Status</th>
                         <th>Date</th>
                         <th class="text-center">Actions</th>
                     </tr>
@@ -87,8 +87,32 @@
             processing: true,
             serverSide: true,
             ajax: "{{ route('orders.data') }}",
-            dom: '<"d-flex justify-content-between mb-2"lfB>rtip',
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
+            dom: '<"d-flex justify-content-between mb-2 px-1"lfB>rtip',
+            buttons: [{
+                    extend: 'copy',
+                    className: 'btn btn-sm btn-light border'
+                },
+                {
+                    extend: 'csv',
+                    className: 'btn btn-sm btn-light border'
+                },
+                {
+                    extend: 'excel',
+                    className: 'btn btn-sm btn-light border'
+                },
+                {
+                    extend: 'pdf',
+                    className: 'btn btn-sm btn-light border'
+                },
+                {
+                    extend: 'print',
+                    className: 'btn btn-sm btn-light border'
+                },
+                {
+                    extend: 'colvis',
+                    className: 'btn btn-sm btn-light border'
+                }
+            ],
             columns: [{
                     data: 'invoice_no',
                     name: 'invoice_no'
@@ -119,12 +143,27 @@
                 }
             ],
             order: [
-                [0, 'desc']
-            ]
+                [4, 'desc']
+            ],
+            createdRow: function(row, data, dataIndex) {
+                $(row).addClass('cursor-pointer order-row').attr('data-id', data.id);
+            }
         });
 
-        $(document).on('click', '.view-order', function() {
+        // Row Click: View Order
+        $(document).on('click', '.order-row td:not(:last-child)', function() {
+            const id = $(this).closest('tr').data('id');
+            openOrderDetails(id);
+        });
+
+        // Action Click: View Order
+        $(document).on('click', '.view-order', function(e) {
+            e.preventDefault();
             const id = $(this).data('id');
+            openOrderDetails(id);
+        });
+
+        function openOrderDetails(id) {
             $.get(`/orders/show/${id}`, function(order) {
                 $('#orderInvoiceNo').text(order.invoice_no || order.id);
                 $('#customerName').text(order.user ? order.user.username : 'N/A');
@@ -163,9 +202,23 @@
 
                 $('#viewOrderModal').modal('show');
             });
+        }
+
+        // View on Map
+        $(document).on('click', '.view-map', function(e) {
+            e.preventDefault();
+            const lat = $(this).data('lat');
+            const long = $(this).data('long');
+            if (lat && long) {
+                window.open(`https://www.openstreetmap.org/?mlat=${lat}&mlon=${long}#map=18/${lat}/${long}`, '_blank');
+            } else {
+                toastr.warning('Location coordinates not available for this order.');
+            }
         });
 
-        $(document).on('click', '.delete-order', function() {
+        // Delete Order
+        $(document).on('click', '.delete-order', function(e) {
+            e.preventDefault();
             const url = $(this).data('url');
             showConfirmModal('Are you sure you want to delete this order?', () => {
                 $.ajax({
@@ -185,4 +238,27 @@
         });
     });
 </script>
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .order-row:hover {
+        background-color: rgba(0, 0, 0, 0.015);
+        transition: background 0.2s ease;
+    }
+
+    .no-caret::after {
+        display: none;
+    }
+
+    .dropdown-item i {
+        width: 1.2rem;
+    }
+
+    .dt-buttons .btn {
+        margin-right: 5px;
+    }
+</style>
 @endpush

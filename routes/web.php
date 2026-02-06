@@ -82,6 +82,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [OrdersController::class, 'index'])->name('index');
         Route::get('/data', [OrdersController::class, 'data'])->name('data');
         Route::get('/show/{id}', [OrdersController::class, 'show'])->name('show');
+        Route::get('/print/{id}', [OrdersController::class, 'printInvoice'])->name('print');
         Route::delete('/destroy/{id}', [OrdersController::class, 'destroy'])->name('destroy');
     });
 
