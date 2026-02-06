@@ -37,6 +37,13 @@ class User extends Authenticatable
     // Add this accessor to include token in JSON
     protected $appends = ['token'];
 
+    public function getAvatarUrlAttribute()
+    {
+        return $this->profile_image
+            ? asset($this->profile_image)
+            : asset('images/default-avatar.png');
+    }
+
     public function getTokenAttribute()
     {
         // Only returns token if the user has created one

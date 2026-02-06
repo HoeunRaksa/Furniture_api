@@ -22,12 +22,8 @@ class UserController extends Controller
 
             return DataTables::of($query)
                 ->addColumn('avatar', function ($user) {
-                    $imageUrl = $user->profile_image
-                        ? asset($user->profile_image)
-                        : asset('images/default-avatar.png');
-
                     return '<div class="d-flex align-items-center gap-2">
-                                <img src="' . $imageUrl . '" alt="' . $user->username . '" 
+                                <img src="' . $user->avatar_url . '" alt="' . $user->username . '" 
                                      class="rounded-circle border" 
                                      style="width: 40px; height: 40px; object-fit: cover;">
                                 <span class="fw-medium">' . $user->username . '</span>
@@ -41,8 +37,9 @@ class UserController extends Controller
                 })
                 ->addColumn('actions', function ($user) {
                     /** @var \App\Models\User $user */
+                    $edit = '<button data-id="' . $user->id . '" class="btn btn-sm btn-light text-primary rounded-circle p-2 edit-user me-1"><i class="bi bi-pencil"></i></button>';
                     $delete = $user->id === \Illuminate\Support\Facades\Auth::id() ? '' : '<button data-url="' . route('users.destroy', $user->id) . '" class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-user"><i class="bi bi-trash"></i></button>';
-                    return '<div class="d-flex justify-content-center">' . $delete . '</div>';
+                    return '<div class="d-flex justify-content-center">' . $edit . $delete . '</div>';
                 })
                 ->rawColumns(['avatar', 'status', 'actions'])
                 ->make(true);
@@ -67,6 +64,43 @@ class UserController extends Controller
                 'is_active' => true,
             ]);
             return response()->json(['success' => true, 'msg' => 'User created successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'msg' => $e->getMessage()], 500);
+        }
+    }
+
+    public function edit($id)
+    {
+        $user = User::findOrFail($id);
+        return response()->json(['success' => true, 'user' => $user]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'username' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:6',
+            'role' => 'required|string',
+            'is_active' => 'boolean',
+        ]);
+
+        try {
+            $data = [
+                'username' => $request->username,
+                'email' => $request->email,
+                'role' => $request->role,
+                'is_active' => $request->has('is_active') ? $request->is_active : $user->is_active,
+            ];
+
+            if ($request->filled('password')) {
+                $data['password'] = Hash::make($request->password);
+            }
+
+            $user->update($data);
+            return response()->json(['success' => true, 'msg' => 'User updated successfully']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()], 500);
         }
