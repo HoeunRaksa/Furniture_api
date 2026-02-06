@@ -6,16 +6,23 @@
     @include('categories.create')
 
     <x-widget title="Category List">
-        <div class="d-flex justify-content-end mb-3">
+        <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
+            <button type="button" id="deleteSelectedBtn" class="btn btn-danger rounded-pill px-4 shadow-sm d-none">
+                <i class="bi bi-trash me-2"></i> Delete Selected (<span id="selectedCount">0</span>)
+            </button>
             <button class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
                 <i class="bi bi-plus-lg me-2"></i> Create New Category
             </button>
         </div>
         <div class="table-responsive">
-            <table class="table table-hover" id="categoriesTable">
+            <table class="table table-hover align-middle" id="categoriesTable">
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
+                        <th style="width: 40px;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="selectAllCategories">
+                            </div>
+                        </th>
                         <th>Name</th>
                         <th>Created At</th>
                         <th class="text-center">Actions</th>
@@ -32,15 +39,18 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#categoriesTable').DataTable({
+        const table = $('#categoriesTable').DataTable({
             processing: true,
             serverSide: true,
             ajax: "{{ route('categories.data') }}",
             dom: '<"d-flex justify-content-between mb-2"lfB>rtip',
             buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
             columns: [{
-                    data: 'id',
-                    name: 'id'
+                    data: 'checkbox',
+                    name: 'checkbox',
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center'
                 },
                 {
                     data: 'name',
@@ -59,8 +69,71 @@
                 }
             ],
             order: [
-                [0, 'desc']
+                [1, 'asc']
             ],
+        });
+
+        // Handle "Select All"
+        $('#selectAllCategories').on('change', function() {
+            $('.category-checkbox').prop('checked', $(this).is(':checked'));
+            updateSelectedCount();
+        });
+
+        // Handle individual checkbox change
+        $(document).on('change', '.category-checkbox', function() {
+            updateSelectedCount();
+        });
+
+        function updateSelectedCount() {
+            const count = $('.category-checkbox:checked').length;
+            $('#selectedCount').text(count);
+            if (count > 0) {
+                $('#deleteSelectedBtn').removeClass('d-none');
+            } else {
+                $('#deleteSelectedBtn').addClass('d-none');
+                $('#selectAllCategories').prop('checked', false);
+            }
+        }
+
+        // Delete Selected
+        $('#deleteSelectedBtn').on('click', function() {
+            const ids = [];
+            $('.category-checkbox:checked').each(function() {
+                ids.push($(this).val());
+            });
+
+            if (ids.length === 0) return;
+
+            showConfirmModal(`Are you sure you want to delete ${ids.length} selected categories?`, () => {
+                const $btn = $('#deleteSelectedBtn');
+                const originalContent = $btn.html();
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Deleting...');
+
+                $.ajax({
+                    url: "{{ route('categories.mass-destroy') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        ids: ids
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            toastr.success(res.msg);
+                            $('#categoriesTable').DataTable().ajax.reload();
+                            $('#deleteSelectedBtn').addClass('d-none');
+                            $('#selectAllCategories').prop('checked', false);
+                        } else {
+                            toastr.error(res.msg);
+                        }
+                        $btn.prop('disabled', false).html(originalContent);
+                    },
+                    error: function(xhr) {
+                        const msg = xhr.responseJSON?.msg || 'Error during mass deletion';
+                        toastr.error(msg);
+                        $btn.prop('disabled', false).html(originalContent);
+                    }
+                });
+            });
         });
 
         // Delete Category
@@ -79,6 +152,7 @@
                         if (response.success) {
                             $('#categoriesTable').DataTable().ajax.reload();
                             toastr.success(response.msg);
+                            updateSelectedCount();
                         } else {
                             toastr.error(response.msg);
                         }

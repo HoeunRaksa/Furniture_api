@@ -28,16 +28,54 @@ class CategoryController extends Controller
             $query = Category::query();
 
             return DataTables::of($query)
+                ->addColumn('checkbox', function ($row) {
+                    return '<div class="form-check d-flex justify-content-center">
+                                <input class="form-check-input category-checkbox" type="checkbox" value="' . $row->id . '">
+                            </div>';
+                })
                 ->editColumn('created_at', function ($row) {
                     return $row->created_at ? $row->created_at->format('Y-m-d H:i:s A') : '-';
                 })
                 ->addColumn('actions', function ($row) {
-                    $edit = '<button data-id="'. $row->id .'" data-name="' . $row->name . '" type="button" class="edit-category btn btn-sm btn-primary me-1">Edit</button>';
-                    $delete = '<button data-url="' . route('categories.destroy', $row->id) . '" class="btn btn-sm btn-danger delete-category">Delete</button>';
-                    return $edit . $delete;
+                    $edit = '<button data-id="' . $row->id . '" data-name="' . $row->name . '" type="button" class="edit-category btn btn-sm btn-light text-primary rounded-circle p-2 me-1" title="Edit"><i class="bi bi-pencil"></i></button>';
+                    $delete = '<button data-url="' . route('categories.destroy', $row->id) . '" class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-category" title="Delete"><i class="bi bi-trash"></i></button>';
+                    return '<div class="d-flex justify-content-center">' . $edit . $delete . '</div>';
                 })
-                ->rawColumns(['actions'])
+                ->rawColumns(['checkbox', 'actions'])
                 ->make(true);
+        }
+    }
+
+    /**
+     * Mass destroy categories.
+     */
+    public function massDestroy(Request $request)
+    {
+        $ids = $request->ids;
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'msg' => 'No categories selected'], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+            $deletedCount = 0;
+
+            foreach ($ids as $id) {
+                $category = Category::find($id);
+                if (!$category) continue;
+                $category->delete();
+                $deletedCount++;
+            }
+
+            DB::commit();
+            return response()->json(['success' => true, 'msg' => "$deletedCount categories deleted successfully."]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error during mass category deletion', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'msg' => 'Error during mass deletion: ' . $e->getMessage()
+            ], 500);
         }
     }
 
