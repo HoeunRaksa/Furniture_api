@@ -32,13 +32,13 @@
             <div class="modal-body">
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <h6 class="text-muted small text-uppercase fw-bold mb-3">Customer & Shipping</h6>
+                        <h6 class="text-muted small fw-bold mb-3">Customer & Shipping</h6>
                         <div id="customerInfoContainer"></div>
                         <p class="mb-1 text-muted" id="customerPhone"></p>
                         <p class="mb-0 small text-slate-600"><i class="bi bi-geo-alt me-1"></i><span id="shippingAddress"></span></p>
                     </div>
                     <div class="col-md-6 text-md-end">
-                        <h6 class="text-muted small text-uppercase fw-bold">Order Details</h6>
+                        <h6 class="text-muted small fw-bold">Order Details</h6>
                         <p class="mb-1" id="orderDate"></p>
                         <div class="mb-1">
                             <span class="badge bg-light text-dark border" id="paymentMethod"></span>
