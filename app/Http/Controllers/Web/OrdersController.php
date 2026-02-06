@@ -26,8 +26,11 @@ class OrdersController extends Controller
             $query = Order::with('user');
 
             return DataTables::of($query)
+                ->editColumn('invoice_no', function ($row) {
+                    return $row->invoice_no ?? 'ID: ' . $row->id;
+                })
                 ->editColumn('user_name', function ($row) {
-                    return $row->user ? $row->user->name : 'N/A';
+                    return $row->user ? $row->user->username : 'N/A';
                 })
                 ->editColumn('total_price', function ($row) {
                     return '$' . number_format($row->total_price, 2);
