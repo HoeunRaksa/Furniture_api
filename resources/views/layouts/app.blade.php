@@ -241,7 +241,8 @@
                 <div class="flex items-center gap-4">
 
                     <!-- Date Badge -->
-                    <div class="hidden md:block text-white text-opacity-75 text-sm px-3 py-1.5 rounded-lg border border-white border-opacity-10 bg-white bg-opacity-5">
+                    <div class="hidden md:block text-white text-opacity-90 text-sm px-3 py-1.5 rounded-lg border-2 border-gold-subtle bg-white bg-opacity-10 shadow-sm" style="border-color: var(--color-gold) !important;">
+                        <i class="bi bi-calendar3 me-2 text-gold" style="color: var(--color-gold) !important;"></i>
                         {{ now()->format('D, M d Y') }}
                     </div>
 
@@ -280,18 +281,18 @@
 
                     <!-- User Profile Dropdown -->
                     <div class="dropdown ms-2">
-                        <button class="flex items-center gap-2 text-white btn btn-link no-underline p-0" data-bs-toggle="dropdown">
-                            <!-- Profile Image (Left) -->
-                            <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 overflow-hidden shadow-inner">
+                        <button class="flex items-center gap-2 text-white btn btn-link no-underline p-1 px-2 rounded-pill hover:bg-white hover:bg-opacity-10 transition-all duration-300" data-bs-toggle="dropdown">
+                            <!-- Name (Left) -->
+                            <span class="hidden md:inline text-sm font-semibold tracking-wide">{{ auth()->user()->username ?? 'Admin' }}</span>
+                            <!-- Profile Image (Right/End) -->
+                            <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 overflow-hidden shadow-inner ms-1">
                                 @if (auth()->user() && auth()->user()->profile_image)
                                 <img src="{{ asset(auth()->user()->profile_image) }}" class="w-full h-full object-cover">
                                 @else
                                 <i class="bi bi-person text-white"></i>
                                 @endif
                             </div>
-                            <!-- Name (Right) -->
-                            <span class="hidden md:inline text-sm font-semibold tracking-wide">{{ auth()->user()->username ?? 'Admin' }}</span>
-                            <i class="bi bi-chevron-down text-[10px] opacity-50"></i>
+                            <i class="bi bi-chevron-down text-[10px] opacity-50 ms-1"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-xl border-0 rounded-xl mt-3">
                             <li class="px-4 py-2 bg-light border-bottom mb-2">
