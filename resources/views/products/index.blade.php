@@ -139,11 +139,13 @@
             }]
         });
 
-        // Instant Intercept for Unauthorized Edit Links
-        $(document).on('click', 'a[data-authorized="false"]', function(e) {
+        // Instant Intercept for Unauthorized Actions (Universal)
+        $(document).on('click', '.permission-denied', function(e) {
             e.preventDefault();
-            e.stopImmediatePropagation(); // Stop other handlers
+            e.stopPropagation();
+            e.stopImmediatePropagation();
             toastr.error('You do not have permission to perform this action.');
+            return false;
         });
 
         // Batch delete logic

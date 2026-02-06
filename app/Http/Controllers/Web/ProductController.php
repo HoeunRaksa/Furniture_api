@@ -61,16 +61,20 @@ class ProductController extends Controller
                     $canEdit = $me->hasPermission('edit_products');
                     $canDelete = $me->hasPermission('delete_products');
 
+                    $editUrl = $canEdit ? route('products.edit', $product->id) : 'javascript:void(0)';
+                    $editClass = $canEdit ? '' : 'permission-denied';
+                    $deleteClass = $canDelete ? '' : 'permission-denied';
+
                     return '
                     <div class="btn-group btn-group-sm" role="group">
-                        <a href="' . route('products.edit', $product->id) . '" 
-                           class="btn btn-outline-primary" 
+                        <a href="' . $editUrl . '" 
+                           class="btn btn-outline-primary ' . $editClass . '" 
                            data-authorized="' . ($canEdit ? 'true' : 'false') . '"
                            title="Edit">
                             <i class="bi bi-pencil"></i>
                         </a>
                         <button data-url="' . route('products.destroy', $product->id) . '" 
-                           class="btn btn-outline-danger delete-product" 
+                           class="btn btn-outline-danger delete-product ' . $deleteClass . '" 
                            data-authorized="' . ($canDelete ? 'true' : 'false') . '"
                            title="Delete">
                             <i class="bi bi-trash"></i>
