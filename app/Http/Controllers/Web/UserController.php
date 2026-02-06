@@ -21,6 +21,18 @@ class UserController extends Controller
             $query = User::query();
 
             return DataTables::of($query)
+                ->addColumn('avatar', function ($user) {
+                    $imageUrl = $user->profile_image
+                        ? asset($user->profile_image)
+                        : asset('images/default-avatar.png');
+
+                    return '<div class="d-flex align-items-center gap-2">
+                                <img src="' . $imageUrl . '" alt="' . $user->username . '" 
+                                     class="rounded-circle border" 
+                                     style="width: 40px; height: 40px; object-fit: cover;">
+                                <span class="fw-medium">' . $user->username . '</span>
+                            </div>';
+                })
                 ->addColumn('status', function ($user) {
                     $checked = $user->is_active ? 'checked' : '';
                     return '<div class="form-check form-switch d-flex justify-content-center">
@@ -32,7 +44,7 @@ class UserController extends Controller
                     $delete = $user->id === \Illuminate\Support\Facades\Auth::id() ? '' : '<button data-url="' . route('users.destroy', $user->id) . '" class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-user"><i class="bi bi-trash"></i></button>';
                     return '<div class="d-flex justify-content-center">' . $delete . '</div>';
                 })
-                ->rawColumns(['status', 'actions'])
+                ->rawColumns(['avatar', 'status', 'actions'])
                 ->make(true);
         }
     }

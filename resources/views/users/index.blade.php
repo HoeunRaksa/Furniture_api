@@ -13,7 +13,7 @@
                 <thead class="table-light">
                     <tr>
                         <th style="width: 50px;">#</th>
-                        <th>Username</th>
+                        <th>User</th>
                         <th>Email</th>
                         <th style="width: 100px;">Role</th>
                         <th style="width: 80px;" class="text-center">Status</th>
@@ -82,8 +82,10 @@
                     name: 'id'
                 },
                 {
-                    data: 'username',
-                    name: 'username'
+                    data: 'avatar',
+                    name: 'username',
+                    orderable: true,
+                    searchable: true
                 },
                 {
                     data: 'email',
