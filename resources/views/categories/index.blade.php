@@ -128,8 +128,12 @@
                         $btn.prop('disabled', false).html(originalContent);
                     },
                     error: function(xhr) {
-                        const msg = xhr.responseJSON?.msg || 'Error during mass deletion';
-                        toastr.error(msg);
+                        if (xhr.status === 403) {
+                            toastr.error('You need permission to perform this action.');
+                        } else {
+                            const msg = xhr.responseJSON?.msg || 'Error during mass deletion';
+                            toastr.error(msg);
+                        }
                         $btn.prop('disabled', false).html(originalContent);
                     }
                 });
@@ -155,6 +159,14 @@
                             updateSelectedCount();
                         } else {
                             toastr.error(response.msg);
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 403) {
+                            toastr.error('You need permission to perform this action.');
+                        } else {
+                            const msg = xhr.responseJSON?.msg || 'Error deleting category';
+                            toastr.error(msg);
                         }
                     }
                 });
@@ -205,6 +217,14 @@
                         $('#categoriesTable').DataTable().ajax.reload();
                     } else {
                         toastr.error(res.msg);
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 403) {
+                        toastr.error('You need permission to perform this action.');
+                    } else {
+                        const msg = xhr.responseJSON?.msg || 'Error creating category';
+                        toastr.error(msg);
                     }
                 }
             });

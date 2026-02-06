@@ -195,8 +195,12 @@
                         $btn.prop('disabled', false).html(originalContent);
                     },
                     error: function(xhr) {
-                        const msg = xhr.responseJSON?.msg || 'Error during mass deletion';
-                        toastr.error(msg);
+                        if (xhr.status === 403) {
+                            toastr.error('You need permission to perform this action.');
+                        } else {
+                            const msg = xhr.responseJSON?.msg || 'Error during mass deletion';
+                            toastr.error(msg);
+                        }
                         $btn.prop('disabled', false).html(originalContent);
                     }
                 });
@@ -287,8 +291,12 @@
                         }
                     },
                     error: function(xhr) {
-                        const msg = xhr.responseJSON?.msg || 'Error deleting user';
-                        toastr.error(msg);
+                        if (xhr.status === 403) {
+                            toastr.error('You need permission to perform this action.');
+                        } else {
+                            const msg = xhr.responseJSON?.msg || 'Error deleting user';
+                            toastr.error(msg);
+                        }
                     }
                 });
             });

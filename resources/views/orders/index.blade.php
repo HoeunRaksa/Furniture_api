@@ -253,6 +253,16 @@
                         if (res.success) {
                             toastr.success(res.msg);
                             table.ajax.reload();
+                        } else {
+                            toastr.error(res.msg);
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 403) {
+                            toastr.error('You need permission to perform this action.');
+                        } else {
+                            const msg = xhr.responseJSON?.msg || 'Error deleting order';
+                            toastr.error(msg);
                         }
                     }
                 });

@@ -9,11 +9,9 @@
                     <button type="button" id="deleteSelectedBtn" class="btn btn-danger rounded-pill px-4 shadow-sm d-none">
                         <i class="bi bi-trash me-2"></i> Delete Selected (<span id="selectedCount">0</span>)
                     </button>
-                    @if(auth()->user()->hasPermission('create_products'))
                     <a href="{{ route('products.create') }}" class="btn btn-primary rounded-1 px-4 shadow-sm hover-lift">
                         <i class="bi bi-plus-lg me-2"></i> Add New Product
                     </a>
-                    @endif
                 </div>
 
                 @if($products->isEmpty())
@@ -44,8 +42,7 @@
                             <tr style="border-bottom: 1px solid #f1f5f9;">
                                 <td class="px-3">
                                     <div class="form-check">
-                                        <input class="form-check-input product-checkbox" type="checkbox" value="{{ $product->id }}"
-                                            {{ !auth()->user()->hasPermission('delete_products') ? 'disabled' : '' }}>
+                                        <input class="form-check-input product-checkbox" type="checkbox" value="{{ $product->id }}">
                                     </div>
                                 </td>
                                 <td class="px-3">
@@ -91,17 +88,13 @@
                                 </td>
                                 <td class="px-3 text-end">
                                     <div class="btn-group">
-                                        @if(auth()->user()->hasPermission('edit_products'))
                                         <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-light border" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        @endif
 
-                                        @if(auth()->user()->hasPermission('delete_products'))
                                         <button type="button" class="btn btn-sm btn-light border text-danger delete-product" data-url="{{ route('products.destroy', $product->id) }}" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </button>
-                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -221,8 +214,12 @@
                         if (data.success) {
                             window.location.reload();
                         } else {
-                            alert('Error deleting product');
+                            toastr.error('Error deleting product');
                         }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        toastr.error('You need permission to perform this action.');
                     });
             });
         });
