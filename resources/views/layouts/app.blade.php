@@ -304,7 +304,7 @@
                         <ul class="dropdown-menu dropdown-menu-end shadow-xl border-0 rounded-xl mt-3">
                             <li class="px-4 py-2 bg-light border-bottom mb-2">
                                 <div class="small text-muted fw-bold uppercase tracking-wider" style="font-size: 0.65rem;">Signed in as</div>
-                                <div class="text-dark fw-bold">{{ auth()->user()->username }}</div>
+                                <div class="text-dark fw-bold">{{ auth()->user()->full_name }}</div>
                             </li>
                             <li><a class="dropdown-item py-2 px-4 flex items-center gap-2" href="{{ route('users.index') }}"><i class="bi bi-person text-slate-400"></i> My Profile</a></li>
                             @if(auth()->user() && auth()->user()->role === 'admin')
