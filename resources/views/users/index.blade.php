@@ -13,8 +13,7 @@
                 <thead class="table-light">
                     <tr>
                         <th style="width: 50px;">#</th>
-                        <th>Name</th>
-                        <th style="width: 150px;">Contact & City</th>
+                        <th>Username</th>
                         <th>Email</th>
                         <th style="width: 100px;">Role</th>
                         <th style="width: 80px;" class="text-center">Status</th>
@@ -39,8 +38,8 @@
                 </div>
                 <div class="modal-body py-4">
                     <div class="mb-3">
-                        <label class="form-label fw-bold small text-muted">Display Name</label>
-                        <input type="text" name="name" class="form-control rounded-3" required>
+                        <label class="form-label fw-bold small text-muted">Username</label>
+                        <input type="text" name="username" class="form-control rounded-3" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-muted">Email</label>
@@ -83,12 +82,8 @@
                     name: 'id'
                 },
                 {
-                    data: 'full_name',
-                    name: 'name'
-                },
-                {
-                    data: 'details',
-                    name: 'details'
+                    data: 'username',
+                    name: 'username'
                 },
                 {
                     data: 'email',

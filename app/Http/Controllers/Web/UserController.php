@@ -21,18 +21,10 @@ class UserController extends Controller
             $query = User::query();
 
             return DataTables::of($query)
-                ->addColumn('full_name', function ($user) {
-                    return trim(($user->prefix ? $user->prefix . ' ' : '') . $user->first_name . ' ' . $user->last_name) ?: $user->name;
-                })
-                ->addColumn('details', function ($user) {
-                    $html = '<div><i class="bi bi-telephone small me-1"></i> ' . ($user->phone ?: 'N/A') . '</div>';
-                    $html .= '<div class="small text-muted"><i class="bi bi-geo-alt small me-1"></i> ' . ($user->city ?: 'N/A') . '</div>';
-                    return $html;
-                })
                 ->addColumn('status', function ($user) {
                     $checked = $user->is_active ? 'checked' : '';
                     return '<div class="form-check form-switch d-flex justify-content-center">
-                                <input class="form-check-input toggle-status" type="checkbox" data-id="'.$user->id.'" '.$checked.'>
+                                <input class="form-check-input toggle-status" type="checkbox" data-id="' . $user->id . '" ' . $checked . '>
                             </div>';
                 })
                 ->addColumn('actions', function ($user) {
@@ -40,7 +32,7 @@ class UserController extends Controller
                     $delete = $user->id === \Illuminate\Support\Facades\Auth::id() ? '' : '<button data-url="' . route('users.destroy', $user->id) . '" class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-user"><i class="bi bi-trash"></i></button>';
                     return '<div class="d-flex justify-content-center">' . $delete . '</div>';
                 })
-                ->rawColumns(['details', 'status', 'actions'])
+                ->rawColumns(['status', 'actions'])
                 ->make(true);
         }
     }
@@ -48,7 +40,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'role' => 'required|string',
@@ -56,7 +48,7 @@ class UserController extends Controller
 
         try {
             User::create([
-                'name' => $request->name,
+                'username' => $request->username,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role' => $request->role,

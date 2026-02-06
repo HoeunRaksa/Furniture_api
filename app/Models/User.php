@@ -12,7 +12,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'name',
+        'username',
         'email',
         'password',
         'role',
@@ -20,16 +20,7 @@ class User extends Authenticatable
         'otp_expires_at',
         'email_verified_at',
         'profile_image',
-        'prefix',
-        'first_name',
-        'last_name',
-        'gender',
         'is_active',
-        'username',
-        'phone',
-        'city',
-        'address',
-        'profile_completion',
     ];
 
     protected $hidden = [
@@ -44,12 +35,7 @@ class User extends Authenticatable
     ];
 
     // Add this accessor to include token in JSON
-    protected $appends = ['token', 'full_name'];
-
-    public function getFullNameAttribute()
-    {
-        return trim($this->first_name . ' ' . $this->last_name) ?: $this->name;
-    }
+    protected $appends = ['token'];
 
     public function getTokenAttribute()
     {
