@@ -116,6 +116,12 @@
                    {{ request()->routeIs('users.index') ? 'text-purple-600 font-medium bg-purple-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
                     User List
                 </a>
+
+                <a href="{{ route('roles.index') }}"
+                    class="block px-4 py-2 text-sm rounded-lg transition-colors relative
+                   {{ request()->routeIs('roles.index') ? 'text-purple-600 font-medium bg-purple-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
+                    Roles & Permissions
+                </a>
             </div>
         </div>
         @endif
@@ -132,15 +138,6 @@
                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
             <i class="bi bi-gear text-xl transition-transform group-hover:rotate-90 {{ request()->routeIs('business.index') ? 'text-amber-600' : 'text-slate-400 group-hover:text-amber-500' }}"></i>
             <span class="tracking-wide text-sm">Business Settings</span>
-        </a>
-
-        <a href="{{ route('roles.index') }}"
-            class="group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ease-in-out
-           {{ request()->routeIs('roles.index')
-               ? 'bg-red-50 text-red-700 font-semibold shadow-sm ring-1 ring-red-100'
-               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
-            <i class="bi bi-shield-lock text-xl transition-transform group-hover:scale-110 {{ request()->routeIs('roles.index') ? 'text-red-600' : 'text-slate-400 group-hover:text-red-500' }}"></i>
-            <span class="tracking-wide text-sm">Roles & Permissions</span>
         </a>
         @endif
 
