@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Public Pages
-Route::get('/', function() {
+Route::get('/', function () {
     return \Illuminate\Support\Facades\Auth::check() ? redirect()->route('home') : redirect()->route('login');
 });
 
@@ -34,7 +34,7 @@ Route::post('/logout', [WebAuthController::class, 'logout'])->name('logout');
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('home');
-    
+
     // Notification Polling
     Route::get('/notifications/check', [NotificationController::class, 'checkNewOrders'])->name('notifications.check');
 
@@ -71,7 +71,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/store', [AttributeController::class, 'store'])->name('store');
         Route::put('/update/{id}', [AttributeController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [AttributeController::class, 'destroy'])->name('destroy');
-        
+
         // Values
         Route::get('/values/{id}', [AttributeController::class, 'getValues'])->name('values');
         Route::post('/value/store', [AttributeController::class, 'storeValue'])->name('value.store');
@@ -91,6 +91,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/data', [UserController::class, 'data'])->name('data');
         Route::post('/store', [UserController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [UserController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [UserController::class, 'destroy'])->name('destroy');
     });
 
