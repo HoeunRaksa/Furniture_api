@@ -281,16 +281,20 @@
 
                     <!-- User Profile Dropdown -->
                     <div class="dropdown">
-                        <button class="flex items-center flex-nowrap gap-3 text-white btn btn-link no-underline p-1 px-2 rounded-pill hover:bg-white hover:bg-opacity-10 transition-all duration-300" data-bs-toggle="dropdown">
+                        <button class="d-flex align-items-center flex-nowrap gap-3 text-white btn btn-link text-decoration-none border-0 p-1 px-2 rounded-pill hover:bg-white hover:bg-opacity-10 transition-all duration-300" data-bs-toggle="dropdown" style="display: flex !important; flex-direction: row !important; align-items: center !important;">
                             <!-- Name (Left) -->
-                            <span class="hidden md:inline text-sm font-bold tracking-wide truncate" style="max-width: 150px;">{{ auth()->user()->username ?? 'Admin' }}</span>
+                            <span class="hidden md:inline text-sm font-bold tracking-wide truncate" style="max-width: 150px; text-decoration: none !important; margin-right: 0.5rem;">{{ auth()->user()->username ?? 'Admin' }}</span>
+
                             <!-- Profile Image (Absolute Right/End) -->
-                            <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 overflow-hidden shadow-lg shrink-0">
-                                @if (auth()->user() && auth()->user()->profile_image)
-                                <img src="{{ asset(auth()->user()->profile_image) }}" class="w-full h-full object-cover">
-                                @else
-                                <i class="bi bi-person text-white"></i>
-                                @endif
+                            <div class="position-relative" style="order: 2;">
+                                <div class="w-10 h-10 rounded-full bg-slate-700 d-flex align-items-center justify-center border-2 border-slate-500 overflow-hidden shadow-lg shrink-0" style="width: 40px; height: 40px;">
+                                    @if (auth()->user() && auth()->user()->profile_image)
+                                    <img src="{{ asset(auth()->user()->profile_image) }}" class="w-full h-full object-cover">
+                                    @else
+                                    <i class="bi bi-person text-white"></i>
+                                    @endif
+                                </div>
+                                <div class="position-absolute bottom-0 end-0 bg-success border border-white rounded-full" style="width: 10px; height: 10px; bottom: 2px; right: 2px;"></div>
                             </div>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-xl border-0 rounded-xl mt-3">
