@@ -28,23 +28,19 @@ class WebAuthController extends Controller
         ]);
 
         try {
-            $login = $request->input('username');
-            $loginType = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-
-            Log::info('Web login attempt', [
-                'login' => $login,
-                'type' => $loginType
-            ]);
-
             $credentials = [
-                $loginType => $login,
+                'email' => $request->username,
                 'password' => $request->password
             ];
+
+            Log::info('Web login attempt with email', [
+                'email' => $request->username,
+            ]);
 
             if (Auth::attempt($credentials, $request->filled('remember'))) {
                 $request->session()->regenerate();
 
-                Log::info('Web login successful', ['login' => $login]);
+                Log::info('Web login successful', ['email' => $request->username]);
 
                 return redirect()->intended(route('home'));
             }
