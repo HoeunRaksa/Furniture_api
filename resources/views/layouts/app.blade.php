@@ -241,9 +241,9 @@
                 <div class="flex items-center gap-4">
 
                     <!-- Date Badge -->
-                    <div class="hidden md:block text-white text-opacity-90 text-sm px-3 py-1.5 rounded-lg border-2 border-gold-subtle bg-white bg-opacity-10 shadow-sm" style="border-color: var(--color-gold) !important;">
-                        <i class="bi bi-calendar3 me-2 text-gold" style="color: var(--color-gold) !important;"></i>
-                        {{ now()->format('D, M d Y') }}
+                    <div class="hidden md:block text-sm px-3 py-1.5 rounded-lg border-2 shadow-sm" style="border-color: #c5a059 !important; color: #c5a059 !important; background: rgba(197, 160, 89, 0.1);">
+                        <i class="bi bi-calendar3 me-2" style="color: #c5a059 !important;"></i>
+                        <span class="fw-bold">{{ now()->format('D, M d Y') }}</span>
                     </div>
 
                     <!-- Notifications -->
@@ -284,7 +284,9 @@
                         <button class="flex items-center flex-nowrap gap-2 text-white btn btn-link no-underline p-1 px-2 rounded-pill hover:bg-white hover:bg-opacity-10 transition-all duration-300" data-bs-toggle="dropdown" style="max-width: 200px;">
                             <!-- Name (Left) -->
                             <span class="hidden md:inline text-sm font-semibold tracking-wide truncate" style="max-width: 120px;">{{ auth()->user()->username ?? 'Admin' }}</span>
-                            <!-- Profile Image (Right/End) -->
+                            <!-- Chevron (Middle) -->
+                            <i class="bi bi-chevron-down text-[10px] opacity-50 ms-1"></i>
+                            <!-- Profile Image (Absolute Right/End) -->
                             <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 overflow-hidden shadow-inner ms-1">
                                 @if (auth()->user() && auth()->user()->profile_image)
                                 <img src="{{ asset(auth()->user()->profile_image) }}" class="w-full h-full object-cover">
@@ -292,7 +294,6 @@
                                 <i class="bi bi-person text-white"></i>
                                 @endif
                             </div>
-                            <i class="bi bi-chevron-down text-[10px] opacity-50 ms-1"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-xl border-0 rounded-xl mt-3">
                             <li class="px-4 py-2 bg-light border-bottom mb-2">
