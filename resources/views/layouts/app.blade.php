@@ -241,9 +241,9 @@
                 <div class="flex items-center gap-4">
 
                     <!-- Date Badge -->
-                    <div class="hidden md:block text-sm px-3 py-1.5 rounded-lg border-2 shadow-sm" style="border-color: #c5a059 !important; color: #c5a059 !important; background: rgba(197, 160, 89, 0.1);">
-                        <i class="bi bi-calendar3 me-2" style="color: #c5a059 !important;"></i>
-                        <span class="fw-bold">{{ now()->format('D, M d Y') }}</span>
+                    <div class="hidden md:block text-sm px-3 py-1.5 rounded-lg border-2 shadow-sm" style="border-color: #ffd700 !important; color: #ffd700 !important; background: rgba(255, 215, 0, 0.15);">
+                        <i class="bi bi-calendar3 me-2" style="color: #ffd700 !important;"></i>
+                        <span class="fw-bold text-uppercase tracking-wider">{{ now()->format('D, M d Y') }}</span>
                     </div>
 
                     <!-- Notifications -->
@@ -280,19 +280,25 @@
                     <audio id="error-audio" src="{{ asset('sounds/error.mp3') }}" preload="auto"></audio>
 
                     <!-- User Profile Dropdown -->
-                    <div class="dropdown ms-2">
-                        <button class="flex items-center flex-nowrap gap-2 text-white btn btn-link no-underline p-1 px-2 rounded-pill hover:bg-white hover:bg-opacity-10 transition-all duration-300" data-bs-toggle="dropdown" style="max-width: 200px;">
+                    <div class="dropdown">
+                        <button class="flex items-center flex-nowrap text-white btn btn-link no-underline p-1 px-2 rounded-pill hover:bg-white hover:bg-opacity-10 transition-all duration-300" data-bs-toggle="dropdown">
                             <!-- Name (Left) -->
-                            <span class="hidden md:inline text-sm font-semibold tracking-wide truncate" style="max-width: 120px;">{{ auth()->user()->username ?? 'Admin' }}</span>
+                            <div class="flex flex-col text-end me-3">
+                                <span class="hidden md:inline text-sm font-bold tracking-wide truncate" style="max-width: 150px; line-height: 1;">{{ auth()->user()->username ?? 'Admin' }}</span>
+                                <span class="hidden md:inline text-uppercase opacity-50 font-semibold" style="font-size: 10px; letter-spacing: 0.5px;">{{ auth()->user()->role ?? 'Staff' }}</span>
+                            </div>
                             <!-- Chevron (Middle) -->
-                            <i class="bi bi-chevron-down text-[10px] opacity-50 ms-1"></i>
-                            <!-- Profile Image (Absolute Right/End) -->
-                            <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 overflow-hidden shadow-inner ms-1">
-                                @if (auth()->user() && auth()->user()->profile_image)
-                                <img src="{{ asset(auth()->user()->profile_image) }}" class="w-full h-full object-cover">
-                                @else
-                                <i class="bi bi-person text-white"></i>
-                                @endif
+                            <i class="bi bi-chevron-down text-[10px] opacity-40 me-2"></i>
+                            <!-- Profile Image (ABSOLUTE END/RIGHT) -->
+                            <div class="position-relative">
+                                <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-500 overflow-hidden shadow-lg">
+                                    @if (auth()->user() && auth()->user()->profile_image)
+                                    <img src="{{ asset(auth()->user()->profile_image) }}" class="w-full h-full object-cover">
+                                    @else
+                                    <i class="bi bi-person text-white"></i>
+                                    @endif
+                                </div>
+                                <div class="position-absolute bottom-0 end-0 bg-success border border-white rounded-full" style="width: 10px; height: 10px;"></div>
                             </div>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-xl border-0 rounded-xl mt-3">
