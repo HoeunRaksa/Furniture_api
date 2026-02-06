@@ -121,8 +121,13 @@ class UserController extends Controller
                 'username' => $request->username,
                 'email' => $request->email,
                 'role' => $request->role,
-                'is_active' => $request->has('is_active') ? true : false,
             ];
+
+            // Only update is_active if it's present in the request
+            // This prevents decommissioning users during profile updates where the field is hidden
+            if ($request->has('is_active')) {
+                $data['is_active'] = $request->is_active ? true : false;
+            }
 
             if ($request->filled('password')) {
                 $data['password'] = Hash::make($request->password);

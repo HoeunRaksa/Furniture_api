@@ -650,8 +650,18 @@
                     $btn.prop('disabled', false).text(originalText);
                 },
                 error: function(xhr) {
-                    toastr.error(xhr.responseJSON?.msg || 'Error updating profile');
-                    $btn.prop('disabled', false).text(originalText);
+                    $btn.prop('disabled', false).html(originalText);
+
+                    if (xhr.status === 422 && xhr.responseJSON.errors) {
+                        const errors = xhr.responseJSON.errors;
+                        let errorMsg = '';
+                        Object.keys(errors).forEach(key => {
+                            errorMsg += errors[key][0] + '\n';
+                        });
+                        toastr.error(errorMsg);
+                    } else {
+                        toastr.error(xhr.responseJSON?.msg || 'Something went wrong');
+                    }
                 }
             });
         });
