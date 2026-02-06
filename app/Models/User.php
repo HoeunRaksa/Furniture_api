@@ -49,4 +49,17 @@ class User extends Authenticatable
         // Only returns token if the user has created one
         return $this->currentAccessToken()?->plainTextToken ?? null;
     }
+
+    /**
+     * Check if user has a specific permission via their role.
+     */
+    public function hasPermission($permissionName)
+    {
+        if ($this->role === 'admin') return true; // Super Admin
+
+        return \App\Models\RolePermission::where('role', $this->role)
+            ->whereHas('permission', function ($q) use ($permissionName) {
+                $q->where('name', $permissionName);
+            })->exists();
+    }
 }

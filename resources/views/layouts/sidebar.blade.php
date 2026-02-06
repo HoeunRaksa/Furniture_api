@@ -133,6 +133,15 @@
             <i class="bi bi-gear text-xl transition-transform group-hover:rotate-90 {{ request()->routeIs('business.index') ? 'text-amber-600' : 'text-slate-400 group-hover:text-amber-500' }}"></i>
             <span class="tracking-wide text-sm">Business Settings</span>
         </a>
+
+        <a href="{{ route('roles.index') }}"
+            class="group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ease-in-out
+           {{ request()->routeIs('roles.index')
+               ? 'bg-red-50 text-red-700 font-semibold shadow-sm ring-1 ring-red-100'
+               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+            <i class="bi bi-shield-lock text-xl transition-transform group-hover:scale-110 {{ request()->routeIs('roles.index') ? 'text-red-600' : 'text-slate-400 group-hover:text-red-500' }}"></i>
+            <span class="tracking-wide text-sm">Roles & Permissions</span>
+        </a>
         @endif
 
     </nav>

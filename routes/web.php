@@ -9,6 +9,7 @@ use App\Http\Controllers\Web\AttributeController;
 use App\Http\Controllers\Web\OrdersController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\BusinessController;
+use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\NotificationController;
 use Illuminate\Support\Facades\Route;
 
@@ -90,6 +91,12 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('business')->name('business.')->middleware('role:admin')->group(function () {
         Route::get('/', [BusinessController::class, 'index'])->name('index');
         Route::post('/update', [BusinessController::class, 'update'])->name('update');
+    });
+
+    // Role Permissions Routes (Admin Only)
+    Route::prefix('roles')->name('roles.')->middleware('role:admin')->group(function () {
+        Route::get('/', [RoleController::class, 'index'])->name('index');
+        Route::post('/update/{role}', [RoleController::class, 'update'])->name('update');
     });
 });
 
