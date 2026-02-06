@@ -280,14 +280,12 @@
                     <audio id="error-audio" src="{{ asset('sounds/error.mp3') }}" preload="auto"></audio>
 
                     <!-- User Profile Dropdown -->
-                    <div class="dropdown ms-2">
-                        <button class="flex items-center flex-nowrap gap-2 text-white btn btn-link no-underline p-1 px-2 rounded-pill hover:bg-white hover:bg-opacity-10 transition-all duration-300" data-bs-toggle="dropdown" style="max-width: 200px;">
+                    <div class="dropdown">
+                        <button class="flex items-center flex-nowrap gap-3 text-white btn btn-link no-underline p-1 px-2 rounded-pill hover:bg-white hover:bg-opacity-10 transition-all duration-300" data-bs-toggle="dropdown">
                             <!-- Name (Left) -->
-                            <span class="hidden md:inline text-sm font-semibold tracking-wide truncate" style="max-width: 120px;">{{ auth()->user()->username ?? 'Admin' }}</span>
-                            <!-- Chevron (Middle) -->
-                            <i class="bi bi-chevron-down text-[10px] opacity-50 ms-1"></i>
+                            <span class="hidden md:inline text-sm font-bold tracking-wide truncate" style="max-width: 150px;">{{ auth()->user()->username ?? 'Admin' }}</span>
                             <!-- Profile Image (Absolute Right/End) -->
-                            <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 overflow-hidden shadow-inner ms-1">
+                            <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border-2 border-slate-600 overflow-hidden shadow-lg shrink-0">
                                 @if (auth()->user() && auth()->user()->profile_image)
                                 <img src="{{ asset(auth()->user()->profile_image) }}" class="w-full h-full object-cover">
                                 @else
