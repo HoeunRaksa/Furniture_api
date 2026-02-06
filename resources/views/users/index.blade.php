@@ -223,14 +223,14 @@
         });
 
         // Image preview for CREATE modal
-        $('input[name="profile_image"]').on('change', function(e) {
+        $('#createUserForm input[name="profile_image"]').on('change', function(e) {
             const file = e.target.files[0];
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     let preview = $('#create_image_preview');
                     if (preview.length === 0) {
-                        $('input[name="profile_image"]').after(
+                        $('#createUserForm input[name="profile_image"]').after(
                             '<div id="create_image_preview" class="mt-2 text-center">' +
                             '<img src="" class="rounded-circle border" style="width: 80px; height: 80px; object-fit: cover;">' +
                             '</div>'
