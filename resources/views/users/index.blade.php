@@ -227,8 +227,20 @@
                     }
                     $btn.prop('disabled', false).text('Create');
                 },
-                error: function() {
-                    toastr.error('Error creating user');
+                error: function(xhr) {
+                    if (xhr.status === 422) {
+                        const errors = xhr.responseJSON.errors;
+                        let errorMsg = '';
+                        Object.values(errors).forEach(err => {
+                            errorMsg += err[0] + '<br>';
+                        });
+                        toastr.error(errorMsg, 'Validation Error', {
+                            enableHtml: true
+                        });
+                    } else {
+                        const msg = xhr.responseJSON?.msg || 'Error creating user';
+                        toastr.error(msg);
+                    }
                     $btn.prop('disabled', false).text('Create');
                 }
             });

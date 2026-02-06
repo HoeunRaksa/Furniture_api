@@ -44,7 +44,7 @@ class HomeController extends Controller
         $salesData = Order::whereIn('status', ['paid', 'delivered'])
             ->where('created_at', '>=', now()->subDays(6))
             ->select(
-                DB::raw("strftime('%m/%d', created_at) as date"),
+                DB::raw("DATE_FORMAT(created_at, '%m/%d') as date"),
                 DB::raw('SUM(total_price) as total')
             )
             ->groupBy('date')
