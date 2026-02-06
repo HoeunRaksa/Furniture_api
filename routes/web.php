@@ -64,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/image/delete/{id}', [ProductController::class, 'deleteImage'])->name('image.delete');
     });
 
+    /*
     // Attribute Routes
     Route::prefix('attributes')->name('attributes.')->group(function () {
         Route::get('/', [AttributeController::class, 'index'])->name('index');
@@ -77,6 +78,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/value/store', [AttributeController::class, 'storeValue'])->name('value.store');
         Route::delete('/value/destroy/{id}', [AttributeController::class, 'destroyValue'])->name('value.destroy');
     });
+    */
 
     // Orders Routes
     Route::prefix('orders')->name('orders.')->group(function () {

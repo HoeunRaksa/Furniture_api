@@ -22,8 +22,8 @@
         @php
         $inventoryActive =
         request()->routeIs('products.*') ||
-        request()->routeIs('categories.*') ||
-        request()->routeIs('attributes.*');
+        request()->routeIs('categories.*');
+        // request()->routeIs('attributes.*');
         @endphp
 
         <div x-data="{ open: {{ $inventoryActive ? 'true' : 'false' }} }">
@@ -51,11 +51,11 @@
                    {{ request()->routeIs('products.create') ? 'text-indigo-600 font-medium bg-indigo-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
                     Add Product
                 </a>
-                <a href="{{ route('attributes.index') }}"
-                    class="block px-4 py-2 text-sm rounded-lg transition-colors relative
-                   {{ request()->routeIs('attributes.index') ? 'text-indigo-600 font-medium bg-indigo-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
-                    Attributes
-                </a>
+                {{-- <a href="{{ route('attributes.index') }}"
+                class="block px-4 py-2 text-sm rounded-lg transition-colors relative
+                {{ request()->routeIs('attributes.index') ? 'text-indigo-600 font-medium bg-indigo-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
+                Attributes
+                </a> --}}
                 <a href="{{ route('categories.index') }}"
                     class="block px-4 py-2 text-sm rounded-lg transition-colors relative
                    {{ request()->routeIs('categories.index') ? 'text-indigo-600 font-medium bg-indigo-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
