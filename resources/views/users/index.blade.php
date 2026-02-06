@@ -27,14 +27,14 @@
 </div>
 
 <!-- Create Modal -->
-<div class="modal fade" id="createUserModal" tabindex="-1">
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-4 shadow">
             <form id="createUserForm" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold">Add New User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title fw-bold" id="createUserModalLabel">Add New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body py-4">
                     <div class="mb-3">
@@ -78,7 +78,7 @@
 </div>
 
 <!-- Edit Modal -->
-<div class="modal fade" id="editUserModal" tabindex="-1">
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-4 shadow">
             <form id="editUserForm" enctype="multipart/form-data">
@@ -88,8 +88,8 @@
                 <input type="hidden" id="edit_is_last_admin" value="0">
                 <input type="hidden" id="edit_current_role">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold">Edit User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title fw-bold" id="editUserModalLabel">Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body py-4">
                     <div class="mb-3 text-center">
@@ -191,7 +191,7 @@
             }
         });
 
-        // Create user with FormData for file upload
+        // Create user
         $('#createUserForm').on('submit', function(e) {
             e.preventDefault();
             const $btn = $(this).find('button[type="submit"]');
@@ -209,6 +209,7 @@
                     if (res.success) {
                         toastr.success(res.msg);
                         $('#createUserForm')[0].reset();
+                        $('#create_image_preview').remove();
                         $('#createUserModal').modal('hide');
                         table.ajax.reload();
                     }
@@ -241,12 +242,6 @@
                 };
                 reader.readAsDataURL(file);
             }
-        });
-
-        // Reset CREATE modal when closed
-        $('#createUserModal').on('hidden.bs.modal', function() {
-            $('#createUserForm')[0].reset();
-            $('#create_image_preview').remove();
         });
 
         // Edit user - load data
@@ -288,6 +283,18 @@
             });
         });
 
+        // Image preview for EDIT modal
+        $('#edit_profile_image').on('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#edit_avatar_preview').attr('src', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
         // Show warning when last admin tries to change role
         $('#edit_role').on('change', function() {
             const isLastAdmin = $('#edit_is_last_admin').val() === '1';
@@ -301,26 +308,7 @@
             }
         });
 
-        // Image preview for EDIT modal
-        $('#edit_profile_image').on('change', function(e) {
-            const file = e.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#edit_avatar_preview').attr('src', e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Reset EDIT modal when closed
-        $('#editUserModal').on('hidden.bs.modal', function() {
-            $('#editUserForm')[0].reset();
-            $('#edit_profile_image').val('');
-            $('#last_admin_warning').hide();
-        });
-
-        // Update user with FormData for file upload
+        // Update user
         $('#editUserForm').on('submit', function(e) {
             e.preventDefault();
             const userId = $('#edit_user_id').val();
@@ -332,7 +320,7 @@
 
             $.ajax({
                 url: `/users/${userId}`,
-                method: 'POST', // Use POST with _method for FormData
+                method: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
