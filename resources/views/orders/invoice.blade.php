@@ -219,6 +219,11 @@
             <button onclick="window.print()" style="padding: 10px 20px; cursor: pointer; background: #1e293b; color: #fff; border: none; border-radius: 5px;">Print Invoice</button>
         </div>
     </div>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
 </body>
 
 </html>

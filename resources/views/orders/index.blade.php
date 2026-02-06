@@ -32,9 +32,8 @@
             <div class="modal-body">
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <h6 class="text-muted small text-uppercase fw-bold">Customer & Shipping</h6>
-                        <p class="mb-1 fw-bold" id="customerName"></p>
-                        <p class="mb-1 text-muted" id="customerEmail"></p>
+                        <h6 class="text-muted small text-uppercase fw-bold mb-3">Customer & Shipping</h6>
+                        <div id="customerInfoContainer"></div>
                         <p class="mb-1 text-muted" id="customerPhone"></p>
                         <p class="mb-0 small text-slate-600"><i class="bi bi-geo-alt me-1"></i><span id="shippingAddress"></span></p>
                     </div>
@@ -167,7 +166,23 @@
             $.get(`/orders/show/${id}`, function(order) {
                 $('#orderInvoiceNo').text(order.invoice_no || order.id);
                 $('#customerName').text(order.user ? order.user.username : 'N/A');
-                $('#customerEmail').text(order.user ? order.user.email : 'N/A');
+
+                // User Image
+                const userImage = order.user && order.user.profile_image ?
+                    `{{ asset('') }}${order.user.profile_image}` :
+                    `{{ asset('images/default-avatar.png') }}`;
+
+                const userImageHtml = `
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="${userImage}" class="rounded-circle border shadow-sm me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                        <div>
+                            <p class="mb-0 fw-bold" id="customerName">${order.user ? order.user.username : 'N/A'}</p>
+                            <small class="text-muted">${order.user ? order.user.email : 'N/A'}</small>
+                        </div>
+                    </div>
+                `;
+                $('#customerInfoContainer').html(userImageHtml);
+
                 $('#customerPhone').text(order.phone_number || 'N/P');
                 $('#shippingAddress').text(order.shipping_address || 'No address provided');
                 $('#orderDate').text(new Date(order.created_at).toLocaleString());
