@@ -48,7 +48,7 @@ class HomeController extends Controller
                 DB::raw('SUM(total_price) as total')
             )
             ->groupBy('date')
-            ->orderBy('created_at')
+            ->orderBy('date')
             ->get();
 
         // Top Categories
