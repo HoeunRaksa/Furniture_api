@@ -20,7 +20,6 @@
                                 <input class="form-check-input" type="checkbox" id="selectAllUsers">
                             </div>
                         </th>
-                        <th style="width: 50px;">#</th>
                         <th>User</th>
                         <th>Email</th>
                         <th style="width: 100px;">Role</th>
@@ -103,10 +102,6 @@
                     className: 'text-center'
                 },
                 {
-                    data: 'id',
-                    name: 'id'
-                },
-                {
                     data: 'avatar',
                     name: 'username',
                     orderable: true,
@@ -134,7 +129,7 @@
                 }
             ],
             order: [
-                [1, 'desc']
+                [1, 'asc']
             ],
             language: {
                 paginate: {
@@ -149,7 +144,7 @@
 
         // Handle "Select All"
         $('#selectAllUsers').on('change', function() {
-            $('.user-checkbox').prop('checked', $(this).is(':checked'));
+            $('.user-checkbox:not(:disabled)').prop('checked', $(this).is(':checked'));
             updateSelectedCount();
         });
 

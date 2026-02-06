@@ -56,7 +56,6 @@
                                         @endif
                                         <div>
                                             <div class="fw-bold" style="color: #1e293b;">{{ $product->name }}</div>
-                                            <small class="text-muted">ID: {{ $product->id }}</small>
                                         </div>
                                     </div>
                                 </td>
@@ -133,7 +132,7 @@
                 infoEmpty: "No products available",
                 infoFiltered: "(filtered from _MAX_ total products)"
             },
-            columnDefs: [{}
+            columnDefs: [{
                 orderable: false,
                 targets: 0
             }]

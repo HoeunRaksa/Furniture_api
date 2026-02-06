@@ -24,8 +24,10 @@ class UserController extends Controller
 
             return DataTables::of($query)
                 ->addColumn('checkbox', function ($user) {
+                    $disabled = $user->id === Auth::id() ? 'disabled' : '';
+                    $title = $user->id === Auth::id() ? 'title="You cannot delete yourself"' : '';
                     return '<div class="form-check d-flex justify-content-center">
-                                <input class="form-check-input user-checkbox" type="checkbox" value="' . $user->id . '">
+                               <input class="form-check-input user-checkbox" type="checkbox" value="' . $user->id . '" ' . $disabled . ' ' . $title . '>
                             </div>';
                 })
                 ->addColumn('avatar', function ($user) {
