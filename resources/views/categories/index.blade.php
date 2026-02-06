@@ -197,6 +197,13 @@
                         } else {
                             toastr.error(response.msg);
                         }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 403) {
+                            toastr.error('You need permission to perform this action.');
+                        } else {
+                            toastr.error('Error updating category');
+                        }
                     }
                 });
             });

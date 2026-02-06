@@ -48,21 +48,21 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('categories')->name('categories.')->middleware('permission:view_categories')->group(function () {
         Route::get('/', [CategoryController::class, 'index'])->name('index');
         Route::get('/data', [CategoryController::class, 'data'])->name('data');
-        Route::post('/store', [CategoryController::class, 'store'])->name('store');
-        Route::put('/update/{id}', [CategoryController::class, 'update'])->name('update');
-        Route::delete('/destroy/{id}', [CategoryController::class, 'destroy'])->name('destroy');
-        Route::post('/mass-destroy', [CategoryController::class, 'massDestroy'])->name('mass-destroy');
+        Route::post('/store', [CategoryController::class, 'store'])->name('store')->middleware('permission:manage_categories');
+        Route::put('/update/{id}', [CategoryController::class, 'update'])->name('update')->middleware('permission:manage_categories');
+        Route::delete('/destroy/{id}', [CategoryController::class, 'destroy'])->name('destroy')->middleware('permission:manage_categories');
+        Route::post('/mass-destroy', [CategoryController::class, 'massDestroy'])->name('mass-destroy')->middleware('permission:manage_categories');
     });
 
     // User Routes (Admin & Staff with permission)
     Route::prefix('users')->name('users.')->middleware('permission:view_users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/data', [UserController::class, 'data'])->name('data');
-        Route::post('/store', [UserController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [UserController::class, 'update'])->name('update');
-        Route::delete('/destroy/{id}', [UserController::class, 'destroy'])->name('destroy');
-        Route::post('/mass-destroy', [UserController::class, 'massDestroy'])->name('mass-destroy');
+        Route::post('/store', [UserController::class, 'store'])->name('store')->middleware('permission:manage_users');
+        Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit')->middleware('permission:manage_users');
+        Route::put('/{id}', [UserController::class, 'update'])->name('update')->middleware('permission:manage_users');
+        Route::delete('/destroy/{id}', [UserController::class, 'destroy'])->name('destroy')->middleware('permission:manage_users');
+        Route::post('/mass-destroy', [UserController::class, 'massDestroy'])->name('mass-destroy')->middleware('permission:manage_users');
     });
 
     // Product Routes (Admin & Staff)
@@ -84,7 +84,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/data', [OrdersController::class, 'data'])->name('data');
         Route::get('/show/{id}', [OrdersController::class, 'show'])->name('show');
         Route::get('/print/{id}', [OrdersController::class, 'printInvoice'])->name('print');
-        Route::delete('/destroy/{id}', [OrdersController::class, 'destroy'])->name('destroy');
+        Route::delete('/destroy/{id}', [OrdersController::class, 'destroy'])->name('destroy')->middleware('permission:manage_orders');
     });
 
     // Business Routes (Admin Only)

@@ -62,6 +62,10 @@ class RoleController extends Controller
             RolePermission::insert($data);
         }
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'msg' => ucfirst($role) . ' permissions updated successfully.']);
+        }
+
         return redirect()->route('roles.index')->with('success', ucfirst($role) . ' permissions updated successfully.');
     }
 }

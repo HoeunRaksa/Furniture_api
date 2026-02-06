@@ -52,7 +52,10 @@
                     </div>
 
                     <div class="text-end mt-4">
-                        <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">Save Changes</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm"
+                            title="{{ auth()->user()->role === 'admin' ? 'Save Changes' : 'You do not have permission to perform this action' }}">
+                            Save Changes
+                        </button>
                     </div>
                 </form>
             </x-widget>
@@ -82,6 +85,13 @@
                 success: function(res) {
                     if (res.success) {
                         toastr.success(res.msg);
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 403) {
+                        toastr.error('You need permission to perform this action.');
+                    } else {
+                        toastr.error('Error updating settings');
                     }
                 }
             });

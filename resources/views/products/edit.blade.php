@@ -132,7 +132,8 @@
 
             <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3 align-items-center">
                 <a href="{{ route('products.index') }}" class="btn btn-light rounded-pill px-4">Cancel</a>
-                <button type="submit" id="btnSubmitProduct" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                <button type="submit" id="btnSubmitProduct" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm"
+                    title="{{ auth()->user()->hasPermission('edit_products') ? 'Update Product' : 'You do not have permission to perform this action' }}">
                     Update Product
                 </button>
             </div>
@@ -372,6 +373,8 @@
                     if (err.status === 422) {
                         const errors = err.responseJSON.errors;
                         Object.keys(errors).forEach(key => toastr.error(errors[key][0]));
+                    } else if (err.status === 403) {
+                        toastr.error('You need permission to perform this action.');
                     } else {
                         toastr.error('Error while updating product.');
                     }

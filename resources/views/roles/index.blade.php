@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <form action="{{ route('roles.update', $role) }}" method="POST">
+                    <form class="role-permission-form" action="{{ route('roles.update', $role) }}" method="POST">
                         @csrf
                         <div class="list-group list-group-flush">
                             @foreach($permissions as $group => $perms)
@@ -37,8 +37,6 @@
                             @foreach($perms as $perm)
                             @php
                             $hasPerm = $rolePermissions->get($role)?->contains('permission_id', $perm->id);
-                            // Admin always has all, but visual feedback is good.
-                            // Though actual logic in User model overrides this for admin.
                             $isChecked = $hasPerm || $role === 'admin';
                             $isDisabled = $role === 'admin';
                             @endphp
@@ -59,7 +57,8 @@
 
                         @if($role !== 'admin')
                         <div class="p-4 border-top bg-light">
-                            <button type="submit" class="btn btn-dark w-100 py-2 rounded-3 shadow-sm">
+                            <button type="submit" class="btn btn-dark w-100 py-2 rounded-3 shadow-sm"
+                                title="{{ auth()->user()->role === 'admin' ? 'Save Permissions' : 'You do not have permission to perform this action' }}">
                                 Save {{ ucfirst($role) }} Permissions
                             </button>
                         </div>
