@@ -185,6 +185,10 @@
 
         // Edit Category Modal setup
         $(document).on('click', '.edit-category', function() {
+            if ($(this).data('authorized') === false) {
+                toastr.error('You do not have permission to perform this action.');
+                return;
+            }
             let id = $(this).data('id');
             let name = $(this).data('name');
             let $modal = $('#editCategoryModal');

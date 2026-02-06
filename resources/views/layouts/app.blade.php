@@ -592,6 +592,12 @@
         $(document).on('click', '.edit-user, .edit-self', function(e) {
             e.preventDefault();
             const $btn = $(this);
+
+            if ($btn.data('authorized') === false) {
+                toastr.error('You do not have permission to perform this action.');
+                return;
+            }
+
             const userId = $btn.data('id');
             const isSelfLink = $btn.hasClass('edit-self');
             const isSelfId = userId == "{{ auth()->id() }}";

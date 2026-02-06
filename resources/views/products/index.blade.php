@@ -139,6 +139,13 @@
             }]
         });
 
+        // Instant Intercept for Unauthorized Edit Links
+        $(document).on('click', 'a[data-authorized="false"]', function(e) {
+            e.preventDefault();
+            e.stopImmediatePropagation(); // Stop other handlers
+            toastr.error('You do not have permission to perform this action.');
+        });
+
         // Batch delete logic
         $('#selectAllProducts').on('change', function() {
             $('.product-checkbox').prop('checked', $(this).is(':checked'));
@@ -199,7 +206,12 @@
         });
 
         // Delete confirmation
-        $(document).on('click', '.delete-product', function() {
+        $(document).on('click', '.delete-product', function(e) {
+            e.preventDefault();
+            if ($(this).data('authorized') === false) {
+                toastr.error('You do not have permission to perform this action.');
+                return;
+            }
             const url = $(this).data('url');
             showConfirmModal('Are you sure you want to delete this product?', () => {
                 fetch(url, {
