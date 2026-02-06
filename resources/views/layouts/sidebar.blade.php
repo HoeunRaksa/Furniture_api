@@ -16,14 +16,16 @@
         </a>
 
         <!-- Section Label -->
+        @if(auth()->user() && auth()->user()->role === 'admin')
         <div class="px-4 mt-8 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-none">Management</div>
+        @endif
 
         <!-- Inventory Dropdown -->
+        @if(auth()->user() && auth()->user()->role === 'admin')
         @php
         $inventoryActive =
         request()->routeIs('products.*') ||
         request()->routeIs('categories.*');
-        // request()->routeIs('attributes.*');
         @endphp
 
         <div x-data="{ open: {{ $inventoryActive ? 'true' : 'false' }} }">
@@ -51,11 +53,6 @@
                    {{ request()->routeIs('products.create') ? 'text-indigo-600 font-medium bg-indigo-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
                     Add Product
                 </a>
-                {{-- <a href="{{ route('attributes.index') }}"
-                class="block px-4 py-2 text-sm rounded-lg transition-colors relative
-                {{ request()->routeIs('attributes.index') ? 'text-indigo-600 font-medium bg-indigo-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
-                Attributes
-                </a> --}}
                 <a href="{{ route('categories.index') }}"
                     class="block px-4 py-2 text-sm rounded-lg transition-colors relative
                    {{ request()->routeIs('categories.index') ? 'text-indigo-600 font-medium bg-indigo-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
@@ -63,8 +60,10 @@
                 </a>
             </div>
         </div>
+        @endif
 
         <!-- Sales Orders -->
+        @if(auth()->user() && auth()->user()->role === 'admin')
         @php
         $salesActive = request()->routeIs('orders.*');
         @endphp
@@ -90,6 +89,7 @@
                 </a>
             </div>
         </div>
+        @endif
 
         <!-- User Management -->
         @if(auth()->user() && auth()->user()->role === 'admin')

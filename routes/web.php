@@ -43,8 +43,8 @@ Route::middleware(['auth'])->group(function () {
         // Additional admin routes can go here
     });
 
-    // Category Routes
-    Route::prefix('categories')->name('categories.')->group(function () {
+    // Category Routes (Admin Only)
+    Route::prefix('categories')->name('categories.')->middleware('role:admin')->group(function () {
         Route::get('/', [CategoryController::class, 'index'])->name('index');
         Route::get('/data', [CategoryController::class, 'data'])->name('data');
         Route::post('/store', [CategoryController::class, 'store'])->name('store');
@@ -53,8 +53,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/mass-destroy', [CategoryController::class, 'massDestroy'])->name('mass-destroy');
     });
 
-    // User Routes
-    Route::prefix('users')->name('users.')->group(function () {
+    // User Routes (Admin Only)
+    Route::prefix('users')->name('users.')->middleware('role:admin')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/data', [UserController::class, 'data'])->name('data');
         Route::post('/store', [UserController::class, 'store'])->name('store');
@@ -64,8 +64,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/mass-destroy', [UserController::class, 'massDestroy'])->name('mass-destroy');
     });
 
-    // Product Routes
-    Route::prefix('products')->name('products.')->group(function () {
+    // Product Routes (Admin Only)
+    Route::prefix('products')->name('products.')->middleware('role:admin')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/data', [ProductController::class, 'data'])->name('data');
         Route::get('/create', [ProductController::class, 'create'])->name('create');
@@ -77,8 +77,8 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/image/delete/{id}', [ProductController::class, 'deleteImage'])->name('image.delete');
     });
 
-    // Orders Routes
-    Route::prefix('orders')->name('orders.')->group(function () {
+    // Orders Routes (Admin Only)
+    Route::prefix('orders')->name('orders.')->middleware('role:admin')->group(function () {
         Route::get('/', [OrdersController::class, 'index'])->name('index');
         Route::get('/data', [OrdersController::class, 'data'])->name('data');
         Route::get('/show/{id}', [OrdersController::class, 'show'])->name('show');
@@ -86,8 +86,8 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/destroy/{id}', [OrdersController::class, 'destroy'])->name('destroy');
     });
 
-    // Business Routes
-    Route::prefix('business')->name('business.')->group(function () {
+    // Business Routes (Admin Only)
+    Route::prefix('business')->name('business.')->middleware('role:admin')->group(function () {
         Route::get('/', [BusinessController::class, 'index'])->name('index');
         Route::post('/update', [BusinessController::class, 'update'])->name('update');
     });
