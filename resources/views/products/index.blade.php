@@ -87,12 +87,23 @@
                                     @endif
                                 </td>
                                 <td class="px-3 text-end">
+                                    @php
+                                    $canEdit = auth()->user()->hasPermission('edit_products');
+                                    $canDelete = auth()->user()->hasPermission('delete_products');
+                                    @endphp
                                     <div class="btn-group">
-                                        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-light border" title="Edit">
+                                        <a href="{{ $canEdit ? route('products.edit', $product->id) : 'javascript:void(0)' }}"
+                                            class="btn btn-sm btn-light border {{ $canEdit ? '' : 'permission-denied' }}"
+                                            data-authorized="{{ $canEdit ? 'true' : 'false' }}"
+                                            title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
 
-                                        <button type="button" class="btn btn-sm btn-light border text-danger delete-product" data-url="{{ route('products.destroy', $product->id) }}" title="Delete">
+                                        <button type="button"
+                                            class="btn btn-sm btn-light border text-danger delete-product {{ $canDelete ? '' : 'permission-denied' }}"
+                                            data-url="{{ route('products.destroy', $product->id) }}"
+                                            data-authorized="{{ $canDelete ? 'true' : 'false' }}"
+                                            title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
