@@ -19,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.auth' => ApiAuthMiddleware::class,
             'role' => RoleMiddleware::class,
             'permission' => \App\Http\Middleware\PermissionMiddleware::class,
+            'bank.balance' => \App\Http\Middleware\CheckBankBalance::class,
+            'bank.auth' => \App\Http\Middleware\BankAuthMiddleware::class,
         ]);
 
         $middleware->web(append: [

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\Bank\BankAccountController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,6 +45,22 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Order Routes
     Route::post('/orders', [OrderController::class, 'store']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Dedicated Bank System Routes (Separate Frontend)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('bank')->group(function () {
+    // Public Bank Routes
+    Route::post('/login', [BankAccountController::class, 'login']);
+    Route::get('/seed', [BankAccountController::class, 'seedTestData']);
+
+    // Protected Bank Routes
+    Route::middleware('bank.auth')->group(function () {
+        Route::get('/account', [BankAccountController::class, 'getAccountDetails']);
+    });
 });
 
 /*
