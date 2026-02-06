@@ -344,56 +344,84 @@
             <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content border-0 rounded-4 shadow">
-                        <form id="editUserForm" enctype="multipart/form-data">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" id="edit_user_id" name="id">
-                            <input type="hidden" id="edit_current_role">
+                        <!-- Profile View Section -->
+                        <div id="profileViewSection">
                             <div class="modal-header border-0 pb-0">
-                                <h5 class="modal-title fw-bold" id="editUserModalLabel">Edit Profile</h5>
+                                <h5 class="modal-title fw-bold" id="editUserModalLabel">User Profile</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" data-mdb-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="modal-body py-3">
-                                <div class="mb-3 text-center">
-                                    <div class="position-relative d-inline-block">
-                                        <img id="edit_avatar_preview" src="" alt="Preview" class="rounded-circle border shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
-                                        <label for="edit_profile_image" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 cursor-pointer shadow-sm" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="bi bi-camera-fill" style="font-size: 0.8rem;"></i>
-                                        </label>
-                                    </div>
-                                    <input type="file" id="edit_profile_image" name="profile_image" class="d-none" accept="image/*">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold small text-muted">Username</label>
-                                    <input type="text" id="edit_username" name="username" class="form-control rounded-3" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold small text-muted">Email</label>
-                                    <input type="email" id="edit_email" name="email" class="form-control rounded-3" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold small text-muted">Password <small class="text-muted text-xs ms-1">(leave blank to keep current)</small></label>
-                                    <input type="password" id="edit_password" name="password" class="form-control rounded-3" placeholder="••••••••">
-                                </div>
+                            <div class="modal-body py-4 text-center">
+                                <img id="view_avatar" src="" alt="Profile" class="rounded-circle border shadow-sm mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                                <h4 id="view_username" class="fw-bold mb-1 text-dark"></h4>
+                                <p id="view_email" class="text-muted mb-3"></p>
+                                <span id="view_role" class="badge rounded-pill bg-primary px-3 py-2 mb-4"></span>
 
-                                @if(auth()->user() && auth()->user()->role === 'admin')
-                                <div class="mb-3" id="role_selection_container">
-                                    <label class="form-label fw-bold small text-muted">Role</label>
-                                    <select id="edit_role" name="role" class="form-select rounded-3">
-                                        <option value="admin">Admin</option>
-                                        <option value="staff">Staff</option>
-                                        <option value="user">User</option>
-                                    </select>
+                                <div class="d-grid gap-2 px-4">
+                                    <button type="button" class="btn btn-primary rounded-pill py-2 fw-bold shadow-sm" id="switchToEditBtn">
+                                        <i class="bi bi-pencil-square me-2"></i> Edit Profile
+                                    </button>
                                 </div>
-                                @else
-                                <input type="hidden" id="edit_role" name="role" value="{{ auth()->user()->role ?? 'user' }}">
-                                @endif
                             </div>
-                            <div class="modal-footer border-0 pt-0">
-                                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal" data-mdb-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm" id="editUserSubmitBtn">Update Profile</button>
-                            </div>
-                        </form>
+                        </div>
+
+                        <!-- Profile Edit Section (Hidden by default) -->
+                        <div id="profileEditSection" style="display: none;">
+                            <form id="editUserForm" enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" id="edit_user_id" name="id">
+                                <input type="hidden" id="edit_current_role">
+                                <div class="modal-header border-0 pb-0">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <button type="button" class="btn btn-link text-dark p-0" id="switchToViewBtn">
+                                            <i class="bi bi-arrow-left fs-5"></i>
+                                        </button>
+                                        <h5 class="modal-title fw-bold">Edit Profile</h5>
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-mdb-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body py-3">
+                                    <div class="mb-3 text-center">
+                                        <div class="position-relative d-inline-block">
+                                            <img id="edit_avatar_preview" src="" alt="Preview" class="rounded-circle border shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
+                                            <label for="edit_profile_image" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 cursor-pointer shadow-sm" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="bi bi-camera-fill" style="font-size: 0.8rem;"></i>
+                                            </label>
+                                        </div>
+                                        <input type="file" id="edit_profile_image" name="profile_image" class="d-none" accept="image/*">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-muted">Username</label>
+                                        <input type="text" id="edit_username" name="username" class="form-control rounded-3" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-muted">Email</label>
+                                        <input type="email" id="edit_email" name="email" class="form-control rounded-3" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-muted">Password <small class="text-muted text-xs ms-1">(leave blank to keep current)</small></label>
+                                        <input type="password" id="edit_password" name="password" class="form-control rounded-3" placeholder="••••••••">
+                                    </div>
+
+                                    @if(auth()->user() && auth()->user()->role === 'admin')
+                                    <div class="mb-3" id="role_selection_container">
+                                        <label class="form-label fw-bold small text-muted">Role</label>
+                                        <select id="edit_role" name="role" class="form-select rounded-3">
+                                            <option value="admin">Admin</option>
+                                            <option value="staff">Staff</option>
+                                            <option value="user">User</option>
+                                        </select>
+                                    </div>
+                                    @else
+                                    <input type="hidden" id="edit_role" name="role" value="{{ auth()->user()->role ?? 'user' }}">
+                                    @endif
+                                </div>
+                                <div class="modal-footer border-0 pt-0">
+                                    <button type="button" class="btn btn-light rounded-pill px-4" id="cancelEditBtn">Back</button>
+                                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm" id="editUserSubmitBtn">Update Profile</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
