@@ -37,7 +37,7 @@
             serverSide: true,
             ajax: "{{ route('categories.data') }}",
             dom: '<"d-flex justify-content-between mb-2"lfB>rtip',
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+            buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
             columns: [{
                     data: 'id',
                     name: 'id'
