@@ -278,6 +278,43 @@
                     <audio id="success-audio" src="{{ asset('sounds/success.mp3') }}" preload="auto"></audio>
                     <audio id="error-audio" src="{{ asset('sounds/error.mp3') }}" preload="auto"></audio>
 
+                    <!-- User Profile Dropdown -->
+                    <div class="dropdown ms-2">
+                        <button class="flex items-center gap-2 text-white btn btn-link no-underline p-0" data-bs-toggle="dropdown">
+                            <!-- Profile Image (Left) -->
+                            <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 overflow-hidden shadow-inner">
+                                @if (auth()->user() && auth()->user()->profile_image)
+                                <img src="{{ asset(auth()->user()->profile_image) }}" class="w-full h-full object-cover">
+                                @else
+                                <i class="bi bi-person text-white"></i>
+                                @endif
+                            </div>
+                            <!-- Name (Right) -->
+                            <span class="hidden md:inline text-sm font-semibold tracking-wide">{{ auth()->user()->username ?? 'Admin' }}</span>
+                            <i class="bi bi-chevron-down text-[10px] opacity-50"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-xl border-0 rounded-xl mt-3">
+                            <li class="px-4 py-2 bg-light border-bottom mb-2">
+                                <div class="small text-muted fw-bold uppercase tracking-wider" style="font-size: 0.65rem;">Signed in as</div>
+                                <div class="text-dark fw-bold">{{ auth()->user()->full_name }}</div>
+                            </li>
+                            <li><a class="dropdown-item py-2 px-4 flex items-center gap-2" href="{{ route('users.index') }}"><i class="bi bi-person text-slate-400"></i> My Profile</a></li>
+                            @if(auth()->user() && auth()->user()->role === 'admin')
+                            <li><a class="dropdown-item py-2 px-4 flex items-center gap-2" href="{{ route('business.index') }}"><i class="bi bi-gear text-slate-400"></i> Settings</a></li>
+                            @endif
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger py-2 px-4 flex items-center gap-2 font-semibold">
+                                        <i class="bi bi-box-arrow-right"></i> Sign Out
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </nav>

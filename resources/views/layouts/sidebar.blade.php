@@ -1,6 +1,6 @@
-<aside class="w-full h-full bg-white shadow-xl rounded-r-2xl py-6 sidebar-animate flex flex-col border-r border-slate-100 font-sans">
+<aside class="w-full h-full bg-white shadow-xl rounded-r-2xl py-6 sidebar-animate overflow-y-auto border-r border-slate-100 font-sans">
 
-    <nav class="px-3 space-y-2 flex-grow overflow-y-auto">
+    <nav class="px-3 space-y-2">
 
         <!-- Home -->
         <a href="{{ route('home') }}"
@@ -136,45 +136,4 @@
         @endif
 
     </nav>
-
-    <!-- User Profile at Bottom -->
-    <div class="mt-auto px-3 pt-6 border-t border-slate-100">
-        <div class="dropdown">
-            <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:bg-slate-50 group no-underline text-left" data-bs-toggle="dropdown">
-                <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 overflow-hidden shadow-inner shrink-0">
-                    @if (auth()->user() && auth()->user()->profile_image)
-                    <img src="{{ asset(auth()->user()->profile_image) }}" class="w-full h-full object-cover">
-                    @else
-                    <i class="bi bi-person text-slate-500"></i>
-                    @endif
-                </div>
-                <div class="flex flex-col min-w-0">
-                    <span class="text-sm font-bold text-slate-800 truncate">{{ auth()->user()->username ?? 'Admin' }}</span>
-                    <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">{{ auth()->user()->role ?? 'Staff' }}</span>
-                </div>
-                <i class="bi bi-chevron-up ms-auto text-[10px] text-slate-400 transition-transform group-hover:text-slate-600"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-dark shadow-xl border-0 rounded-xl mb-2 w-[calc(100%-1.5rem)] ml-3">
-                <li class="px-4 py-2 bg-slate-800 border-bottom border-slate-700 mb-2 rounded-t-xl">
-                    <div class="text-[10px] text-slate-400 fw-bold uppercase tracking-wider">Signed in as</div>
-                    <div class="text-white text-sm fw-bold truncate">{{ auth()->user()->email }}</div>
-                </li>
-                <li><a class="dropdown-item py-2 px-4 flex items-center gap-2" href="{{ route('users.index') }}"><i class="bi bi-person text-slate-400"></i> My Profile</a></li>
-                @if(auth()->user() && auth()->user()->role === 'admin')
-                <li><a class="dropdown-item py-2 px-4 flex items-center gap-2" href="{{ route('business.index') }}"><i class="bi bi-gear text-slate-400"></i> Settings</a></li>
-                @endif
-                <li>
-                    <hr class="dropdown-divider border-slate-700 opacity-50">
-                </li>
-                <li>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="dropdown-item text-danger py-2 px-4 flex items-center gap-2 font-semibold">
-                            <i class="bi bi-box-arrow-right"></i> Sign Out
-                        </button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </div>
 </aside>
