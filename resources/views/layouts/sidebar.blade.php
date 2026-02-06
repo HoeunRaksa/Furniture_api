@@ -97,7 +97,7 @@
         @endif
 
         <!-- User Management -->
-        @if(auth()->user() && auth()->user()->hasPermission('view_users'))
+        @if(auth()->user() && (auth()->user()->hasPermission('view_users') || auth()->user()->hasPermission('view_roles')))
         @php
         $userActive = request()->routeIs('users.*') || request()->routeIs('roles.*');
         @endphp
@@ -122,7 +122,7 @@
                     User List
                 </a>
 
-                @if(auth()->user()->role === 'admin')
+                @if(auth()->user()->hasPermission('view_roles'))
                 <a href="{{ route('roles.index') }}"
                     class="block px-4 py-2 text-sm rounded-lg transition-colors relative
                    {{ request()->routeIs('roles.index') ? 'text-purple-600 font-medium bg-purple-50/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50' }}">
@@ -134,7 +134,7 @@
         @endif
 
 
-        @if(auth()->user() && auth()->user()->role === 'admin')
+        @if(auth()->user() && auth()->user()->hasPermission('view_business'))
         <!-- Section Label -->
         <div class="px-4 mt-8 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-none">Configuration</div>
 

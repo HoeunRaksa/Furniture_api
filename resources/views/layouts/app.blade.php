@@ -360,7 +360,7 @@
                                 <div class="text-dark fw-bold">{{ auth()->user()->full_name }}</div>
                             </li>
                             <li><a class="dropdown-item py-2 px-4 flex items-center gap-2 edit-self" href="javascript:void(0)" data-id="{{ auth()->id() }}"><i class="bi bi-person text-slate-400"></i> My Profile</a></li>
-                            @if(auth()->user() && auth()->user()->role === 'admin')
+                            @if(auth()->user() && auth()->user()->hasPermission('view_business'))
                             <li><a class="dropdown-item py-2 px-4 flex items-center gap-2" href="{{ route('business.index') }}"><i class="bi bi-gear text-slate-400"></i> Settings</a></li>
                             @endif
                             <li>
