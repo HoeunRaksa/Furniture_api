@@ -106,10 +106,18 @@
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 40px;
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3),
                 0 0 0 1px rgba(255, 255, 255, 0.1);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 20px;
+            }
         }
 
         .login-card:hover {

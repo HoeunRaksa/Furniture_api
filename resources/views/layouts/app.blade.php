@@ -79,10 +79,67 @@
             text-transform: uppercase;
         }
 
-        /* Sidebar */
+        /* Sidebar Responsive */
         .sidebar-wrapper {
+            position: fixed;
+            top: 72px;
+            /* Height of navbar */
+            left: 0;
+            bottom: 0;
+            width: 260px;
+            z-index: 1040;
+            transition: transform 0.3s ease-in-out;
             background: #fff;
             border-right: 1px solid #eaeaea;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-wrapper {
+                transform: translateX(-100%);
+            }
+
+            .sidebar-wrapper.show {
+                transform: translateX(0);
+            }
+
+            .page-content {
+                margin-left: 0 !important;
+            }
+        }
+
+        @media (min-width: 1025px) {
+            .sidebar-wrapper {
+                transform: translateX(0);
+                position: fixed;
+                width: 260px;
+            }
+
+            .page-content {
+                margin-left: 260px;
+            }
+
+            .lg\:hidden {
+                display: none !important;
+            }
+        }
+
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1039;
+            backdrop-filter: blur(2px);
+        }
+
+        .page-content {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        [x-cloak] {
+            display: none !important;
         }
 
         /* Refined Interactions */
