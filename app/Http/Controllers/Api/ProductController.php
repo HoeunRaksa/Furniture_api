@@ -23,6 +23,16 @@ class ProductController extends Controller
                         $image->full_url = url($image->image_url);
                     }
                 });
+
+                // Check for favorite status if user is authenticated (Sanctum)
+                $user = auth('sanctum')->user();
+                if ($user) {
+                    $product->is_favorite = \App\Models\Favorite::where('user_id', $user->id)
+                        ->where('product_id', $product->id)
+                        ->exists();
+                } else {
+                    $product->is_favorite = false;
+                }
             });
 
             return response()->json([
