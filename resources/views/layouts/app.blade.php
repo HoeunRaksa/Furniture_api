@@ -273,19 +273,44 @@
             </main>
 
             <!-- GLOBAL CONFIRM MODAL -->
-            <div class="modal fade" id="globalConfirmModal" tabindex="-1" aria-labelledby="globalConfirmModalLabel" aria-hidden="true">
+            <div class="modal fade" id="globalConfirmModal" tabindex="-1" aria-labelledby="globalConfirmModalLabel" aria-hidden="true" data-bs-backdrop="static">
                 <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content border-0 rounded-4 shadow">
-                        <div class="modal-header border-0">
-                            <h5 class="modal-title fw-bold" id="globalConfirmModalLabel">Confirm Action</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+                        <!-- Modal Header with Gradient -->
+                        <div class="modal-header text-white position-relative" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 1.75rem 2rem;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 12px; backdrop-filter: blur(10px);">
+                                    <i class="bi bi-question-circle-fill" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <h5 class="modal-title fw-bold mb-0" id="globalConfirmModalLabel" style="font-size: 1.25rem; letter-spacing: -0.5px;">Confirm Action</h5>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="opacity: 0.8;"></button>
                         </div>
-                        <div class="modal-body py-4" id="globalConfirmModalBody">
-                            Are you sure you want to proceed?
+
+                        <!-- Modal Body -->
+                        <div class="modal-body p-4" style="background: #f8f9fa;">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 2rem;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="mb-0 text-dark" id="globalConfirmModalBody" style="font-size: 1rem; line-height: 1.6;">
+                                        Are you sure you want to proceed?
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="modal-footer border-0">
-                            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-danger rounded-pill px-4" id="globalConfirmModalConfirmBtn">Yes, Proceed</button>
+
+                        <!-- Modal Footer -->
+                        <div class="modal-footer border-0 bg-white p-4 gap-2" style="justify-content: flex-end;">
+                            <button type="button" class="btn btn-light px-4 py-2 fw-semibold" data-bs-dismiss="modal" style="border-radius: 10px; border: 1px solid #dee2e6;">
+                                <i class="bi bi-x-circle me-1"></i>
+                                Cancel
+                            </button>
+                            <button type="button" class="btn text-white px-4 py-2 fw-semibold shadow-sm" id="globalConfirmModalConfirmBtn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 10px;">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Yes, Proceed
+                            </button>
                         </div>
                     </div>
                 </div>

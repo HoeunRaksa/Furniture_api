@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid py-4">
-        <div class="row">
-            <div class="col-md-8">
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-8">
             <div class="col-md-8">
                 <x-widget title="Attribute Management">
                     <div class="d-flex justify-content-end mb-3">
@@ -26,7 +26,7 @@
                     </div>
                 </x-widget>
             </div>
-            
+
             <div id="valuesSection" class="col-md-4 d-none">
                 <x-widget title="Values for: <span id='currentAttributeName' class='text-primary'></span>">
                     <div class="d-flex justify-content-end mb-3">
@@ -101,22 +101,41 @@
             </div>
         </div>
     </div>
-@endsection
+    @endsection
 
-@push('scripts')
+    @push('scripts')
     <script>
         $(document).ready(function() {
             const table = $('#attributesTable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('attributes.data') }}",
-                columns: [
-                    { data: 'id', name: 'id' },
-                    { data: 'name', name: 'name' },
-                    { data: 'values_count', name: 'values_count', className: 'text-center' },
-                    { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-center' }
+                dom: '<"d-flex justify-content-between mb-2"lfB>rtip',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                columns: [{
+                        data: 'id',
+                        name: 'id'
+                    },
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'values_count',
+                        name: 'values_count',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'actions',
+                        name: 'actions',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    }
                 ],
-                order: [[0, 'desc']]
+                order: [
+                    [0, 'desc']
+                ]
             });
 
             // Create
@@ -171,7 +190,9 @@
                     $.ajax({
                         url: url,
                         method: "DELETE",
-                        data: { _token: "{{ csrf_token() }}" },
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
                         success: function(res) {
                             if (res.success) {
                                 toastr.success(res.msg);
@@ -245,7 +266,9 @@
                 $.ajax({
                     url: `/attributes/value/destroy/${id}`,
                     method: "DELETE",
-                    data: { _token: "{{ csrf_token() }}" },
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
                     success: function(res) {
                         if (res.success) {
                             toastr.success(res.msg);
@@ -257,4 +280,4 @@
             }
         }
     </script>
-@endpush
+    @endpush
