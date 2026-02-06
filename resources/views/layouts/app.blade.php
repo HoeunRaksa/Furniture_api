@@ -302,7 +302,7 @@
                                 <div class="small text-muted fw-bold uppercase tracking-wider" style="font-size: 0.65rem;">Signed in as</div>
                                 <div class="text-dark fw-bold">{{ auth()->user()->full_name }}</div>
                             </li>
-                            <li><a class="dropdown-item py-2 px-4 flex items-center gap-2" href="{{ route('users.index') }}"><i class="bi bi-person text-slate-400"></i> My Profile</a></li>
+                            <li><a class="dropdown-item py-2 px-4 flex items-center gap-2 edit-self" href="javascript:void(0)" data-id="{{ auth()->id() }}"><i class="bi bi-person text-slate-400"></i> My Profile</a></li>
                             @if(auth()->user() && auth()->user()->role === 'admin')
                             <li><a class="dropdown-item py-2 px-4 flex items-center gap-2" href="{{ route('business.index') }}"><i class="bi bi-gear text-slate-400"></i> Settings</a></li>
                             @endif
@@ -339,6 +339,64 @@
                     @yield('content')
                 </div>
             </main>
+
+            <!-- GLOBAL EDIT USER MODAL -->
+            <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 rounded-4 shadow">
+                        <form id="editUserForm" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" id="edit_user_id" name="id">
+                            <input type="hidden" id="edit_current_role">
+                            <div class="modal-header border-0 pb-0">
+                                <h5 class="modal-title fw-bold" id="editUserModalLabel">Edit Profile</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" data-mdb-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body py-3">
+                                <div class="mb-3 text-center">
+                                    <div class="position-relative d-inline-block">
+                                        <img id="edit_avatar_preview" src="" alt="Preview" class="rounded-circle border shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
+                                        <label for="edit_profile_image" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 cursor-pointer shadow-sm" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-camera-fill" style="font-size: 0.8rem;"></i>
+                                        </label>
+                                    </div>
+                                    <input type="file" id="edit_profile_image" name="profile_image" class="d-none" accept="image/*">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">Username</label>
+                                    <input type="text" id="edit_username" name="username" class="form-control rounded-3" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">Email</label>
+                                    <input type="email" id="edit_email" name="email" class="form-control rounded-3" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-muted">Password <small class="text-muted text-xs ms-1">(leave blank to keep current)</small></label>
+                                    <input type="password" id="edit_password" name="password" class="form-control rounded-3" placeholder="••••••••">
+                                </div>
+
+                                @if(auth()->user() && auth()->user()->role === 'admin')
+                                <div class="mb-3" id="role_selection_container">
+                                    <label class="form-label fw-bold small text-muted">Role</label>
+                                    <select id="edit_role" name="role" class="form-select rounded-3">
+                                        <option value="admin">Admin</option>
+                                        <option value="staff">Staff</option>
+                                        <option value="user">User</option>
+                                    </select>
+                                </div>
+                                @else
+                                <input type="hidden" id="edit_role" name="role" value="{{ auth()->user()->role ?? 'user' }}">
+                                @endif
+                            </div>
+                            <div class="modal-footer border-0 pt-0">
+                                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal" data-mdb-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm" id="editUserSubmitBtn">Update Profile</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
             <!-- GLOBAL CONFIRM MODAL -->
             <div class="modal fade" id="globalConfirmModal" tabindex="-1" aria-labelledby="globalConfirmModalLabel" aria-hidden="true" data-bs-backdrop="static">
@@ -441,6 +499,89 @@
                 confirmCallback();
             }
             confirmCallback = null;
+        });
+
+        // Global User Edit Logic
+        $(document).on('click', '.edit-user, .edit-self', function(e) {
+            e.preventDefault();
+            const userId = $(this).data('id');
+            const isSelf = $(this).hasClass('edit-self') || userId == "{{ auth()->id() }}";
+
+            if (isSelf && "{{ auth()->user()->role }}" !== 'admin') {
+                $('#role_selection_container').addClass('d-none');
+            } else {
+                $('#role_selection_container').removeClass('d-none');
+            }
+
+            $.ajax({
+                url: `/users/${userId}/edit`,
+                method: 'GET',
+                success: function(res) {
+                    if (res.success) {
+                        $('#edit_user_id').val(res.user.id);
+                        $('#edit_username').val(res.user.username);
+                        $('#edit_email').val(res.user.email);
+                        if ($('#edit_role').length) $('#edit_role').val(res.user.role);
+                        $('#edit_password').val('');
+
+                        const avatarUrl = res.user.profile_image ?
+                            '{{ asset("") }}' + res.user.profile_image :
+                            '{{ asset("images/default-avatar.png") }}';
+                        $('#edit_avatar_preview').attr('src', avatarUrl);
+
+                        $('#editUserModal').modal('show');
+                    }
+                }
+            });
+        });
+
+        $('#edit_profile_image').on('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#edit_avatar_preview').attr('src', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        $('#editUserForm').on('submit', function(e) {
+            e.preventDefault();
+            const userId = $('#edit_user_id').val();
+            const $btn = $('#editUserSubmitBtn');
+            const originalText = $btn.text();
+
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Updating...');
+
+            const formData = new FormData(this);
+            formData.append('_token', '{{ csrf_token() }}');
+            formData.append('_method', 'PUT');
+
+            $.ajax({
+                url: `/users/${userId}`,
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    if (res.success) {
+                        toastr.success(res.msg);
+                        $('#editUserModal').modal('hide');
+                        if (typeof table !== 'undefined' && table.ajax) table.ajax.reload();
+                        if (userId == "{{ auth()->id() }}") {
+                            setTimeout(() => location.reload(), 1000);
+                        }
+                    } else {
+                        toastr.error(res.msg);
+                    }
+                    $btn.prop('disabled', false).text(originalText);
+                },
+                error: function(xhr) {
+                    toastr.error(xhr.responseJSON?.msg || 'Error updating profile');
+                    $btn.prop('disabled', false).text(originalText);
+                }
+            });
         });
 
         // Logout Confirmation
