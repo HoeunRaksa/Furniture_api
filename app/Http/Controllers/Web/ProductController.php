@@ -302,6 +302,41 @@ class ProductController extends Controller
         }
     }
 
+    public function massDestroy(Request $request)
+    {
+        $ids = $request->ids;
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'msg' => 'No products selected'], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+            $deletedCount = 0;
+
+            foreach ($ids as $id) {
+                $product = Product::find($id);
+                if (!$product) continue;
+
+                // Delete files
+                foreach ($product->images as $image) {
+                    if ($image->image_url && File::exists(public_path($image->image_url))) {
+                        File::delete(public_path($image->image_url));
+                    }
+                }
+
+                $product->delete();
+                $deletedCount++;
+            }
+
+            DB::commit();
+            return response()->json(['success' => true, 'msg' => "$deletedCount products deleted successfully."]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error during mass product deletion', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'msg' => 'Error during mass deletion: ' . $e->getMessage()], 500);
+        }
+    }
+
     /**
      * Delete specific product image.
      */

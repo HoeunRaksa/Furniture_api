@@ -5,7 +5,10 @@
     <div class="row">
         <div class="col-12">
             <x-widget title="Products Management">
-                <div class="d-flex justify-content-end mb-3">
+                <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
+                    <button type="button" id="deleteSelectedBtn" class="btn btn-danger rounded-pill px-4 shadow-sm d-none">
+                        <i class="bi bi-trash me-2"></i> Delete Selected (<span id="selectedCount">0</span>)
+                    </button>
                     <a href="{{ route('products.create') }}" class="btn btn-primary rounded-1 px-4 shadow-sm hover-lift">
                         <i class="bi bi-plus-lg me-2"></i> Add New Product
                     </a>
@@ -21,6 +24,11 @@
                     <table class="table table-hover align-middle" id="productsTable">
                         <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                             <tr>
+                                <th style="width: 40px;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAllProducts">
+                                    </div>
+                                </th>
                                 <th class="py-3 px-3 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 700;">Product</th>
                                 <th class="py-3 px-3 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 700;">Category</th>
                                 <th class="py-3 px-3 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 0.05em; font-weight: 700;">Price</th>
@@ -32,6 +40,11 @@
                         <tbody>
                             @foreach($products as $product)
                             <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td class="px-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input product-checkbox" type="checkbox" value="{{ $product->id }}">
+                                    </div>
+                                </td>
                                 <td class="px-3">
                                     <div class="d-flex align-items-center gap-3">
                                         @if($product->images->first())
@@ -106,11 +119,11 @@
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#productsTable').DataTable({
+        const table = $('#productsTable').DataTable({
             dom: '<"d-flex justify-content-between mb-2"lfB>rtip',
             buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
             order: [
-                [0, 'asc']
+                [1, 'asc']
             ],
             pageLength: 10,
             language: {
@@ -119,7 +132,70 @@
                 info: "Showing _START_ to _END_ of _TOTAL_ products",
                 infoEmpty: "No products available",
                 infoFiltered: "(filtered from _MAX_ total products)"
+            },
+            columnDefs: [{}
+                orderable: false,
+                targets: 0
+            }]
+        });
+
+        // Batch delete logic
+        $('#selectAllProducts').on('change', function() {
+            $('.product-checkbox').prop('checked', $(this).is(':checked'));
+            updateSelectedCount();
+        });
+
+        $(document).on('change', '.product-checkbox', function() {
+            updateSelectedCount();
+        });
+
+        function updateSelectedCount() {
+            const count = $('.product-checkbox:checked').length;
+            $('#selectedCount').text(count);
+            if (count > 0) {
+                $('#deleteSelectedBtn').removeClass('d-none');
+            } else {
+                $('#deleteSelectedBtn').addClass('d-none');
+                $('#selectAllProducts').prop('checked', false);
             }
+        }
+
+        $('#deleteSelectedBtn').on('click', function() {
+            const ids = [];
+            $('.product-checkbox:checked').each(function() {
+                ids.push($(this).val());
+            });
+
+            if (ids.length === 0) return;
+
+            showConfirmModal(`Are you sure you want to delete ${ids.length} selected products?`, () => {
+                const $btn = $('#deleteSelectedBtn');
+                const originalContent = $btn.html();
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Deleting...');
+
+                $.ajax({
+                    url: "{{ route('products.mass-destroy') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        ids: ids
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            toastr.success(res.msg);
+                            setTimeout(() => window.location.reload(), 1000);
+                        } else {
+                            toastr.error(res.msg);
+                            $btn.prop('disabled', false).html(originalContent);
+                        }
+                    },
+                    error: function(xhr) {
+                        const msg = xhr.responseJSON?.msg || 'Error during mass deletion';
+                        toastr.error(msg);
+                        $btn.prop('disabled', false).html(originalContent);
+                    }
+                });
+            });
         });
 
         // Delete confirmation

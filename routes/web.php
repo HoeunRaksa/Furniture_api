@@ -52,6 +52,17 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/destroy/{id}', [CategoryController::class, 'destroy'])->name('destroy');
     });
 
+    // User Routes
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::get('/data', [UserController::class, 'data'])->name('data');
+        Route::post('/store', [UserController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [UserController::class, 'update'])->name('update');
+        Route::delete('/destroy/{id}', [UserController::class, 'destroy'])->name('destroy');
+        Route::post('/mass-destroy', [UserController::class, 'massDestroy'])->name('mass-destroy');
+    });
+
     // Product Routes
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('index');
@@ -61,24 +72,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [ProductController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [ProductController::class, 'destroy'])->name('destroy');
+        Route::post('/mass-destroy', [ProductController::class, 'massDestroy'])->name('mass-destroy');
         Route::delete('/image/delete/{id}', [ProductController::class, 'deleteImage'])->name('image.delete');
     });
-
-    /*
-    // Attribute Routes
-    Route::prefix('attributes')->name('attributes.')->group(function () {
-        Route::get('/', [AttributeController::class, 'index'])->name('index');
-        Route::get('/data', [AttributeController::class, 'data'])->name('data');
-        Route::post('/store', [AttributeController::class, 'store'])->name('store');
-        Route::put('/update/{id}', [AttributeController::class, 'update'])->name('update');
-        Route::delete('/destroy/{id}', [AttributeController::class, 'destroy'])->name('destroy');
-
-        // Values
-        Route::get('/values/{id}', [AttributeController::class, 'getValues'])->name('values');
-        Route::post('/value/store', [AttributeController::class, 'storeValue'])->name('value.store');
-        Route::delete('/value/destroy/{id}', [AttributeController::class, 'destroyValue'])->name('value.destroy');
-    });
-    */
 
     // Orders Routes
     Route::prefix('orders')->name('orders.')->group(function () {
@@ -86,16 +82,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/data', [OrdersController::class, 'data'])->name('data');
         Route::get('/show/{id}', [OrdersController::class, 'show'])->name('show');
         Route::delete('/destroy/{id}', [OrdersController::class, 'destroy'])->name('destroy');
-    });
-
-    // User Routes
-    Route::prefix('users')->name('users.')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('index');
-        Route::get('/data', [UserController::class, 'data'])->name('data');
-        Route::post('/store', [UserController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [UserController::class, 'update'])->name('update');
-        Route::delete('/destroy/{id}', [UserController::class, 'destroy'])->name('destroy');
     });
 
     // Business Routes

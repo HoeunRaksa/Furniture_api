@@ -3,7 +3,10 @@
 @section('content')
 <div class="container-fluid py-4">
     <x-widget title="User Management">
-        <div class="d-flex justify-content-end mb-3">
+        <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
+            <button type="button" id="deleteSelectedBtn" class="btn btn-danger rounded-pill px-4 shadow-sm d-none">
+                <i class="bi bi-trash me-2"></i> Delete Selected (<span id="selectedCount">0</span>)
+            </button>
             <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createUserModal">
                 <i class="bi bi-person-plus me-2"></i> Add User
             </button>
@@ -12,6 +15,11 @@
             <table class="table table-hover align-middle" id="usersTable">
                 <thead class="table-light">
                     <tr>
+                        <th style="width: 40px;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="selectAllUsers">
+                            </div>
+                        </th>
                         <th style="width: 50px;">#</th>
                         <th>User</th>
                         <th>Email</th>
@@ -88,6 +96,13 @@
             dom: '<"d-flex justify-content-between mb-2"lfB>rtip',
             buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
             columns: [{
+                    data: 'checkbox',
+                    name: 'checkbox',
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center'
+                },
+                {
                     data: 'id',
                     name: 'id'
                 },
@@ -119,14 +134,78 @@
                 }
             ],
             order: [
-                [0, 'desc']
+                [1, 'desc']
             ],
             language: {
                 paginate: {
                     next: '<i class="bi bi-chevron-right"></i>',
                     previous: '<i class="bi bi-chevron-left"></i>'
                 }
+            },
+            drawCallback: function() {
+                updateSelectedCount();
             }
+        });
+
+        // Handle "Select All"
+        $('#selectAllUsers').on('change', function() {
+            $('.user-checkbox').prop('checked', $(this).is(':checked'));
+            updateSelectedCount();
+        });
+
+        // Handle individual checkbox change
+        $(document).on('change', '.user-checkbox', function() {
+            updateSelectedCount();
+        });
+
+        function updateSelectedCount() {
+            const count = $('.user-checkbox:checked').length;
+            $('#selectedCount').text(count);
+            if (count > 0) {
+                $('#deleteSelectedBtn').removeClass('d-none');
+            } else {
+                $('#deleteSelectedBtn').addClass('d-none');
+                $('#selectAllUsers').prop('checked', false);
+            }
+        }
+
+        // Delete Selected
+        $('#deleteSelectedBtn').on('click', function() {
+            const ids = [];
+            $('.user-checkbox:checked').each(function() {
+                ids.push($(this).val());
+            });
+
+            if (ids.length === 0) return;
+
+            showConfirmModal(`Are you sure you want to delete ${ids.length} selected users?`, () => {
+                const $btn = $('#deleteSelectedBtn');
+                const originalContent = $btn.html();
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Deleting...');
+
+                $.ajax({
+                    url: "{{ route('users.mass-destroy') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        ids: ids
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            toastr.success(res.msg);
+                            table.ajax.reload(null, false);
+                        } else {
+                            toastr.error(res.msg);
+                        }
+                        $btn.prop('disabled', false).html(originalContent);
+                    },
+                    error: function(xhr) {
+                        const msg = xhr.responseJSON?.msg || 'Error during mass deletion';
+                        toastr.error(msg);
+                        $btn.prop('disabled', false).html(originalContent);
+                    }
+                });
+            });
         });
 
         // Create user

@@ -23,6 +23,11 @@ class UserController extends Controller
             $query = User::query();
 
             return DataTables::of($query)
+                ->addColumn('checkbox', function ($user) {
+                    return '<div class="form-check d-flex justify-content-center">
+                                <input class="form-check-input user-checkbox" type="checkbox" value="' . $user->id . '">
+                            </div>';
+                })
                 ->addColumn('avatar', function ($user) {
                     return '<div class="d-flex align-items-center gap-2">
                                 <img src="' . $user->avatar_url . '" alt="' . $user->username . '" 
@@ -43,7 +48,7 @@ class UserController extends Controller
                     $delete = $user->id === Auth::id() ? '' : '<button data-url="' . route('users.destroy', $user->id) . '" class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-user"><i class="bi bi-trash"></i></button>';
                     return '<div class="d-flex justify-content-center">' . $edit . $delete . '</div>';
                 })
-                ->rawColumns(['avatar', 'status', 'actions'])
+                ->rawColumns(['checkbox', 'avatar', 'status', 'actions'])
                 ->make(true);
         }
     }
@@ -179,5 +184,55 @@ class UserController extends Controller
 
         $user->delete();
         return response()->json(['success' => true, 'msg' => 'User deleted successfully']);
+    }
+
+    public function massDestroy(Request $request)
+    {
+        $ids = $request->ids;
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'msg' => 'No users selected'], 400);
+        }
+
+        try {
+            $deletedCount = 0;
+            $skippedCount = 0;
+
+            foreach ($ids as $id) {
+                // Skip deleting self
+                if ($id == Auth::id()) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                $user = User::find($id);
+                if (!$user) continue;
+
+                // Skip deleting last admin
+                if ($user->role === 'admin') {
+                    $adminCount = User::where('role', 'admin')->count();
+                    if ($adminCount <= 1) {
+                        $skippedCount++;
+                        continue;
+                    }
+                }
+
+                // Delete profile image if exists
+                if ($user->profile_image && file_exists(public_path($user->profile_image))) {
+                    unlink(public_path($user->profile_image));
+                }
+
+                $user->delete();
+                $deletedCount++;
+            }
+
+            $msg = "$deletedCount users deleted successfully.";
+            if ($skippedCount > 0) {
+                $msg .= " $skippedCount users skipped (including self or last admin).";
+            }
+
+            return response()->json(['success' => true, 'msg' => $msg]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'msg' => 'Error during mass deletion: ' . $e->getMessage()], 500);
+        }
     }
 }
