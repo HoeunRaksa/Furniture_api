@@ -8,7 +8,8 @@ class BankAccount extends Model
 {
     protected $fillable = [
         'account_number',
-        'account_name',
+        'first_name',
+        'last_name',
         'password',
         'bank_name',
         'bank_logo',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Bank;
 use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -32,7 +33,7 @@ class BankAccountController extends Controller
             ->where('is_active', true)
             ->first();
 
-        if (!$account || $request->password !== $account->password) {
+        if (!$account || !Hash::check($request->password, $account->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid account number or password.',
@@ -74,7 +75,7 @@ class BankAccountController extends Controller
                 'account_number' => '123456789',
                 'first_name' => 'John',
                 'last_name' => 'Doe',
-                'password' => '123456',
+                'password' => Hash::make('123456'),
                 'balance' => 5000.00,
                 'profile_image' => 'https://ui-avatars.com/api/?name=John+Doe&background=random'
             ],
@@ -82,7 +83,7 @@ class BankAccountController extends Controller
                 'account_number' => '987654321',
                 'first_name' => 'Jane',
                 'last_name' => 'Smith',
-                'password' => '654321',
+                'password' => Hash::make('654321'),
                 'balance' => 250.50,
                 'profile_image' => 'https://ui-avatars.com/api/?name=Jane+Smith&background=random'
             ]
