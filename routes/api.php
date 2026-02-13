@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\Bank\BankAccountController;
 use App\Http\Controllers\Api\FavoriteController;
-use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\Bank\BankAccountController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +22,8 @@ Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
 // Public Product Routes
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
+Route::get('/qr/details/{tranId}', [OrderController::class, 'getTransactionDetails']);
+Route::get('/qr/pay/{tranId}', [OrderController::class, 'finalizePayment']);
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Order Routes
     Route::post('/orders', [OrderController::class, 'store']);
+    Route::get('/orders/{invoice_no}/status', [OrderController::class, 'checkStatus']);
 });
 
 /*
@@ -71,7 +74,7 @@ Route::prefix('bank')->group(function () {
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
     // Admin Dashboard
-    Route::get('/admin/dashboard', fn () => response()->json([
+    Route::get('/admin/dashboard', fn() => response()->json([
         'success' => true,
         'message' => 'Admin dashboard',
     ]));
