@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -83,14 +82,14 @@ class ProductController extends Controller
 
                 foreach ($request->file('images') as $image) {
                     // Generate unique filename
-                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
 
                     // Move to public directory
                     $image->move($uploadPath, $filename);
 
                     // Create image record
                     $product->images()->create([
-                        'image_url' => 'uploads/products/' . $filename,
+                        'image_url' => 'uploads/products/'.$filename,
                     ]);
                 }
             }
@@ -199,14 +198,14 @@ class ProductController extends Controller
 
                 foreach ($request->file('images') as $image) {
                     // Generate unique filename
-                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
 
                     // Move to public directory
                     $image->move($uploadPath, $filename);
 
                     // Create image record
                     $product->images()->create([
-                        'image_url' => 'uploads/products/' . $filename,
+                        'image_url' => 'uploads/products/'.$filename,
                     ]);
                 }
             }
@@ -290,14 +289,14 @@ class ProductController extends Controller
 
                 foreach ($request->file('images') as $image) {
                     // Generate unique filename
-                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
 
                     // Move to public directory
                     $image->move($uploadPath, $filename);
 
                     // Create image record
                     $product->images()->create([
-                        'image_url' => 'uploads/products/' . $filename,
+                        'image_url' => 'uploads/products/'.$filename,
                     ]);
                 }
             }

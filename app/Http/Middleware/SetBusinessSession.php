@@ -16,7 +16,7 @@ class SetBusinessSession
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!session()->has('business')) {
+        if (! session()->has('business')) {
             $business = Business::first();
 
             if ($business) {

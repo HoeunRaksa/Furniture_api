@@ -41,7 +41,7 @@ class RoleController extends Controller
     {
         // Validate request
         $request->validate([
-            'permissions' => 'array'
+            'permissions' => 'array',
         ]);
 
         // Sync permissions
@@ -63,9 +63,9 @@ class RoleController extends Controller
         }
 
         if ($request->wantsJson()) {
-            return response()->json(['success' => true, 'msg' => ucfirst($role) . ' permissions updated successfully.']);
+            return response()->json(['success' => true, 'msg' => ucfirst($role).' permissions updated successfully.']);
         }
 
-        return redirect()->route('roles.index')->with('success', ucfirst($role) . ' permissions updated successfully.');
+        return redirect()->route('roles.index')->with('success', ucfirst($role).' permissions updated successfully.');
     }
 }

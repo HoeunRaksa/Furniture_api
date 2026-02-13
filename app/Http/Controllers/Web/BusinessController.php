@@ -11,7 +11,8 @@ class BusinessController extends Controller
 {
     public function index()
     {
-        $business = Business::first() ?? new Business();
+        $business = Business::first() ?? new Business;
+
         return view('business.index', compact('business'));
     }
 
@@ -24,15 +25,15 @@ class BusinessController extends Controller
         ]);
 
         try {
-            $business = Business::first() ?? new Business();
+            $business = Business::first() ?? new Business;
             $data = $request->except('logo');
 
             if ($request->hasFile('logo')) {
-                if ($business->logo && File::exists(public_path('uploads/business/' . $business->logo))) {
-                    File::delete(public_path('uploads/business/' . $business->logo));
+                if ($business->logo && File::exists(public_path('uploads/business/'.$business->logo))) {
+                    File::delete(public_path('uploads/business/'.$business->logo));
                 }
                 $file = $request->file('logo');
-                $filename = time() . '.' . $file->getClientOriginalExtension();
+                $filename = time().'.'.$file->getClientOriginalExtension();
                 $file->move(public_path('uploads/business'), $filename);
                 $data['logo'] = $filename;
             }

@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
@@ -21,6 +21,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with(['category', 'images'])->latest()->paginate(20);
+
         return view('products.index', compact('products'));
     }
 
@@ -36,15 +37,16 @@ class ProductController extends Controller
             Log::info("ProductController::data - Found {$count} products.");
 
             return DataTables::of($query)
-                ->addColumn('image_url', fn($product) => $product->images->first()?->image_url ? asset($product->images->first()->image_url) : null)
-                ->addColumn('category', fn($product) => $product->category?->name ?? '<span class="badge bg-secondary">No Category</span>')
-                ->addColumn('price', fn($product) => '$' . number_format($product->price, 2))
-                ->addColumn('discount', fn($product) => '$' . number_format($product->discount, 2))
-                ->addColumn('stock', fn($product) => $product->stock)
+                ->addColumn('image_url', fn ($product) => $product->images->first()?->image_url ? asset($product->images->first()->image_url) : null)
+                ->addColumn('category', fn ($product) => $product->category?->name ?? '<span class="badge bg-secondary">No Category</span>')
+                ->addColumn('price', fn ($product) => '$'.number_format($product->price, 2))
+                ->addColumn('discount', fn ($product) => '$'.number_format($product->discount, 2))
+                ->addColumn('stock', fn ($product) => $product->stock)
                 ->addColumn('featured', function ($product) {
                     if ($product->is_featured) {
                         return '<span class="status-badge text-white bg-warning">Featured</span>';
                     }
+
                     return '<span class="status-badge text-dark bg-light">Standard</span>';
                 })
                 ->addColumn('status', function ($product) {
@@ -54,6 +56,7 @@ class ProductController extends Controller
                     } else {
                         $badges[] = '<span class="status-badge text-white bg-secondary">Inactive</span>';
                     }
+
                     return implode(' ', $badges);
                 })
                 ->addColumn('action', function ($product) {
@@ -67,15 +70,15 @@ class ProductController extends Controller
 
                     return '
                     <div class="btn-group btn-group-sm" role="group">
-                        <a href="' . $editUrl . '" 
-                           class="btn btn-outline-primary ' . $editClass . '" 
-                           data-authorized="' . ($canEdit ? 'true' : 'false') . '"
+                        <a href="'.$editUrl.'" 
+                           class="btn btn-outline-primary '.$editClass.'" 
+                           data-authorized="'.($canEdit ? 'true' : 'false').'"
                            title="Edit">
                             <i class="bi bi-pencil"></i>
                         </a>
-                        <button data-url="' . route('products.destroy', $product->id) . '" 
-                           class="btn btn-outline-danger delete-product ' . $deleteClass . '" 
-                           data-authorized="' . ($canDelete ? 'true' : 'false') . '"
+                        <button data-url="'.route('products.destroy', $product->id).'" 
+                           class="btn btn-outline-danger delete-product '.$deleteClass.'" 
+                           data-authorized="'.($canDelete ? 'true' : 'false').'"
                            title="Delete">
                             <i class="bi bi-trash"></i>
                         </button>
@@ -92,6 +95,7 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::all();
+
         return view('products.create', compact('categories'));
     }
 
@@ -124,24 +128,24 @@ class ProductController extends Controller
                 'stock' => $request->stock ?? 0,
                 'is_featured' => $request->boolean('is_featured', false),
                 'is_active' => $request->boolean('is_active', true),
-                'active' => $request->boolean('is_active', true) // Sync legacy active column if it exists
+                'active' => $request->boolean('is_active', true), // Sync legacy active column if it exists
             ]);
 
             // Handle Images
             if ($request->hasFile('images')) {
                 $uploadPath = public_path('uploads/products');
-                if (!File::exists($uploadPath)) {
+                if (! File::exists($uploadPath)) {
                     File::makeDirectory($uploadPath, 0755, true);
                 }
 
                 $mainImageIndex = $request->input('main_image_index', 0); // Default to first image
 
                 foreach ($request->file('images') as $index => $image) {
-                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
                     $image->move($uploadPath, $filename);
                     $product->images()->create([
-                        'image_url' => 'uploads/products/' . $filename,
-                        'is_main' => ($index == $mainImageIndex) // Mark as main if index matches
+                        'image_url' => 'uploads/products/'.$filename,
+                        'is_main' => ($index == $mainImageIndex), // Mark as main if index matches
                     ]);
                 }
             }
@@ -151,14 +155,15 @@ class ProductController extends Controller
             return response()->json([
                 'success' => true,
                 'msg' => 'Product created successfully',
-                'location' => route('products.index')
+                'location' => route('products.index'),
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating product', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
-                'msg' => 'Error creating product: ' . $e->getMessage()
+                'msg' => 'Error creating product: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -170,6 +175,7 @@ class ProductController extends Controller
     {
         $product = Product::with(['images'])->findOrFail($id);
         $categories = Category::all();
+
         return view('products.edit', compact('product', 'categories'));
     }
 
@@ -205,7 +211,7 @@ class ProductController extends Controller
                 'stock' => $request->stock ?? 0,
                 'is_featured' => $request->boolean('is_featured', false),
                 'is_active' => $request->boolean('is_active', true),
-                'active' => $request->boolean('is_active', true)
+                'active' => $request->boolean('is_active', true),
             ]);
 
             // Handle Deleted Images (Deferred Deletion)
@@ -222,7 +228,6 @@ class ProductController extends Controller
                 }
             }
 
-
             // Handle main_image_id change for EXISTING images
             if ($request->has('main_image_id')) {
                 // Reset all images to not main
@@ -237,14 +242,14 @@ class ProductController extends Controller
             // Handle New Images
             if ($request->hasFile('images')) {
                 $uploadPath = public_path('uploads/products');
-                if (!File::exists($uploadPath)) {
+                if (! File::exists($uploadPath)) {
                     File::makeDirectory($uploadPath, 0755, true);
                 }
 
                 $mainImageIndex = $request->input('main_image_index');
 
                 foreach ($request->file('images') as $index => $image) {
-                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $filename = time().'_'.uniqid().'.'.$image->getClientOriginalExtension();
                     $image->move($uploadPath, $filename);
 
                     // If main_image_index is set and matches, unset all existing main images first
@@ -255,8 +260,8 @@ class ProductController extends Controller
                     }
 
                     $product->images()->create([
-                        'image_url' => 'uploads/products/' . $filename,
-                        'is_main' => $isMain
+                        'image_url' => 'uploads/products/'.$filename,
+                        'is_main' => $isMain,
                     ]);
                 }
             }
@@ -266,14 +271,15 @@ class ProductController extends Controller
             return response()->json([
                 'success' => true,
                 'msg' => 'Product updated successfully',
-                'location' => route('products.index')
+                'location' => route('products.index'),
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error updating product', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
-                'msg' => 'Error updating product: ' . $e->getMessage()
+                'msg' => 'Error updating product: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -301,14 +307,15 @@ class ProductController extends Controller
 
             return response()->json([
                 'success' => true,
-                'msg' => 'Product deleted successfully'
+                'msg' => 'Product deleted successfully',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error deleting product', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
-                'msg' => 'Failed to delete product'
+                'msg' => 'Failed to delete product',
             ], 500);
         }
     }
@@ -316,7 +323,7 @@ class ProductController extends Controller
     public function massDestroy(Request $request)
     {
         $ids = $request->ids;
-        if (!$ids || !is_array($ids)) {
+        if (! $ids || ! is_array($ids)) {
             return response()->json(['success' => false, 'msg' => 'No products selected'], 400);
         }
 
@@ -326,7 +333,9 @@ class ProductController extends Controller
 
             foreach ($ids as $id) {
                 $product = Product::find($id);
-                if (!$product) continue;
+                if (! $product) {
+                    continue;
+                }
 
                 // Delete files
                 foreach ($product->images as $image) {
@@ -340,11 +349,13 @@ class ProductController extends Controller
             }
 
             DB::commit();
+
             return response()->json(['success' => true, 'msg' => "$deletedCount products deleted successfully."]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error during mass product deletion', ['error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'msg' => 'Error during mass deletion: ' . $e->getMessage()], 500);
+
+            return response()->json(['success' => false, 'msg' => 'Error during mass deletion: '.$e->getMessage()], 500);
         }
     }
 
@@ -365,12 +376,12 @@ class ProductController extends Controller
 
             return response()->json([
                 'success' => true,
-                'msg' => 'Image deleted successfully'
+                'msg' => 'Image deleted successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'msg' => 'Error deleting image: ' . $e->getMessage()
+                'msg' => 'Error deleting image: '.$e->getMessage(),
             ], 500);
         }
     }

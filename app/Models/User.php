@@ -55,7 +55,9 @@ class User extends Authenticatable
      */
     public function hasPermission($permissionName)
     {
-        if ($this->role === 'admin') return true; // Super Admin
+        if ($this->role === 'admin') {
+            return true;
+        } // Super Admin
 
         return \App\Models\RolePermission::where('role', $this->role)
             ->whereHas('permission', function ($q) use ($permissionName) {

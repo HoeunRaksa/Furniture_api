@@ -29,10 +29,10 @@ class WebAuthController extends Controller
 
         try {
             $loginField = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-            
+
             $credentials = [
                 $loginField => $request->username,
-                'password' => $request->password
+                'password' => $request->password,
             ];
 
             Log::info('Web login attempt', [

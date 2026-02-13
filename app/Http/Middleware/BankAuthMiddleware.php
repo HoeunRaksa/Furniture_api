@@ -17,7 +17,7 @@ class BankAuthMiddleware
     {
         $token = $request->header('X-Bank-Token');
 
-        if (!$token) {
+        if (! $token) {
             return response()->json([
                 'success' => false,
                 'message' => 'Bank authentication token required.',
@@ -28,7 +28,7 @@ class BankAuthMiddleware
             ->where('is_active', true)
             ->first();
 
-        if (!$account) {
+        if (! $account) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid or expired bank authentication token.',

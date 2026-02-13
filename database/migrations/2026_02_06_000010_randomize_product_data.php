@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
@@ -19,7 +17,7 @@ return new class extends Migration
             'Minimalist design meets maximum functionality. This piece is perfect for modern homes looking for a clean, sophisticated look.',
             'Add a touch of luxury to your living space. Featuring ergonomic design and premium finish, this item stands out in any room.',
             'Classic craftsmanship with a modern twist. Built to last and designed to impress, making it a perfect addition to your home.',
-            'Sustainable, stylish, and sturdy. This eco-friendly furniture piece brings warmth and character to your interior decor.'
+            'Sustainable, stylish, and sturdy. This eco-friendly furniture piece brings warmth and character to your interior decor.',
         ];
 
         foreach ($products as $product) {
@@ -31,7 +29,7 @@ return new class extends Migration
                     'discount' => rand(0, 10) > 7 ? rand(5, 30) : 0, // 30% chance of discount
                     'is_featured' => rand(0, 10) > 8, // 20% chance of being featured
                     'description' => $descriptions[array_rand($descriptions)],
-                    'is_active' => true // Ensure all are active
+                    'is_active' => true, // Ensure all are active
                 ]);
         }
     }

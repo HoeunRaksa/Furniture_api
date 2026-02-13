@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
@@ -26,22 +25,24 @@ class UserController extends Controller
                 ->addColumn('checkbox', function ($user) {
                     $disabled = $user->id === Auth::id() ? 'disabled' : '';
                     $title = $user->id === Auth::id() ? 'title="You cannot delete yourself"' : '';
+
                     return '<div class="form-check d-flex justify-content-center">
-                               <input class="form-check-input user-checkbox" type="checkbox" value="' . $user->id . '" ' . $disabled . ' ' . $title . '>
+                               <input class="form-check-input user-checkbox" type="checkbox" value="'.$user->id.'" '.$disabled.' '.$title.'>
                             </div>';
                 })
                 ->addColumn('avatar', function ($user) {
                     return '<div class="d-flex align-items-center gap-2">
-                                <img src="' . $user->avatar_url . '" alt="' . $user->username . '" 
+                                <img src="'.$user->avatar_url.'" alt="'.$user->username.'" 
                                      class="rounded-circle border" 
                                      style="width: 40px; height: 40px; object-fit: cover;">
-                                <span class="fw-medium">' . $user->username . '</span>
+                                <span class="fw-medium">'.$user->username.'</span>
                             </div>';
                 })
                 ->addColumn('status', function ($user) {
                     $checked = $user->is_active ? 'checked' : '';
+
                     return '<div class="form-check form-switch d-flex justify-content-center">
-                                <input class="form-check-input toggle-status" type="checkbox" data-id="' . $user->id . '" ' . $checked . '>
+                                <input class="form-check-input toggle-status" type="checkbox" data-id="'.$user->id.'" '.$checked.'>
                             </div>';
                 })
                 ->addColumn('actions', function ($user) {
@@ -56,7 +57,7 @@ class UserController extends Controller
                     $deleteTitle = $canDelete ? 'Delete User' : 'You do not have permission to perform this action';
 
                     $editAuth = ($canEdit || $isSelf) ? 'true' : 'false';
-                    $edit = '<button data-id="' . $user->id . '" data-authorized="' . $editAuth . '" class="btn btn-sm btn-light text-primary rounded-circle p-2 edit-user me-1" title="' . $editTitle . '"><i class="bi bi-pencil"></i></button>';
+                    $edit = '<button data-id="'.$user->id.'" data-authorized="'.$editAuth.'" class="btn btn-sm btn-light text-primary rounded-circle p-2 edit-user me-1" title="'.$editTitle.'"><i class="bi bi-pencil"></i></button>';
 
                     $deleteAttrs = '';
                     if ($user->id === Auth::id()) {
@@ -65,12 +66,12 @@ class UserController extends Controller
                     } else {
                         // Permission check
                         $deleteAuth = $canDelete ? 'true' : 'false';
-                        $deleteAttrs = 'data-url="' . route('users.destroy', $user->id) . '" data-authorized="' . $deleteAuth . '" title="' . $deleteTitle . '"';
+                        $deleteAttrs = 'data-url="'.route('users.destroy', $user->id).'" data-authorized="'.$deleteAuth.'" title="'.$deleteTitle.'"';
                     }
 
-                    $delete = '<button ' . $deleteAttrs . ' class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-user"><i class="bi bi-trash"></i></button>';
+                    $delete = '<button '.$deleteAttrs.' class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-user"><i class="bi bi-trash"></i></button>';
 
-                    return '<div class="d-flex justify-content-center">' . $edit . $delete . '</div>';
+                    return '<div class="d-flex justify-content-center">'.$edit.$delete.'</div>';
                 })
                 ->rawColumns(['checkbox', 'avatar', 'status', 'actions'])
                 ->make(true);
@@ -99,12 +100,13 @@ class UserController extends Controller
             // Handle image upload
             if ($request->hasFile('profile_image')) {
                 $image = $request->file('profile_image');
-                $filename = time() . '_' . $image->getClientOriginalName();
+                $filename = time().'_'.$image->getClientOriginalName();
                 $image->move(public_path('uploads/users'), $filename);
-                $data['profile_image'] = 'uploads/users/' . $filename;
+                $data['profile_image'] = 'uploads/users/'.$filename;
             }
 
             User::create($data);
+
             return response()->json(['success' => true, 'msg' => 'User created successfully']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()], 500);
@@ -114,23 +116,24 @@ class UserController extends Controller
     public function edit($id)
     {
         // Permission check: explicit or self
-        if (!Auth::user()->hasPermission('edit_users') && Auth::id() != $id) {
+        if (! Auth::user()->hasPermission('edit_users') && Auth::id() != $id) {
             abort(403, 'Unauthorized action.');
         }
 
         $user = User::findOrFail($id);
         $adminCount = User::where('role', 'admin')->count();
+
         return response()->json([
             'success' => true,
             'user' => $user,
-            'admin_count' => $adminCount
+            'admin_count' => $adminCount,
         ]);
     }
 
     public function update(Request $request, $id)
     {
         // Permission check: explicit or self
-        if (!Auth::user()->hasPermission('edit_users') && Auth::id() != $id) {
+        if (! Auth::user()->hasPermission('edit_users') && Auth::id() != $id) {
             return response()->json(['success' => false, 'msg' => 'Unauthorized action.'], 403);
         }
 
@@ -138,7 +141,7 @@ class UserController extends Controller
 
         $request->validate([
             'username' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
+            'email' => 'required|email|unique:users,email,'.$id,
             'password' => 'nullable|string|min:3',
             'role' => 'required|string',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -151,7 +154,7 @@ class UserController extends Controller
                 if ($adminCount === 1) {
                     return response()->json([
                         'success' => false,
-                        'msg' => 'Cannot change role! You are the last admin. Please assign another user as admin first.'
+                        'msg' => 'Cannot change role! You are the last admin. Please assign another user as admin first.',
                     ], 403);
                 }
             }
@@ -180,12 +183,13 @@ class UserController extends Controller
                 }
 
                 $image = $request->file('profile_image');
-                $filename = time() . '_' . $image->getClientOriginalName();
+                $filename = time().'_'.$image->getClientOriginalName();
                 $image->move(public_path('uploads/users'), $filename);
-                $data['profile_image'] = 'uploads/users/' . $filename;
+                $data['profile_image'] = 'uploads/users/'.$filename;
             }
 
             $user->update($data);
+
             return response()->json(['success' => true, 'msg' => 'User updated successfully']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()], 500);
@@ -206,7 +210,7 @@ class UserController extends Controller
             if ($adminCount === 1) {
                 return response()->json([
                     'success' => false,
-                    'msg' => 'Cannot delete the last admin user!'
+                    'msg' => 'Cannot delete the last admin user!',
                 ], 403);
             }
         }
@@ -217,13 +221,14 @@ class UserController extends Controller
         }
 
         $user->delete();
+
         return response()->json(['success' => true, 'msg' => 'User deleted successfully']);
     }
 
     public function massDestroy(Request $request)
     {
         $ids = $request->ids;
-        if (!$ids || !is_array($ids)) {
+        if (! $ids || ! is_array($ids)) {
             return response()->json(['success' => false, 'msg' => 'No users selected'], 400);
         }
 
@@ -235,17 +240,21 @@ class UserController extends Controller
                 // Skip deleting self
                 if ($id == Auth::id()) {
                     $skippedCount++;
+
                     continue;
                 }
 
                 $user = User::find($id);
-                if (!$user) continue;
+                if (! $user) {
+                    continue;
+                }
 
                 // Skip deleting last admin
                 if ($user->role === 'admin') {
                     $adminCount = User::where('role', 'admin')->count();
                     if ($adminCount <= 1) {
                         $skippedCount++;
+
                         continue;
                     }
                 }
@@ -266,7 +275,7 @@ class UserController extends Controller
 
             return response()->json(['success' => true, 'msg' => $msg]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'msg' => 'Error during mass deletion: ' . $e->getMessage()], 500);
+            return response()->json(['success' => false, 'msg' => 'Error during mass deletion: '.$e->getMessage()], 500);
         }
     }
 }

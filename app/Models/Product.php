@@ -18,7 +18,7 @@ class Product extends Model
         'stock',
         'active',
         'is_active',
-        'is_featured'
+        'is_featured',
     ];
 
     public function images()

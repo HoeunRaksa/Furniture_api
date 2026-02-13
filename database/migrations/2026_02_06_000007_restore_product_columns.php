@@ -12,28 +12,28 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            if (!Schema::hasColumn('products', 'description')) {
+            if (! Schema::hasColumn('products', 'description')) {
                 $table->text('description')->nullable();
             }
-            if (!Schema::hasColumn('products', 'price')) {
+            if (! Schema::hasColumn('products', 'price')) {
                 $table->decimal('price', 10, 2)->default(0);
             }
-            if (!Schema::hasColumn('products', 'discount')) {
+            if (! Schema::hasColumn('products', 'discount')) {
                 $table->decimal('discount', 10, 2)->default(0);
             }
-            if (!Schema::hasColumn('products', 'stock')) {
+            if (! Schema::hasColumn('products', 'stock')) {
                 $table->integer('stock')->default(0);
             }
-            if (!Schema::hasColumn('products', 'is_featured')) {
+            if (! Schema::hasColumn('products', 'is_featured')) {
                 $table->boolean('is_featured')->default(false);
             }
-            if (!Schema::hasColumn('products', 'slug')) {
+            if (! Schema::hasColumn('products', 'slug')) {
                 $table->string('slug')->nullable();
             }
-            if (!Schema::hasColumn('products', 'is_recommended')) {
+            if (! Schema::hasColumn('products', 'is_recommended')) {
                 $table->boolean('is_recommended')->default(false);
             }
-            if (!Schema::hasColumn('products', 'active')) {
+            if (! Schema::hasColumn('products', 'active')) {
                 $table->boolean('active')->default(true);
             }
         });

@@ -1,16 +1,15 @@
 <?php
 
-use App\Http\Controllers\Web\PageController;
-use App\Http\Controllers\Web\WebAuthController;
-use App\Http\Controllers\Web\HomeController;
-use App\Http\Controllers\Web\CategoryController;
-use App\Http\Controllers\Web\ProductController;
-use App\Http\Controllers\Web\AttributeController;
-use App\Http\Controllers\Web\OrdersController;
-use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\BusinessController;
-use App\Http\Controllers\Web\RoleController;
+use App\Http\Controllers\Web\CategoryController;
+use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\NotificationController;
+use App\Http\Controllers\Web\OrdersController;
+use App\Http\Controllers\Web\PageController;
+use App\Http\Controllers\Web\ProductController;
+use App\Http\Controllers\Web\RoleController;
+use App\Http\Controllers\Web\UserController;
+use App\Http\Controllers\Web\WebAuthController;
 use Illuminate\Support\Facades\Route;
 
 /*

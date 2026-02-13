@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
 class CategoryController extends Controller
@@ -30,7 +30,7 @@ class CategoryController extends Controller
             return DataTables::of($query)
                 ->addColumn('checkbox', function ($row) {
                     return '<div class="form-check d-flex justify-content-center">
-                                <input class="form-check-input category-checkbox" type="checkbox" value="' . $row->id . '">
+                                <input class="form-check-input category-checkbox" type="checkbox" value="'.$row->id.'">
                             </div>';
                 })
                 ->editColumn('created_at', function ($row) {
@@ -41,9 +41,10 @@ class CategoryController extends Controller
                     $canManage = $me->hasPermission('manage_categories'); // Categories share one manage perm for now or split? Seeder has manage_categories.
                     $authVal = $canManage ? 'true' : 'false';
 
-                    $edit = '<button data-id="' . $row->id . '" data-name="' . $row->name . '" data-authorized="' . $authVal . '" type="button" class="edit-category btn btn-sm btn-light text-primary rounded-circle p-2 me-1" title="Edit"><i class="bi bi-pencil"></i></button>';
-                    $delete = '<button data-url="' . route('categories.destroy', $row->id) . '" data-authorized="' . $authVal . '" class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-category" title="Delete"><i class="bi bi-trash"></i></button>';
-                    return '<div class="d-flex justify-content-center">' . $edit . $delete . '</div>';
+                    $edit = '<button data-id="'.$row->id.'" data-name="'.$row->name.'" data-authorized="'.$authVal.'" type="button" class="edit-category btn btn-sm btn-light text-primary rounded-circle p-2 me-1" title="Edit"><i class="bi bi-pencil"></i></button>';
+                    $delete = '<button data-url="'.route('categories.destroy', $row->id).'" data-authorized="'.$authVal.'" class="btn btn-sm btn-light text-danger rounded-circle p-2 delete-category" title="Delete"><i class="bi bi-trash"></i></button>';
+
+                    return '<div class="d-flex justify-content-center">'.$edit.$delete.'</div>';
                 })
                 ->rawColumns(['checkbox', 'actions'])
                 ->make(true);
@@ -56,7 +57,7 @@ class CategoryController extends Controller
     public function massDestroy(Request $request)
     {
         $ids = $request->ids;
-        if (!$ids || !is_array($ids)) {
+        if (! $ids || ! is_array($ids)) {
             return response()->json(['success' => false, 'msg' => 'No categories selected'], 400);
         }
 
@@ -66,19 +67,23 @@ class CategoryController extends Controller
 
             foreach ($ids as $id) {
                 $category = Category::find($id);
-                if (!$category) continue;
+                if (! $category) {
+                    continue;
+                }
                 $category->delete();
                 $deletedCount++;
             }
 
             DB::commit();
+
             return response()->json(['success' => true, 'msg' => "$deletedCount categories deleted successfully."]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error during mass category deletion', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
-                'msg' => 'Error during mass deletion: ' . $e->getMessage()
+                'msg' => 'Error during mass deletion: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -107,14 +112,15 @@ class CategoryController extends Controller
                 'success' => true,
                 'msg' => 'Category created successfully',
                 'id' => $category->id,
-                'name' => $category->name
+                'name' => $category->name,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error creating category', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
-                'msg' => 'Error creating category: ' . $e->getMessage()
+                'msg' => 'Error creating category: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -131,7 +137,7 @@ class CategoryController extends Controller
         try {
             $category = Category::find($id);
 
-            if (!$category) {
+            if (! $category) {
                 return response()->json(['data' => ['success' => false, 'msg' => 'Category not found']]);
             }
 
@@ -141,13 +147,14 @@ class CategoryController extends Controller
 
             return response()->json([
                 'success' => true,
-                'msg' => 'Category updated successfully'
+                'msg' => 'Category updated successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Error updating category', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
-                'msg' => 'Failed to update category'
+                'msg' => 'Failed to update category',
             ], 500);
         }
     }
@@ -162,7 +169,7 @@ class CategoryController extends Controller
 
             $category = Category::find($id);
 
-            if (!$category) {
+            if (! $category) {
                 return response()->json(['data' => ['success' => false, 'msg' => 'Category not found']]);
             }
 
@@ -172,14 +179,15 @@ class CategoryController extends Controller
 
             return response()->json([
                 'success' => true,
-                'msg' => 'Category deleted successfully'
+                'msg' => 'Category deleted successfully',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Category delete failed', ['id' => $id, 'message' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
-                'msg' => 'Failed to delete category'
+                'msg' => 'Failed to delete category',
             ], 500);
         }
     }

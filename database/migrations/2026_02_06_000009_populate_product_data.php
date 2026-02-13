@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
@@ -27,7 +25,7 @@ return new class extends Migration
             ->whereNull('description')
             ->orWhere('description', '=', '')
             ->update([
-                'description' => 'Experience premium comfort and style with our signature furniture collection. Crafted with high-quality materials to ensure durability and elegance for your home.'
+                'description' => 'Experience premium comfort and style with our signature furniture collection. Crafted with high-quality materials to ensure durability and elegance for your home.',
             ]);
 
         DB::table('products')

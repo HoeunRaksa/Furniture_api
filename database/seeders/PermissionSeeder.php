@@ -63,7 +63,7 @@ class PermissionSeeder extends Seeder
             'delete_users',
             'delete_products',
             'manage_categories',
-            'manage_orders'
+            'manage_orders',
         ];
         $ids = Permission::whereIn('name', $sensitive)->pluck('id');
         RolePermission::where('role', 'staff')->whereIn('permission_id', $ids)->delete();
@@ -73,7 +73,7 @@ class PermissionSeeder extends Seeder
     {
         RolePermission::firstOrCreate([
             'role' => $role,
-            'permission_id' => $permission->id
+            'permission_id' => $permission->id,
         ]);
     }
 }

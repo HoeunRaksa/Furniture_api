@@ -3,14 +3,11 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
+use App\Models\Category;
 use App\Models\Order;
 use App\Models\User;
-use App\Models\Category;
-use App\Models\Product;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\View\View;
 
 class HomeController extends Controller
 {

@@ -19,13 +19,14 @@ class PermissionMiddleware
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Unauthenticated'], 401);
             }
+
             return redirect()->guest(route('login'));
         }
 
         // Use the helper on User model which handles Admin bypass too
         if (! $request->user()->hasPermission($permission)) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Unauthorized: Missing permission ' . $permission], 403);
+                return response()->json(['message' => 'Unauthorized: Missing permission '.$permission], 403);
             }
             abort(403, 'Unauthorized action.');
         }

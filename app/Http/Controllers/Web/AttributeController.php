@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class AttributeController extends Controller
@@ -30,10 +28,11 @@ class AttributeController extends Controller
 
             return DataTables::of($query)
                 ->addColumn('actions', function ($row) {
-                    $view = '<button data-id="' . $row->id . '" data-name="' . $row->name . '" class="btn btn-sm btn-info view-values me-1">Values</button>';
-                    $edit = '<button data-id="' . $row->id . '" data-name="' . $row->name . '" class="btn btn-sm btn-primary edit-attribute me-1">Edit</button>';
-                    $delete = '<button data-url="' . route('attributes.destroy', $row->id) . '" class="btn btn-sm btn-danger delete-attribute">Delete</button>';
-                    return $view . $edit . $delete;
+                    $view = '<button data-id="'.$row->id.'" data-name="'.$row->name.'" class="btn btn-sm btn-info view-values me-1">Values</button>';
+                    $edit = '<button data-id="'.$row->id.'" data-name="'.$row->name.'" class="btn btn-sm btn-primary edit-attribute me-1">Edit</button>';
+                    $delete = '<button data-url="'.route('attributes.destroy', $row->id).'" class="btn btn-sm btn-danger delete-attribute">Delete</button>';
+
+                    return $view.$edit.$delete;
                 })
                 ->rawColumns(['actions'])
                 ->make(true);
@@ -51,6 +50,7 @@ class AttributeController extends Controller
 
         try {
             $attribute = Attribute::create($request->only('name'));
+
             return response()->json([
                 'success' => true,
                 'msg' => 'Attribute created successfully',
@@ -58,7 +58,7 @@ class AttributeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'msg' => 'Error: ' . $e->getMessage(),
+                'msg' => 'Error: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -69,12 +69,13 @@ class AttributeController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:attributes,name,' . $id,
+            'name' => 'required|string|max:255|unique:attributes,name,'.$id,
         ]);
 
         try {
             $attribute = Attribute::findOrFail($id);
             $attribute->update($request->only('name'));
+
             return response()->json([
                 'success' => true,
                 'msg' => 'Attribute updated successfully',
@@ -82,7 +83,7 @@ class AttributeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'msg' => 'Error: ' . $e->getMessage(),
+                'msg' => 'Error: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -95,6 +96,7 @@ class AttributeController extends Controller
         try {
             $attribute = Attribute::findOrFail($id);
             $attribute->delete();
+
             return response()->json([
                 'success' => true,
                 'msg' => 'Attribute deleted successfully',
@@ -113,6 +115,7 @@ class AttributeController extends Controller
     public function getValues($id)
     {
         $values = AttributeValue::where('attribute_id', $id)->get();
+
         return response()->json($values);
     }
 
@@ -128,6 +131,7 @@ class AttributeController extends Controller
 
         try {
             AttributeValue::create($request->only(['attribute_id', 'value']));
+
             return response()->json([
                 'success' => true,
                 'msg' => 'Value added successfully',
@@ -135,7 +139,7 @@ class AttributeController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'msg' => 'Error: ' . $e->getMessage(),
+                'msg' => 'Error: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -148,6 +152,7 @@ class AttributeController extends Controller
         try {
             $value = AttributeValue::findOrFail($id);
             $value->delete();
+
             return response()->json([
                 'success' => true,
                 'msg' => 'Value deleted successfully',

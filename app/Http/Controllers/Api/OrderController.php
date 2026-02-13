@@ -7,16 +7,15 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
     /**
      * Create a new order.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -37,7 +36,7 @@ class OrderController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation Error',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -75,7 +74,7 @@ class OrderController extends Controller
             // 3. Create Order
             $order = Order::create([
                 'user_id' => $user->id,
-                'invoice_no' => 'INV-' . strtoupper(uniqid()), // Simple invoice generation
+                'invoice_no' => 'INV-'.strtoupper(uniqid()), // Simple invoice generation
                 'total_price' => $totalPrice,
                 'status' => 'pending',
                 'payment_status' => 'pending',
@@ -111,9 +110,10 @@ class OrderController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Order creation failed: ' . $e->getMessage(),
+                'message' => 'Order creation failed: '.$e->getMessage(),
             ], 500);
         }
     }
