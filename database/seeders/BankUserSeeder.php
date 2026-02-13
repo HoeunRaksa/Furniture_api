@@ -20,7 +20,6 @@ class BankUserSeeder extends Seeder
                 'last_name' => 'Raksa',
                 'password' => Hash::make('password123'),
                 'balance' => 50000.00,
-                'currency' => 'USD',
                 'is_active' => true,
             ]
         );
