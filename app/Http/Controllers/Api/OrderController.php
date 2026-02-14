@@ -117,4 +117,85 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get transaction details for QR payment.
+     */
+    public function getTransactionDetails($tranId)
+    {
+        $order = Order::where('invoice_no', $tranId)->first();
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaction not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'merchant' => 'Furniture Store',
+                'amount' => $order->total_price,
+                'currency' => 'USD',
+                'invoice_no' => $order->invoice_no,
+                'description' => 'Payment for Furniture Order',
+            ],
+        ]);
+    }
+
+    /**
+     * Finalize payment (Simulate bank callback/confirmation).
+     */
+    public function finalizePayment($tranId)
+    {
+        $order = Order::where('invoice_no', $tranId)->first();
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaction not found',
+            ], 404);
+        }
+
+        if ($order->payment_status === 'paid') {
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment already completed',
+            ]);
+        }
+
+        // Simulate successful payment
+        $order->update([
+            'payment_status' => 'paid',
+            'status' => 'processing',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Payment successful',
+            'data' => $order,
+        ]);
+    }
+
+    /**
+     * Check order status (for polling).
+     */
+    public function checkStatus($invoice_no)
+    {
+        $order = Order::where('invoice_no', $invoice_no)->first();
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'status' => $order->status,
+            'payment_status' => $order->payment_status,
+        ]);
+    }
 }
