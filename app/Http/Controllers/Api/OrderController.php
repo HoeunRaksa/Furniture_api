@@ -103,10 +103,30 @@ class OrderController extends Controller
 
             DB::commit();
 
+            $responseData = $order->load('items.product')->toArray();
+            
+            // Generate QR code if payment method is QR
+            if ($request->payment_method === 'QR') {
+                $invoiceNo = $order->invoice_no;
+                // Use a public QR code API to generate the image
+                $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . urlencode($invoiceNo);
+                try {
+                    $qrImageData = @file_get_contents($qrUrl);
+                    if ($qrImageData) {
+                        $responseData['qr_image'] = 'data:image/png;base64,' . base64_encode($qrImageData);
+                    } else {
+                        // Fallback: just return the URL if file_get_contents fails
+                        $responseData['qr_image'] = $qrUrl;
+                    }
+                } catch (\Exception $e) {
+                    $responseData['qr_image'] = $qrUrl;
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Order placed successfully',
-                'data' => $order->load('items.product'), // Return order with items
+                'data' => $responseData,
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
