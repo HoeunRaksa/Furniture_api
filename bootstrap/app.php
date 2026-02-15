@@ -26,6 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\SetBusinessSession::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            '/pay/*', // Allow QR payment POST requests without CSRF token
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // ✅ REQUIRED — do not remove
