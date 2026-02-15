@@ -103,3 +103,7 @@ Route::middleware(['auth'])->group(function () {
 Route::prefix('api')->name('api.')->group(function () {
     Route::get('/featured-products', [PageController::class, 'getFeaturedProducts'])->name('featured');
 });
+
+// Public Bank Payment Routes for QR Scanning
+Route::get('/pay/{invoice_no}', [\App\Http\Controllers\Web\BankPaymentController::class, 'showPaymentPage'])->name('pay.show');
+Route::post('/pay/{invoice_no}', [\App\Http\Controllers\Web\BankPaymentController::class, 'processPayment'])->name('pay.process');

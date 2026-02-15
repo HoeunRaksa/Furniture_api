@@ -109,8 +109,9 @@ class OrderController extends Controller
             // Generate QR code if payment method is QR
             if ($request->payment_method === 'QR') {
                 $invoiceNo = $order->invoice_no;
+                $paymentUrl = url("/pay/$invoiceNo");
                 // Use a public QR code API to generate the image
-                $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='.urlencode($invoiceNo);
+                $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='.urlencode($paymentUrl);
                 try {
                     $qrImageData = @file_get_contents($qrUrl);
                     if ($qrImageData) {
