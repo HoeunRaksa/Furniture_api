@@ -30,7 +30,7 @@
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
-                    <form action="{{ route('pay.process', $order->invoice_no) }}" method="POST">
+                    <form id="paymentForm" action="{{ route('pay.process', $order->invoice_no) }}" method="POST">
                         @csrf
                         <!-- Hidden Pre-filled Credentials -->
                         <input type="hidden" name="account_number" value="123456789">
@@ -39,12 +39,19 @@
                         <div class="text-center mb-4">
                             <h2 class="fw-bold text-primary">${{ number_format($order->total_price, 2) }}</h2>
                             <p class="text-muted">Invoice: {{ $order->invoice_no }}</p>
+                            <div class="spinner-border text-primary mt-3" role="status">
+                                <span class="visually-hidden">Processing...</span>
+                            </div>
+                            <p class="text-muted mt-2">Processing payment automatically...</p>
                         </div>
-
-                        <button type="submit" class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm">
-                            PAY NOW
-                        </button>
                     </form>
+
+                    <script>
+                        // Auto-submit the form after 1 second
+                        setTimeout(function() {
+                            document.getElementById('paymentForm').submit();
+                        }, 1000);
+                    </script>
                     
                     <div class="mt-4 text-center">
                         <small class="text-muted">Secured by Simulation Bank</small>
