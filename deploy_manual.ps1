@@ -6,7 +6,7 @@ param(
     [string]$ServerIP = "54.165.46.134",
     
     [Parameter(Mandatory = $false)]
-    [string]$KeyPath = "C:\Users\Vathana\.ssh\K3.pem"
+    [string]$KeyPath = "C:\Users\hoeun\.ssh\K3.pem"
 )
 
 Write-Host "Deploying to server: $ServerIP" -ForegroundColor Green

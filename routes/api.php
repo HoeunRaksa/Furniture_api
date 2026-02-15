@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\FavoriteController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\Bank\BankAccountController;
+use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -74,7 +74,7 @@ Route::prefix('bank')->group(function () {
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
     // Admin Dashboard
-    Route::get('/admin/dashboard', fn() => response()->json([
+    Route::get('/admin/dashboard', fn () => response()->json([
         'success' => true,
         'message' => 'Admin dashboard',
     ]));

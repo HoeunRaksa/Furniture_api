@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\BankAccount;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -104,16 +105,16 @@ class OrderController extends Controller
             DB::commit();
 
             $responseData = $order->load('items.product')->toArray();
-            
+
             // Generate QR code if payment method is QR
             if ($request->payment_method === 'QR') {
                 $invoiceNo = $order->invoice_no;
                 // Use a public QR code API to generate the image
-                $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . urlencode($invoiceNo);
+                $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='.urlencode($invoiceNo);
                 try {
                     $qrImageData = @file_get_contents($qrUrl);
                     if ($qrImageData) {
-                        $responseData['qr_image'] = 'data:image/png;base64,' . base64_encode($qrImageData);
+                        $responseData['qr_image'] = 'data:image/png;base64,'.base64_encode($qrImageData);
                     } else {
                         // Fallback: just return the URL if file_get_contents fails
                         $responseData['qr_image'] = $qrUrl;
@@ -145,7 +146,7 @@ class OrderController extends Controller
     {
         $order = Order::where('invoice_no', $tranId)->first();
 
-        if (!$order) {
+        if (! $order) {
             return response()->json([
                 'success' => false,
                 'message' => 'Transaction not found',
@@ -167,11 +168,11 @@ class OrderController extends Controller
     /**
      * Finalize payment (Simulate bank callback/confirmation).
      */
-    public function finalizePayment($tranId)
+    public function finalizePayment(Request $request, $tranId)
     {
         $order = Order::where('invoice_no', $tranId)->first();
 
-        if (!$order) {
+        if (! $order) {
             return response()->json([
                 'success' => false,
                 'message' => 'Transaction not found',
@@ -185,7 +186,29 @@ class OrderController extends Controller
             ]);
         }
 
-        // Simulate successful payment
+        // Optional: Simulate actual balance deduction if an account number is provided
+        if ($request->has('account_number')) {
+            $bankAccount = BankAccount::where('account_number', $request->account_number)->first();
+
+            if (! $bankAccount) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bank account not found',
+                ], 404);
+            }
+
+            if ($bankAccount->balance < $order->total_price) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Insufficient balance in bank account',
+                ], 400);
+            }
+
+            // Deduct the amount
+            $bankAccount->decrement('balance', $order->total_price);
+        }
+
+        // Update order status
         $order->update([
             'payment_status' => 'paid',
             'status' => 'processing',
@@ -205,7 +228,7 @@ class OrderController extends Controller
     {
         $order = Order::where('invoice_no', $invoice_no)->first();
 
-        if (!$order) {
+        if (! $order) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found',
