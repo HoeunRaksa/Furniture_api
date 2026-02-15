@@ -25,6 +25,8 @@ class BankPaymentController extends Controller
 
     public function processPayment(Request $request, $invoice_no)
     {
+        \Illuminate\Support\Facades\Log::info("Processing payment for: $invoice_no");
+
         $request->validate([
             'account_number' => 'required',
             'password' => 'required',
@@ -34,19 +36,26 @@ class BankPaymentController extends Controller
             ->orWhere('invoice_no', 'INV-' . $invoice_no)
             ->firstOrFail();
         
+        \Illuminate\Support\Facades\Log::info("Order found: " . $order->id . " Status: " . $order->payment_status);
+
         if ($order->payment_status === 'paid') {
             return redirect()->route('pay.show', $invoice_no);
         }
 
         $account = BankAccount::where('account_number', $request->account_number)->first();
 
-        if (!$account || !Hash::check($request->password, $account->password)) {
-            \Illuminate\Support\Facades\Log::warning("Payment attempt failed for invoice: $invoice_no - Invalid credentials.");
-            return back()->with('error', 'Invalid account number or password.');
+        if (!$account) {
+            \Illuminate\Support\Facades\Log::error("Account not found: " . $request->account_number);
+            return back()->with('error', 'Invalid account number.');
+        }
+
+        if (!Hash::check($request->password, $account->password)) {
+            \Illuminate\Support\Facades\Log::error("Password mismatch for account: " . $request->account_number);
+            return back()->with('error', 'Invalid password.');
         }
 
         if ($account->balance < $order->total_price) {
-            \Illuminate\Support\Facades\Log::warning("Payment attempt failed for invoice: $invoice_no - Insufficient balance.");
+            \Illuminate\Support\Facades\Log::error("Insufficient balance. Acc: " . $account->balance . " Order: " . $order->total_price);
             return back()->with('error', 'Insufficient balance.');
         }
 
@@ -58,7 +67,7 @@ class BankPaymentController extends Controller
         $order->status = 'processing';
         $order->save();
 
-        \Illuminate\Support\Facades\Log::info("Payment successful for invoice: $invoice_no. New Status: " . $order->payment_status);
+        \Illuminate\Support\Facades\Log::info("SUCCESS! Order " . $order->invoice_no . " marked as PAID.");
 
         return redirect()->route('pay.show', $invoice_no)->with('success', 'Payment successful!');
     }
