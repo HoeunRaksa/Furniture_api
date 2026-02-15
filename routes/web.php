@@ -31,6 +31,10 @@ Route::domain('bank.furniture.learner-teach.online')->group(function () {
         return view('bank.home');
     })->name('bank.scanner');
     
+    Route::get('/login', function() {
+        return redirect('/');
+    });
+    
     Route::get('/pay/{invoice_no}', [\App\Http\Controllers\Web\BankPaymentController::class, 'showPaymentPage'])->name('pay.show');
     Route::post('/pay/{invoice_no}', [\App\Http\Controllers\Web\BankPaymentController::class, 'processPayment'])->name('pay.process');
 });
