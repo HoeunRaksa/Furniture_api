@@ -23,7 +23,8 @@ Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/qr/details/{tranId}', [OrderController::class, 'getTransactionDetails']);
-Route::get('/qr/pay/{tranId}', [OrderController::class, 'finalizePayment']);
+Route::post('/qr/pay/{tranId}', [OrderController::class, 'finalizePayment']); // Added POST support
+Route::get('/qr/pay/{tranId}', [OrderController::class, 'finalizePayment']);  // Keep GET support
 
 /*
 |--------------------------------------------------------------------------
