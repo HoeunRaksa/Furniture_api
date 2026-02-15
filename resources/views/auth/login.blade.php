@@ -114,9 +114,37 @@
             margin: 20px;
         }
 
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 35px 25px;
+                margin: 15px;
+                max-width: 90%;
+            }
+        }
+
         @media (max-width: 480px) {
             .login-card {
                 padding: 30px 20px;
+                margin: 10px;
+                max-width: 95%;
+                border-radius: 15px;
+            }
+            
+            .login-title {
+                font-size: 20px;
+            }
+            
+            .login-subtitle {
+                font-size: 13px;
+            }
+            
+            .logo-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .logo-icon i {
+                font-size: 28px;
             }
         }
 
