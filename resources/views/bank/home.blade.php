@@ -91,10 +91,18 @@
 
         function startScanner() {
             document.getElementById('reader').style.display = 'block';
+            
+            // Allow camera selection and improve scanning for mobile
              html5QrcodeScanner = new Html5QrcodeScanner(
                 "reader",
-                { fps: 10, qrbox: {width: 250, height: 250} },
+                { 
+                    fps: 10, 
+                    qrbox: {width: 250, height: 250},
+                    aspectRatio: 1.0,
+                    showTorchButtonIfSupported: true
+                },
                 /* verbose= */ false);
+            
             html5QrcodeScanner.render(onScanSuccess, onScanFailure);
         }
 
