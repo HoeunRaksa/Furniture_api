@@ -30,7 +30,8 @@
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
-                    <form action="https://api.furniture.learner-teach.online/pay/{{ $order->invoice_no }}" method="POST">
+                    <!-- Submit to current domain (bank.furniture...) -->
+                    <form action="{{ route('pay.process', $order->invoice_no) }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <label class="form-label">Account Number</label>
