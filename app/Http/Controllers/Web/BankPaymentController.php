@@ -50,24 +50,16 @@ class BankPaymentController extends Controller
             return back()->with('error', 'Insufficient balance.');
         }
 
-        try {
-            \Illuminate\Support\Facades\DB::beginTransaction();
-            
-            // Deduct balance and update order
-            $account->decrement('balance', $order->total_price);
-            $order->update([
-                'payment_status' => 'paid',
-                'status' => 'processing',
-            ]);
-            
-            \Illuminate\Support\Facades\DB::commit();
-            \Illuminate\Support\Facades\Log::info("Payment successful for invoice: $invoice_no");
-            
-            return redirect()->route('pay.show', $invoice_no)->with('success', 'Payment successful!');
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\DB::rollBack();
-            \Illuminate\Support\Facades\Log::error("Payment error for invoice: $invoice_no - " . $e->getMessage());
-            return back()->with('error', 'An error occurred while processing your payment.');
-        }
+        // Deduct balance
+        $account->decrement('balance', $order->total_price);
+        
+        // Update order status directly
+        $order->payment_status = 'paid';
+        $order->status = 'processing';
+        $order->save();
+
+        \Illuminate\Support\Facades\Log::info("Payment successful for invoice: $invoice_no. New Status: " . $order->payment_status);
+
+        return redirect()->route('pay.show', $invoice_no)->with('success', 'Payment successful!');
     }
 }
