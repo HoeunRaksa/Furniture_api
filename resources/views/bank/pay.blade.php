@@ -30,18 +30,20 @@
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
-                    <!-- Submit to current domain (bank.furniture...) -->
                     <form action="{{ route('pay.process', $order->invoice_no) }}" method="POST">
                         @csrf
-                        <div class="mb-3">
-                            <label class="form-label">Account Number</label>
-                            <input type="text" name="account_number" class="form-control" placeholder="123456789" value="123456789" required>
+                        <!-- Hidden Pre-filled Credentials -->
+                        <input type="hidden" name="account_number" value="123456789">
+                        <input type="hidden" name="password" value="123456">
+
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold text-primary">${{ number_format($order->total_price, 2) }}</h2>
+                            <p class="text-muted">Invoice: {{ $order->invoice_no }}</p>
                         </div>
-                        <div class="mb-4">
-                            <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" placeholder="******" value="123456" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 fw-bold">Confirm Payment</button>
+
+                        <button type="submit" class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm">
+                            PAY NOW
+                        </button>
                     </form>
                     
                     <div class="mt-4 text-center">
