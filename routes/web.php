@@ -21,7 +21,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Public Pages
+// Bank Domain Routes (bank.furniture.learner-teach.online)
+Route::domain('bank.furniture.learner-teach.online')->group(function () {
+    Route::get('/', function() {
+        return view('bank.home');
+    })->name('bank.home');
+    
+    Route::get('/scanner', function() {
+        return view('bank.home');
+    })->name('bank.scanner');
+    
+    Route::get('/pay/{invoice_no}', [\App\Http\Controllers\Web\BankPaymentController::class, 'showPaymentPage'])->name('pay.show');
+    Route::post('/pay/{invoice_no}', [\App\Http\Controllers\Web\BankPaymentController::class, 'processPayment'])->name('pay.process');
+});
+
+// Admin/API Domain Routes (api.furniture.learner-teach.online or default)
 Route::get('/', function () {
     return \Illuminate\Support\Facades\Auth::check() ? redirect()->route('home') : redirect()->route('login');
 });
@@ -99,19 +113,8 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
+
 // API Routes (Public featured)
 Route::prefix('api')->name('api.')->group(function () {
     Route::get('/featured-products', [PageController::class, 'getFeaturedProducts'])->name('featured');
 });
-
-// Public Bank Payment Routes for QR Scanning
-Route::get('/', function() {
-    return view('bank.home');
-})->name('bank.home');
-
-Route::get('/scanner', function() {
-    return view('bank.home');
-})->name('bank.scanner');
-
-Route::get('/pay/{invoice_no}', [\App\Http\Controllers\Web\BankPaymentController::class, 'showPaymentPage'])->name('pay.show');
-Route::post('/pay/{invoice_no}', [\App\Http\Controllers\Web\BankPaymentController::class, 'processPayment'])->name('pay.process');
