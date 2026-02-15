@@ -35,11 +35,11 @@
                         @csrf
                         <div class="mb-3">
                             <label class="form-label">Account Number</label>
-                            <input type="text" name="account_number" class="form-control" placeholder="123456789" required>
+                            <input type="text" name="account_number" class="form-control" placeholder="123456789" value="123456789" required>
                         </div>
                         <div class="mb-4">
                             <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" placeholder="******" required>
+                            <input type="password" name="password" class="form-control" placeholder="******" value="123456" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 fw-bold">Confirm Payment</button>
                     </form>
