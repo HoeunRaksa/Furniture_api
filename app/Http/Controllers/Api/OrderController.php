@@ -144,12 +144,14 @@ class OrderController extends Controller
      */
     public function getTransactionDetails($tranId)
     {
-        $order = Order::where('invoice_no', $tranId)->first();
+        $order = Order::where('invoice_no', $tranId)
+            ->orWhere('invoice_no', 'INV-' . $tranId)
+            ->first();
 
         if (! $order) {
             return response()->json([
                 'success' => false,
-                'message' => 'Transaction not found',
+                'message' => 'Transaction not found for ID: ' . $tranId,
             ], 404);
         }
 
@@ -170,12 +172,14 @@ class OrderController extends Controller
      */
     public function finalizePayment(Request $request, $tranId)
     {
-        $order = Order::where('invoice_no', $tranId)->first();
+        $order = Order::where('invoice_no', $tranId)
+            ->orWhere('invoice_no', 'INV-' . $tranId)
+            ->first();
 
         if (! $order) {
             return response()->json([
                 'success' => false,
-                'message' => 'Transaction not found',
+                'message' => 'Transaction not found for ID: ' . $tranId,
             ], 404);
         }
 
