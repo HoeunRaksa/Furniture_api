@@ -246,8 +246,8 @@ class OrderController extends Controller
             'success' => true,
             'data' => [
                 'status' => $order->status,
-                'payment_status' => $order->payment_status
-            ]
+                'payment_status' => $order->payment_status,
+            ],
         ]);
     }
 }
