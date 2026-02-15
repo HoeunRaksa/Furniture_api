@@ -25,6 +25,7 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/qr/details/{tranId}', [OrderController::class, 'getTransactionDetails']);
 Route::post('/qr/pay/{tranId}', [OrderController::class, 'finalizePayment']); // Added POST support
 Route::get('/qr/pay/{tranId}', [OrderController::class, 'finalizePayment']);  // Keep GET support
+Route::get('/orders/{invoice_no}/status', [OrderController::class, 'checkStatus']); // Made Public
 
 /*
 |--------------------------------------------------------------------------
@@ -46,9 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/favorites/toggle', [FavoriteController::class, 'toggle']);
     Route::get('/favorites/check/{product_id}', [FavoriteController::class, 'check']);
 
-    // Order Routes
     Route::post('/orders', [OrderController::class, 'store']);
-    Route::get('/orders/{invoice_no}/status', [OrderController::class, 'checkStatus']);
 });
 
 /*
