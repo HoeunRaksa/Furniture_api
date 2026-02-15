@@ -230,7 +230,9 @@ class OrderController extends Controller
      */
     public function checkStatus($invoice_no)
     {
-        $order = Order::where('invoice_no', $invoice_no)->first();
+        $order = Order::where('invoice_no', $invoice_no)
+            ->orWhere('invoice_no', 'INV-'.$invoice_no)
+            ->first();
 
         if (! $order) {
             return response()->json([
