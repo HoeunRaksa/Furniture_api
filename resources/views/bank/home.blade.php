@@ -268,36 +268,40 @@
     </div>
 
     <script>
-        let html5QrcodeScanner;
+        let html5Qrcode;
 
-        function startScanner() {
-            document.getElementById('reader').style.display = 'block';
+        async function startScanner() {
+            const readerElement = document.getElementById('reader');
+            readerElement.style.display = 'block';
             document.getElementById('result').style.display = 'none';
             
-            html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader",
-                { 
-                    fps: 10, 
-                    qrbox: {width: 250, height: 250},
-                    aspectRatio: 1.0,
-                    showTorchButtonIfSupported: true,
-                    rememberLastUsedCamera: false,
-                    // Force back camera (environment facing)
-                    videoConstraints: {
-                        facingMode: { exact: "environment" }
-                    }
-                },
-                false
-            );
+            html5Qrcode = new Html5Qrcode("reader");
             
-            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            try {
+                // Start scanning with back camera only
+                await html5Qrcode.start(
+                    { facingMode: "environment" }, // Force back camera
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 },
+                        aspectRatio: 1.0
+                    },
+                    onScanSuccess,
+                    onScanFailure
+                );
+            } catch (err) {
+                console.error("Camera error:", err);
+                alert("Unable to access camera. Please allow camera permissions.");
+            }
         }
 
         function onScanSuccess(decodedText, decodedResult) {
             console.log(`Scanned: ${decodedText}`);
             
-            html5QrcodeScanner.clear();
-            document.getElementById('reader').style.display = 'none';
+            // Stop scanning
+            html5Qrcode.stop().then(() => {
+                document.getElementById('reader').style.display = 'none';
+            });
 
             let invoice = decodedText;
             
@@ -327,7 +331,7 @@
         }
 
         function onScanFailure(error) {
-            // Ignore
+            // Ignore scan failures (normal when searching)
         }
 
         function processPayment(invoice) {
