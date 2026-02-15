@@ -105,5 +105,9 @@ Route::prefix('api')->name('api.')->group(function () {
 });
 
 // Public Bank Payment Routes for QR Scanning
+Route::get('/', function() {
+    return view('bank.home');
+})->name('bank.home');
+
 Route::get('/pay/{invoice_no}', [\App\Http\Controllers\Web\BankPaymentController::class, 'showPaymentPage'])->name('pay.show');
 Route::post('/pay/{invoice_no}', [\App\Http\Controllers\Web\BankPaymentController::class, 'processPayment'])->name('pay.process');
