@@ -187,6 +187,7 @@ class OrderController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Payment already completed',
+                'data' => $order,
             ]);
         }
 
@@ -243,8 +244,10 @@ class OrderController extends Controller
 
         return response()->json([
             'success' => true,
-            'status' => $order->status,
-            'payment_status' => $order->payment_status,
+            'data' => [
+                'status' => $order->status,
+                'payment_status' => $order->payment_status,
+            ],
         ]);
     }
 }
