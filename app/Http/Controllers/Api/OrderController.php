@@ -25,17 +25,17 @@ class OrderController extends Controller
             ->latest()
             ->get();
 
-             $orders->each(function ($order) {
-        $order->items->each(function ($item) {
-            if ($item->product) {
-                $item->product->images->each(function ($image) {
-                    if ($image->image_url) {
-                        $image->full_url = url($image->image_url);
-                    }
-                });
-            }
+        $orders->each(function ($order) {
+            $order->items->each(function ($item) {
+                if ($item->product) {
+                    $item->product->images->each(function ($image) {
+                        if ($image->image_url) {
+                            $image->full_url = url($image->image_url);
+                        }
+                    });
+                }
+            });
         });
-    });
 
         return response()->json([
             'success' => true,
@@ -134,7 +134,18 @@ class OrderController extends Controller
 
             DB::commit();
 
-            $responseData = $order->load(['items.product', 'user'])->toArray();
+            $responseData = $order->load(['items.product.images', 'user'])->toArray();
+
+            // Set full URLs for product images in response
+            foreach ($responseData['items'] as &$item) {
+                if (isset($item['product']['images'])) {
+                    foreach ($item['product']['images'] as &$image) {
+                        if (isset($image['image_url'])) {
+                            $image['full_url'] = url($image['image_url']);
+                        }
+                    }
+                }
+            }
 
             // Generate QR code if payment method is QR
             if ($request->payment_method === 'QR') {
@@ -255,6 +266,41 @@ class OrderController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Payment successful',
+            'data' => $order,
+        ]);
+    }
+
+    /**
+     * Get a specific order detail.
+     */
+    public function show($id)
+    {
+        $user = Auth::user();
+        $order = Order::with(['user', 'items.product.images'])
+            ->where('user_id', $user->id)
+            ->where('id', $id)
+            ->first();
+
+        if (! $order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order not found',
+            ], 404);
+        }
+
+        // Add full URLs for product images
+        $order->items->each(function ($item) {
+            if ($item->product) {
+                $item->product->images->each(function ($image) {
+                    if ($image->image_url) {
+                        $image->full_url = url($image->image_url);
+                    }
+                });
+            }
+        });
+
+        return response()->json([
+            'success' => true,
             'data' => $order,
         ]);
     }
