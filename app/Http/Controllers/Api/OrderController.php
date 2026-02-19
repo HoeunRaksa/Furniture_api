@@ -20,7 +20,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $orders = Order::with(['user', 'items.product'])
+        $orders = Order::with(['user', 'items.product.images'])
             ->where('user_id', $user->id)
             ->latest()
             ->get();
