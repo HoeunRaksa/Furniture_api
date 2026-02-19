@@ -25,6 +25,18 @@ class OrderController extends Controller
             ->latest()
             ->get();
 
+             $orders->each(function ($order) {
+        $order->items->each(function ($item) {
+            if ($item->product) {
+                $item->product->images->each(function ($image) {
+                    if ($image->image_url) {
+                        $image->full_url = url($image->image_url);
+                    }
+                });
+            }
+        });
+    });
+
         return response()->json([
             'success' => true,
             'message' => 'Orders retrieved successfully',
