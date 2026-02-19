@@ -129,7 +129,7 @@ class OrderController extends Controller
                 $invoiceNo = $order->invoice_no;
                 // Use the bank domain for payment page
                 $paymentUrl = "https://bank.furniture.learner-teach.online/pay/$invoiceNo";
-                
+
                 // Use a public QR code API to generate the image
                 $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='.urlencode($paymentUrl);
                 try {

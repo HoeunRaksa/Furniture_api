@@ -23,18 +23,18 @@ use Illuminate\Support\Facades\Route;
 
 // Bank Domain Routes (bank.furniture.learner-teach.online)
 Route::domain('bank.furniture.learner-teach.online')->group(function () {
-    Route::get('/', function() {
+    Route::get('/', function () {
         return view('bank.home');
     })->name('bank.home');
-    
-    Route::get('/scanner', function() {
+
+    Route::get('/scanner', function () {
         return view('bank.home');
     })->name('bank.scanner');
-    
-    Route::get('/login', function() {
+
+    Route::get('/login', function () {
         return redirect('/');
     });
-    
+
     Route::get('/pay/{invoice_no}', [\App\Http\Controllers\Web\BankPaymentController::class, 'showPaymentPage'])->name('pay.show');
     Route::post('/pay/{invoice_no}', [\App\Http\Controllers\Web\BankPaymentController::class, 'processPayment'])->name('pay.process');
 });
@@ -116,7 +116,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/update/{role}', [RoleController::class, 'update'])->name('update')->middleware('permission:manage_roles');
     });
 });
-
 
 // API Routes (Public featured)
 Route::prefix('api')->name('api.')->group(function () {
