@@ -15,6 +15,24 @@ use Illuminate\Support\Facades\Validator;
 class OrderController extends Controller
 {
     /**
+     * Get orders for the authenticated user.
+     */
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        $orders = Order::with(['user', 'items.product'])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Orders retrieved successfully',
+            'data' => $orders,
+        ]);
+    }
+
+    /**
      * Create a new order.
      *
      * @return \Illuminate\Http\Response
@@ -104,7 +122,7 @@ class OrderController extends Controller
 
             DB::commit();
 
-            $responseData = $order->load('items.product')->toArray();
+            $responseData = $order->load(['items.product', 'user'])->toArray();
 
             // Generate QR code if payment method is QR
             if ($request->payment_method === 'QR') {
