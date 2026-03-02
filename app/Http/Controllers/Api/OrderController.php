@@ -214,74 +214,74 @@ class OrderController extends Controller
     /**
      * Finalize payment (Simulate bank callback/confirmation).
      */
-  public function finalizePayment(Request $request, $tranId)
-{
-    $order = Order::where('invoice_no', $tranId)
-        ->orWhere('invoice_no', 'INV-' . $tranId)
-        ->first();
+    public function finalizePayment(Request $request, $tranId)
+    {
+        $order = Order::where('invoice_no', $tranId)
+            ->orWhere('invoice_no', 'INV-'.$tranId)
+            ->first();
 
-    if (! $order) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Transaction not found for ID: ' . $tranId,
-        ], 404);
-    }
-
-    if ($order->payment_status === 'paid') {
-        return response()->json([
-            'success' => true,
-            'message' => 'Payment already completed',
-            'data' => $order,
-        ]);
-    }
-
-    // Optional: Simulate actual balance deduction if an account number is provided
-    if ($request->has('account_number')) {
-        $bankAccount = BankAccount::where('account_number', $request->account_number)->first();
-
-        if (! $bankAccount) {
+        if (! $order) {
             return response()->json([
                 'success' => false,
-                'message' => 'Bank account not found',
+                'message' => 'Transaction not found for ID: '.$tranId,
             ], 404);
         }
 
-        // ✅ Use string values for safe decimal compare
-        $balance = (string) $bankAccount->balance;
-        $total   = (string) $order->total_price;
-
-        // ✅ bccomp returns: -1 if balance < total, 0 if equal, 1 if greater
-        if (bccomp($balance, $total, 2) === -1) {
+        if ($order->payment_status === 'paid') {
             return response()->json([
-                'success' => false,
-                'message' => 'Insufficient balance in bank account',
-                'data' => [
-                    'balance' => $balance,
-                    'total_price' => $total,
-                ],
-            ], 400);
+                'success' => true,
+                'message' => 'Payment already completed',
+                'data' => $order,
+            ]);
         }
 
-        // ✅ Deduct safely using bcsub (avoid float bug)
-        $newBalance = bcsub($balance, $total, 2);
+        // Optional: Simulate actual balance deduction if an account number is provided
+        if ($request->has('account_number')) {
+            $bankAccount = BankAccount::where('account_number', $request->account_number)->first();
 
-        $bankAccount->update([
-            'balance' => $newBalance,
+            if (! $bankAccount) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bank account not found',
+                ], 404);
+            }
+
+            // ✅ Use string values for safe decimal compare
+            $balance = (string) $bankAccount->balance;
+            $total = (string) $order->total_price;
+
+            // ✅ bccomp returns: -1 if balance < total, 0 if equal, 1 if greater
+            if (bccomp($balance, $total, 2) === -1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Insufficient balance in bank account',
+                    'data' => [
+                        'balance' => $balance,
+                        'total_price' => $total,
+                    ],
+                ], 400);
+            }
+
+            // ✅ Deduct safely using bcsub (avoid float bug)
+            $newBalance = bcsub($balance, $total, 2);
+
+            $bankAccount->update([
+                'balance' => $newBalance,
+            ]);
+        }
+
+        // ✅ Update order status
+        $order->update([
+            'payment_status' => 'paid',
+            'status' => 'processing',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Payment successful',
+            'data' => $order,
         ]);
     }
-
-    // ✅ Update order status
-    $order->update([
-        'payment_status' => 'paid',
-        'status' => 'processing',
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Payment successful',
-        'data' => $order,
-    ]);
-}
 
     /**
      * Get a specific order detail.
