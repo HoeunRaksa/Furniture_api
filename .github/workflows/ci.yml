@@ -13,7 +13,7 @@ jobs:
       - name: Deploy to Server
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.SERVER_IP }}
+          host: 54.165.46.134
           username: ubuntu
           port: 22
           key: ${{ secrets.DEPLOY_KEY }}

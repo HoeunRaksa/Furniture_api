@@ -240,6 +240,12 @@ class AuthController extends Controller
                 'token' => $user->createToken('api-token')->plainTextToken,
             ]);
         } catch (\Exception $e) {
+            // Clean up if registration/verification fails
+            if ($pending->profile_image && File::exists(public_path($pending->profile_image))) {
+                File::delete(public_path($pending->profile_image));
+            }
+            $pending->delete();
+
             Log::error('Failed to verify OTP', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
