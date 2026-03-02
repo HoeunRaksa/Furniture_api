@@ -117,10 +117,11 @@ class AuthController extends Controller
                 'email' => $request->email,
             ]);
         } catch (\Exception $e) {
-            // Clean up image if database operation fails
+            // Clean up profile image and database entry if it fails
             if ($profileImagePath && File::exists(public_path($profileImagePath))) {
                 File::delete(public_path($profileImagePath));
             }
+            PendingUser::where('email', $request->email)->delete();
 
             Log::error('Registration failed', [
                 'error' => $e->getMessage(),
@@ -218,7 +219,7 @@ class AuthController extends Controller
 
         try {
             $user = User::create([
-                'name' => $pending->name,
+                'username' => $pending->name,
                 'email' => $pending->email,
                 'password' => $pending->password,
                 'profile_image' => $pending->profile_image,
@@ -374,7 +375,7 @@ class AuthController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
+            'username' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:6',
             'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
