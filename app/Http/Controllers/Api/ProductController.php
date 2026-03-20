@@ -58,6 +58,30 @@ class ProductController extends Controller
         }
     }
 
+    #[OA\Post(
+        path: "/api/admin/products",
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: "category_id", type: "integer"),
+                        new OA\Property(property: "name", type: "string"),
+                        new OA\Property(property: "description", type: "string"),
+                        new OA\Property(property: "price", type: "number"),
+                        new OA\Property(property: "discount", type: "number"),
+                        new OA\Property(property: "stock", type: "integer"),
+                        new OA\Property(property: "images[]", type: "array", items: new OA\Items(type: "string", format: "binary"))
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: "Product created"),
+            new OA\Response(response: 422, description: "Validation error")
+        ]
+    )]
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -140,6 +164,16 @@ class ProductController extends Controller
         }
     }
 
+    #[OA\Get(
+        path: "/api/products/{id}",
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Product details"),
+            new OA\Response(response: 404, description: "Product not found")
+        ]
+    )]
     public function show($id)
     {
         try {
@@ -167,6 +201,34 @@ class ProductController extends Controller
         }
     }
 
+    #[OA\Post(
+        path: "/api/admin/products/{id}",
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+        ],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: "category_id", type: "integer"),
+                        new OA\Property(property: "name", type: "string"),
+                        new OA\Property(property: "description", type: "string"),
+                        new OA\Property(property: "price", type: "number"),
+                        new OA\Property(property: "discount", type: "number"),
+                        new OA\Property(property: "stock", type: "integer"),
+                        new OA\Property(property: "images[]", type: "array", items: new OA\Items(type: "string", format: "binary")),
+                        new OA\Property(property: "_method", type: "string", example: "PUT")
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Product updated"),
+            new OA\Response(response: 404, description: "Product not found")
+        ]
+    )]
     public function update(Request $request, $id)
     {
         // Handle _method field from FormData
@@ -246,6 +308,17 @@ class ProductController extends Controller
         }
     }
 
+    #[OA\Delete(
+        path: "/api/admin/products/{id}",
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Product deleted"),
+            new OA\Response(response: 404, description: "Product not found")
+        ]
+    )]
     public function destroy($id)
     {
         try {
@@ -278,6 +351,27 @@ class ProductController extends Controller
     }
 
     // Upload additional images to existing product
+    #[OA\Post(
+        path: "/api/admin/products/{id}/images",
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+        ],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: "images[]", type: "array", items: new OA\Items(type: "string", format: "binary"))
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Images uploaded"),
+            new OA\Response(response: 404, description: "Product not found")
+        ]
+    )]
     public function uploadImages(Request $request, $id)
     {
         $product = Product::findOrFail($id);
@@ -337,6 +431,18 @@ class ProductController extends Controller
     }
 
     // Delete specific image
+    #[OA\Delete(
+        path: "/api/admin/products/{productId}/images/{imageId}",
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: "productId", in: "path", required: true, schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "imageId", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Image deleted"),
+            new OA\Response(response: 404, description: "Product or image not found")
+        ]
+    )]
     public function deleteImage($productId, $imageId)
     {
         try {

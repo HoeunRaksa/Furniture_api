@@ -208,9 +208,21 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * VERIFY OTP
-     */
+    #[OA\Post(
+        path: "/api/verify-otp",
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "email", type: "string"),
+                    new OA\Property(property: "otp", type: "string", example: "123456")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Account verified"),
+            new OA\Response(response: 400, description: "Invalid/Expired OTP")
+        ]
+    )]
     public function verifyOtp(Request $request)
     {
         $request->validate([
@@ -289,9 +301,20 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * RESEND OTP
-     */
+    #[OA\Post(
+        path: "/api/resend-otp",
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "email", type: "string")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "OTP resent"),
+            new OA\Response(response: 404, description: "Pending user not found")
+        ]
+    )]
     public function resendOtp(Request $request)
     {
         $request->validate(['email' => 'required|email']);
@@ -380,9 +403,14 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * GET AUTHENTICATED USER
-     */
+    #[OA\Get(
+        path: "/api/user",
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Current user profile"),
+            new OA\Response(response: 401, description: "Unauthenticated")
+        ]
+    )]
     public function user(Request $request)
     {
         $user = $request->user();
@@ -398,9 +426,28 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * UPDATE PROFILE
-     */
+    #[OA\Post(
+        path: "/api/update-profile",
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: "username", type: "string"),
+                        new OA\Property(property: "email", type: "string"),
+                        new OA\Property(property: "password", type: "string"),
+                        new OA\Property(property: "profile_image", type: "string", format: "binary"),
+                        new OA\Property(property: "_method", type: "string", example: "PUT")
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Profile updated"),
+            new OA\Response(response: 422, description: "Validation error")
+        ]
+    )]
     public function updateProfile(Request $request)
     {
         $user = $request->user();
@@ -478,9 +525,14 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * DELETE PROFILE IMAGE
-     */
+    #[OA\Delete(
+        path: "/api/profile-image",
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Image deleted"),
+            new OA\Response(response: 401, description: "Unauthenticated")
+        ]
+    )]
     public function deleteProfileImage(Request $request)
     {
         try {
@@ -510,9 +562,14 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * LOGOUT
-     */
+    #[OA\Post(
+        path: "/api/logout",
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(response: 200, description: "Logged out successfully"),
+            new OA\Response(response: 401, description: "Unauthenticated")
+        ]
+    )]
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

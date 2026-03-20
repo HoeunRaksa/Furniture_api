@@ -15,9 +15,14 @@ use OpenApi\Attributes as OA;
 
 class OrderController extends Controller
 {
-    /**
-     * Get orders for the authenticated user.
-     */
+    #[OA\Get(
+        path: "/api/orders",
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(response: 200, description: "List user orders"),
+            new OA\Response(response: 401, description: "Unauthenticated")
+        ]
+    )]
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -45,11 +50,31 @@ class OrderController extends Controller
         ]);
     }
 
-    /**
-     * Create a new order.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    #[OA\Post(
+        path: "/api/orders",
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "items", type: "array", items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: "product_id", type: "integer"),
+                            new OA\Property(property: "quantity", type: "integer")
+                        ]
+                    )),
+                    new OA\Property(property: "shipping_address", type: "string"),
+                    new OA\Property(property: "lat", type: "number"),
+                    new OA\Property(property: "long", type: "number"),
+                    new OA\Property(property: "phone_number", type: "string"),
+                    new OA\Property(property: "payment_method", type: "string", enum: ["Cash", "QR"])
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: "Order created"),
+            new OA\Response(response: 422, description: "Validation error")
+        ]
+    )]
     public function store(Request $request)
     {
         // 1. Validation
@@ -303,9 +328,17 @@ class OrderController extends Controller
         ]);
     }
 
-    /**
-     * Get a specific order detail.
-     */
+    #[OA\Get(
+        path: "/api/orders/{id}",
+        security: [['sanctum' => []]],
+        parameters: [
+            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Order details"),
+            new OA\Response(response: 404, description: "Order not found")
+        ]
+    )]
     public function show($id)
     {
         $user = Auth::user();
@@ -338,9 +371,16 @@ class OrderController extends Controller
         ]);
     }
 
-    /**
-     * Check order status (for polling).
-     */
+    #[OA\Get(
+        path: "/api/orders/{invoice_no}/status",
+        parameters: [
+            new OA\Parameter(name: "invoice_no", in: "path", required: true, schema: new OA\Schema(type: "string"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Order status"),
+            new OA\Response(response: 404, description: "Order not found")
+        ]
+    )]
     public function checkStatus($invoice_no)
     {
         $order = Order::where('invoice_no', $invoice_no)
