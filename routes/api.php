@@ -30,7 +30,7 @@ Route::get('/orders/{invoice_no}/status', [OrderController::class, 'checkStatus'
 /*
 |--------------------------------------------------------------------------
 | Authenticated Routes (Requires Login)
-|--------------------------------------------------------------------------
+|---------------------g-----------------------------------------------------
 */
 Route::middleware('auth:sanctum')->group(function () {
 
