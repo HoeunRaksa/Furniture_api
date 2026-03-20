@@ -38,7 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']); // ✅ Replaced UserController::me
     Route::post('/update-profile', [AuthController::class, 'updateProfile']); // ✅ Replaced UserController::uploadProfileImage
     Route::delete('/profile-image', [AuthController::class, 'deleteProfileImage']);
-    Route::post('/logout',[AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 
     // Favorite Routes
     Route::get('/favorites', [FavoriteController::class, 'index']);

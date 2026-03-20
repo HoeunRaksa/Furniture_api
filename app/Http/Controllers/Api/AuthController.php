@@ -16,23 +16,23 @@ use OpenApi\Attributes as OA;
 class AuthController extends Controller
 {
     #[OA\Post(
-        path: "/api/register",
+        path: '/api/register',
         requestBody: new OA\RequestBody(
             content: new OA\MediaType(
-                mediaType: "multipart/form-data",
+                mediaType: 'multipart/form-data',
                 schema: new OA\Schema(
                     properties: [
-                        new OA\Property(property: "name", type: "string"),
-                        new OA\Property(property: "email", type: "string"),
-                        new OA\Property(property: "password", type: "string"),
-                        new OA\Property(property: "profile_image", type: "string", format: "binary")
+                        new OA\Property(property: 'name', type: 'string'),
+                        new OA\Property(property: 'email', type: 'string'),
+                        new OA\Property(property: 'password', type: 'string'),
+                        new OA\Property(property: 'profile_image', type: 'string', format: 'binary'),
                     ]
                 )
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "OTP sent"),
-            new OA\Response(response: 400, description: "Invalid input")
+            new OA\Response(response: 200, description: 'OTP sent'),
+            new OA\Response(response: 400, description: 'Invalid input'),
         ]
     )]
     public function register(Request $request)
@@ -155,18 +155,18 @@ class AuthController extends Controller
     }
 
     #[OA\Post(
-        path: "/api/login",
+        path: '/api/login',
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "email", type: "string"),
-                    new OA\Property(property: "password", type: "string")
+                    new OA\Property(property: 'email', type: 'string'),
+                    new OA\Property(property: 'password', type: 'string'),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Success"),
-            new OA\Response(response: 401, description: "Invalid credentials")
+            new OA\Response(response: 200, description: 'Success'),
+            new OA\Response(response: 401, description: 'Invalid credentials'),
         ]
     )]
     public function login(Request $request)
@@ -209,18 +209,18 @@ class AuthController extends Controller
     }
 
     #[OA\Post(
-        path: "/api/verify-otp",
+        path: '/api/verify-otp',
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "email", type: "string"),
-                    new OA\Property(property: "otp", type: "string", example: "123456")
+                    new OA\Property(property: 'email', type: 'string'),
+                    new OA\Property(property: 'otp', type: 'string', example: '123456'),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Account verified"),
-            new OA\Response(response: 400, description: "Invalid/Expired OTP")
+            new OA\Response(response: 200, description: 'Account verified'),
+            new OA\Response(response: 400, description: 'Invalid/Expired OTP'),
         ]
     )]
     public function verifyOtp(Request $request)
@@ -302,17 +302,17 @@ class AuthController extends Controller
     }
 
     #[OA\Post(
-        path: "/api/resend-otp",
+        path: '/api/resend-otp',
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "email", type: "string")
+                    new OA\Property(property: 'email', type: 'string'),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "OTP resent"),
-            new OA\Response(response: 404, description: "Pending user not found")
+            new OA\Response(response: 200, description: 'OTP resent'),
+            new OA\Response(response: 404, description: 'Pending user not found'),
         ]
     )]
     public function resendOtp(Request $request)
@@ -404,11 +404,11 @@ class AuthController extends Controller
     }
 
     #[OA\Get(
-        path: "/api/user",
+        path: '/api/user',
         security: [['sanctum' => []]],
         responses: [
-            new OA\Response(response: 200, description: "Current user profile"),
-            new OA\Response(response: 401, description: "Unauthenticated")
+            new OA\Response(response: 200, description: 'Current user profile'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
         ]
     )]
     public function user(Request $request)
@@ -427,25 +427,25 @@ class AuthController extends Controller
     }
 
     #[OA\Post(
-        path: "/api/update-profile",
+        path: '/api/update-profile',
         security: [['sanctum' => []]],
         requestBody: new OA\RequestBody(
             content: new OA\MediaType(
-                mediaType: "multipart/form-data",
+                mediaType: 'multipart/form-data',
                 schema: new OA\Schema(
                     properties: [
-                        new OA\Property(property: "username", type: "string"),
-                        new OA\Property(property: "email", type: "string"),
-                        new OA\Property(property: "password", type: "string"),
-                        new OA\Property(property: "profile_image", type: "string", format: "binary"),
-                        new OA\Property(property: "_method", type: "string", example: "PUT")
+                        new OA\Property(property: 'username', type: 'string'),
+                        new OA\Property(property: 'email', type: 'string'),
+                        new OA\Property(property: 'password', type: 'string'),
+                        new OA\Property(property: 'profile_image', type: 'string', format: 'binary'),
+                        new OA\Property(property: '_method', type: 'string', example: 'PUT'),
                     ]
                 )
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Profile updated"),
-            new OA\Response(response: 422, description: "Validation error")
+            new OA\Response(response: 200, description: 'Profile updated'),
+            new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
     public function updateProfile(Request $request)
@@ -526,11 +526,11 @@ class AuthController extends Controller
     }
 
     #[OA\Delete(
-        path: "/api/profile-image",
+        path: '/api/profile-image',
         security: [['sanctum' => []]],
         responses: [
-            new OA\Response(response: 200, description: "Image deleted"),
-            new OA\Response(response: 401, description: "Unauthenticated")
+            new OA\Response(response: 200, description: 'Image deleted'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
         ]
     )]
     public function deleteProfileImage(Request $request)
@@ -563,11 +563,11 @@ class AuthController extends Controller
     }
 
     #[OA\Post(
-        path: "/api/logout",
+        path: '/api/logout',
         security: [['sanctum' => []]],
         responses: [
-            new OA\Response(response: 200, description: "Logged out successfully"),
-            new OA\Response(response: 401, description: "Unauthenticated")
+            new OA\Response(response: 200, description: 'Logged out successfully'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
         ]
     )]
     public function logout(Request $request)

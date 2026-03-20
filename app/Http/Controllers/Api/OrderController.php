@@ -16,11 +16,11 @@ use OpenApi\Attributes as OA;
 class OrderController extends Controller
 {
     #[OA\Get(
-        path: "/api/orders",
+        path: '/api/orders',
         security: [['sanctum' => []]],
         responses: [
-            new OA\Response(response: 200, description: "List user orders"),
-            new OA\Response(response: 401, description: "Unauthenticated")
+            new OA\Response(response: 200, description: 'List user orders'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
         ]
     )]
     public function index(Request $request)
@@ -51,28 +51,28 @@ class OrderController extends Controller
     }
 
     #[OA\Post(
-        path: "/api/orders",
+        path: '/api/orders',
         security: [['sanctum' => []]],
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "items", type: "array", items: new OA\Items(
+                    new OA\Property(property: 'items', type: 'array', items: new OA\Items(
                         properties: [
-                            new OA\Property(property: "product_id", type: "integer"),
-                            new OA\Property(property: "quantity", type: "integer")
+                            new OA\Property(property: 'product_id', type: 'integer'),
+                            new OA\Property(property: 'quantity', type: 'integer'),
                         ]
                     )),
-                    new OA\Property(property: "shipping_address", type: "string"),
-                    new OA\Property(property: "lat", type: "number"),
-                    new OA\Property(property: "long", type: "number"),
-                    new OA\Property(property: "phone_number", type: "string"),
-                    new OA\Property(property: "payment_method", type: "string", enum: ["Cash", "QR"])
+                    new OA\Property(property: 'shipping_address', type: 'string'),
+                    new OA\Property(property: 'lat', type: 'number'),
+                    new OA\Property(property: 'long', type: 'number'),
+                    new OA\Property(property: 'phone_number', type: 'string'),
+                    new OA\Property(property: 'payment_method', type: 'string', enum: ['Cash', 'QR']),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 201, description: "Order created"),
-            new OA\Response(response: 422, description: "Validation error")
+            new OA\Response(response: 201, description: 'Order created'),
+            new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
     public function store(Request $request)
@@ -210,12 +210,12 @@ class OrderController extends Controller
     }
 
     #[OA\Get(
-        path: "/api/qr/details/{tranId}",
+        path: '/api/qr/details/{tranId}',
         parameters: [
-            new OA\Parameter(name: "tranId", in: "path", required: true, schema: new OA\Schema(type: "string"))
+            new OA\Parameter(name: 'tranId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Get transaction details")
+            new OA\Response(response: 200, description: 'Get transaction details'),
         ]
     )]
     public function getTransactionDetails($tranId)
@@ -244,19 +244,19 @@ class OrderController extends Controller
     }
 
     #[OA\Post(
-        path: "/api/qr/pay/{tranId}",
+        path: '/api/qr/pay/{tranId}',
         parameters: [
-            new OA\Parameter(name: "tranId", in: "path", required: true, schema: new OA\Schema(type: "string"))
+            new OA\Parameter(name: 'tranId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "account_number", type: "string")
+                    new OA\Property(property: 'account_number', type: 'string'),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Payment successful")
+            new OA\Response(response: 200, description: 'Payment successful'),
         ]
     )]
     public function finalizePayment(Request $request, $tranId)
@@ -329,14 +329,14 @@ class OrderController extends Controller
     }
 
     #[OA\Get(
-        path: "/api/orders/{id}",
+        path: '/api/orders/{id}',
         security: [['sanctum' => []]],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Order details"),
-            new OA\Response(response: 404, description: "Order not found")
+            new OA\Response(response: 200, description: 'Order details'),
+            new OA\Response(response: 404, description: 'Order not found'),
         ]
     )]
     public function show($id)
@@ -372,13 +372,13 @@ class OrderController extends Controller
     }
 
     #[OA\Get(
-        path: "/api/orders/{invoice_no}/status",
+        path: '/api/orders/{invoice_no}/status',
         parameters: [
-            new OA\Parameter(name: "invoice_no", in: "path", required: true, schema: new OA\Schema(type: "string"))
+            new OA\Parameter(name: 'invoice_no', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Order status"),
-            new OA\Response(response: 404, description: "Order not found")
+            new OA\Response(response: 200, description: 'Order status'),
+            new OA\Response(response: 404, description: 'Order not found'),
         ]
     )]
     public function checkStatus($invoice_no)

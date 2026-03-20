@@ -13,18 +13,18 @@ use OpenApi\Attributes as OA;
 class BankAccountController extends Controller
 {
     #[OA\Post(
-        path: "/api/bank/login",
+        path: '/api/bank/login',
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "account_number", type: "string"),
-                    new OA\Property(property: "password", type: "string")
+                    new OA\Property(property: 'account_number', type: 'string'),
+                    new OA\Property(property: 'password', type: 'string'),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Bank login successful"),
-            new OA\Response(response: 401, description: "Invalid credentials")
+            new OA\Response(response: 200, description: 'Bank login successful'),
+            new OA\Response(response: 401, description: 'Invalid credentials'),
         ]
     )]
     public function login(Request $request)
@@ -65,11 +65,11 @@ class BankAccountController extends Controller
     }
 
     #[OA\Get(
-        path: "/api/bank/account",
+        path: '/api/bank/account',
         security: [['api_token' => []]],
         responses: [
-            new OA\Response(response: 200, description: "Bank account details"),
-            new OA\Response(response: 401, description: "Unauthenticated")
+            new OA\Response(response: 200, description: 'Bank account details'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
         ]
     )]
     public function getAccountDetails(Request $request)
@@ -84,9 +84,9 @@ class BankAccountController extends Controller
     }
 
     #[OA\Post(
-        path: "/api/bank/seed",
+        path: '/api/bank/seed',
         responses: [
-            new OA\Response(response: 200, description: "Test data seeded")
+            new OA\Response(response: 200, description: 'Test data seeded'),
         ]
     )]
     public function seedTestData()

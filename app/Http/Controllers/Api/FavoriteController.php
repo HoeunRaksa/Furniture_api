@@ -11,11 +11,11 @@ use OpenApi\Attributes as OA;
 class FavoriteController extends Controller
 {
     #[OA\Get(
-        path: "/api/favorites",
+        path: '/api/favorites',
         security: [['sanctum' => []]],
         responses: [
-            new OA\Response(response: 200, description: "List favorites"),
-            new OA\Response(response: 401, description: "Unauthenticated")
+            new OA\Response(response: 200, description: 'List favorites'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
         ]
     )]
     public function index(Request $request)
@@ -57,18 +57,18 @@ class FavoriteController extends Controller
     }
 
     #[OA\Post(
-        path: "/api/favorites",
+        path: '/api/favorites',
         security: [['sanctum' => []]],
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "product_id", type: "integer")
+                    new OA\Property(property: 'product_id', type: 'integer'),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 201, description: "Added to favorites"),
-            new OA\Response(response: 400, description: "Already in favorites")
+            new OA\Response(response: 201, description: 'Added to favorites'),
+            new OA\Response(response: 400, description: 'Already in favorites'),
         ]
     )]
     public function store(Request $request)
@@ -129,14 +129,14 @@ class FavoriteController extends Controller
     }
 
     #[OA\Delete(
-        path: "/api/favorites/{product_id}",
+        path: '/api/favorites/{product_id}',
         security: [['sanctum' => []]],
         parameters: [
-            new OA\Parameter(name: "product_id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: 'product_id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Removed from favorites"),
-            new OA\Response(response: 404, description: "Favorite not found")
+            new OA\Response(response: 200, description: 'Removed from favorites'),
+            new OA\Response(response: 404, description: 'Favorite not found'),
         ]
     )]
     public function destroy($product_id, Request $request)
@@ -172,17 +172,17 @@ class FavoriteController extends Controller
 
     // Optional: Toggle favorite (add/remove in one endpoint)
     #[OA\Post(
-        path: "/api/favorites/toggle",
+        path: '/api/favorites/toggle',
         security: [['sanctum' => []]],
         requestBody: new OA\RequestBody(
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "product_id", type: "integer")
+                    new OA\Property(property: 'product_id', type: 'integer'),
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Favorite status toggled")
+            new OA\Response(response: 200, description: 'Favorite status toggled'),
         ]
     )]
     public function toggle(Request $request)
@@ -247,13 +247,13 @@ class FavoriteController extends Controller
 
     // Check if product is favorited
     #[OA\Get(
-        path: "/api/favorites/check/{product_id}",
+        path: '/api/favorites/check/{product_id}',
         security: [['sanctum' => []]],
         parameters: [
-            new OA\Parameter(name: "product_id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: 'product_id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
         ],
         responses: [
-            new OA\Response(response: 200, description: "Favorite status")
+            new OA\Response(response: 200, description: 'Favorite status'),
         ]
     )]
     public function check($product_id, Request $request)
