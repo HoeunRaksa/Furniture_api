@@ -11,12 +11,30 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
 {
-    /**
-     * REGISTER WITH OTP
-     */
+    #[OA\Post(
+        path: "/api/register",
+        requestBody: new OA\RequestBody(
+            content: new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: "name", type: "string"),
+                        new OA\Property(property: "email", type: "string"),
+                        new OA\Property(property: "password", type: "string"),
+                        new OA\Property(property: "profile_image", type: "string", format: "binary")
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "OTP sent"),
+            new OA\Response(response: 400, description: "Invalid input")
+        ]
+    )]
     public function register(Request $request)
     {
         // Cleanup expired OTPs
@@ -136,9 +154,21 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * LOGIN (BLOCK UNVERIFIED USERS)
-     */
+    #[OA\Post(
+        path: "/api/login",
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "email", type: "string"),
+                    new OA\Property(property: "password", type: "string")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Success"),
+            new OA\Response(response: 401, description: "Invalid credentials")
+        ]
+    )]
     public function login(Request $request)
     {
         $request->validate([

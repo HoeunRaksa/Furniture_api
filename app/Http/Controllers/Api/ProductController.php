@@ -7,9 +7,16 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 
 class ProductController extends Controller
 {
+    #[OA\Get(
+        path: "/api/products",
+        responses: [
+            new OA\Response(response: 200, description: "List all products")
+        ]
+    )]
     public function index()
     {
         try {
