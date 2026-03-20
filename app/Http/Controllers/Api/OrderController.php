@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Attributes as OA;
 
 class OrderController extends Controller
 {
@@ -183,9 +184,15 @@ class OrderController extends Controller
         }
     }
 
-    /**
-     * Get transaction details for QR payment.
-     */
+    #[OA\Get(
+        path: "/api/qr/details/{tranId}",
+        parameters: [
+            new OA\Parameter(name: "tranId", in: "path", required: true, schema: new OA\Schema(type: "string"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Get transaction details")
+        ]
+    )]
     public function getTransactionDetails($tranId)
     {
         $order = Order::where('invoice_no', $tranId)
@@ -211,9 +218,22 @@ class OrderController extends Controller
         ]);
     }
 
-    /**
-     * Finalize payment (Simulate bank callback/confirmation).
-     */
+    #[OA\Post(
+        path: "/api/qr/pay/{tranId}",
+        parameters: [
+            new OA\Parameter(name: "tranId", in: "path", required: true, schema: new OA\Schema(type: "string"))
+        ],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "account_number", type: "string")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Payment successful")
+        ]
+    )]
     public function finalizePayment(Request $request, $tranId)
     {
         $order = Order::where('invoice_no', $tranId)

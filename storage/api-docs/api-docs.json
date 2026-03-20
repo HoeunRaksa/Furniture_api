@@ -82,6 +82,60 @@
                 }
             }
         },
+        "/api/qr/details/{tranId}": {
+            "get": {
+                "operationId": "2a99a0bebcbd94e772c22decc87cb628",
+                "parameters": [
+                    {
+                        "name": "tranId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get transaction details"
+                    }
+                }
+            }
+        },
+        "/api/qr/pay/{tranId}": {
+            "post": {
+                "operationId": "29795cda5fa63bf4771f213396d91945",
+                "parameters": [
+                    {
+                        "name": "tranId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "account_number": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment successful"
+                    }
+                }
+            }
+        },
         "/api/products": {
             "get": {
                 "operationId": "d97d1c3727cbac49708b85f7d11f7d58",
