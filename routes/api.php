@@ -1,14 +1,11 @@
 <?php
 
-use App\Http\Controllers\Api\{
-    AuthController,
-    CategoryController,
-    FavoriteController,
-    OrderController,
-    ProductController
-};
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Bank\BankAccountController;
-
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
