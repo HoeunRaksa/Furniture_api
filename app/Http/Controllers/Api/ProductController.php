@@ -23,6 +23,14 @@ class ProductController extends Controller
             $products = Product::with(['images', 'category'])->latest()->get();
             $categories = \App\Models\Category::where('is_active', true)->get();
 
+            $categories->each(function ($category) {
+                if ($category->image_path) {
+                    $category->image_full_url = url($category->image_path);
+                } else {
+                    $category->image_full_url = null;
+                }
+            });
+
             $products->each(function ($product) {
                 $product->images->each(function ($image) {
                     if ($image->image_url) {
