@@ -21,6 +21,7 @@ Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
 
 // Public Product Routes
 Route::get('/products', [ProductController::class, 'index']);
+Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/qr/details/{tranId}', [OrderController::class, 'getTransactionDetails']);
 Route::post('/qr/pay/{tranId}', [OrderController::class, 'finalizePayment']); // Added POST support
